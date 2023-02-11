@@ -1,27 +1,38 @@
-mod hash;
+
 
 use std::{
     sync::{mpsc, Arc, Mutex},
     thread, fmt::Display,
 };
 
+//what does this do?
+//wait for requests
+//handle connection
+// return OK if data is right
+// return Wc if not
+//send replay
+
+//
+//get request from google server with email
+//send email to email with password
+
+
+
 #[derive(Debug)]
-struct User {
-    email: String,
-    password: String,
+pub struct User {
+    pub email: String,
+    pub password: String,
 }
 #[derive(Debug, PartialEq)]
-enum CustomResult {
+pub enum CustomResult {
     Ok,
-    We,
-    Wp,
+    Wc,
 }
 impl Display for CustomResult {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             CustomResult::Ok => write!(f, "Ok"),
-            CustomResult::We => write!(f, "We"),
-            CustomResult::Wp => write!(f, "Wp"),
+            CustomResult::Wc => write!(f, "Wc"),
         }
     }
 }
