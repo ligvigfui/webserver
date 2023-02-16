@@ -2,7 +2,7 @@
 
 use std::{
     sync::{mpsc, Arc, Mutex},
-    thread, fmt::Display,
+    thread, fmt::Display, time,
 };
 
 //what does this do?
@@ -22,17 +22,73 @@ use std::{
 pub struct User {
     pub email: String,
     pub password: String,
+    sessions: Vec<Session>,
+}
+#[derive(Debug)]
+pub struct Session {
+    pub id: String,
+    pub time: i32,
+}
+impl User {
+    pub fn new(email: String, password: String) -> User {
+        User {
+            email,
+            password,
+            sessions: vec![],
+        }
+    }
+    fn add_session(&mut self, session_id: String) {
+        for session in &mut self.sessions {
+            if session.id == session_id {
+                session.time = now();
+                return;
+            }
+        }
+        self.sessions.push(Session { id: session_id, time: now()});
+        if self.sessions.len() > 5 {
+            self.sessions.remove(0);
+        }
+    }
+    fn can_login(&self, with_session_id: &String) -> bool {
+        // if user is in sessions and loged in in the last 5 secs
+        // or user is 
+        let mut logged_in_in_5 = 0;
+        for session in &self.sessions {
+            if session.id == *with_session_id && session.time+5 > now() && logged_in_in_5 == 0 {
+                return true;
+            } else if session.time+5 > now() {
+                logged_in_in_5 += 1;
+            }
+        }
+        if logged_in_in_5 == 0 {
+            return true;
+        }
+        return false;
+    }
+    pub fn login(&mut self, session_id: String) -> CustomResult {
+        if self.can_login(&session_id) {
+            self.add_session(session_id);
+            return CustomResult::Ok;
+        }
+        return CustomResult::Mu;
+    }
+}
+
+pub fn now() -> i32 {
+    time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_secs() as i32
 }
 #[derive(Debug, PartialEq)]
 pub enum CustomResult {
     Ok,
     Wc,
+    Mu,
 }
 impl Display for CustomResult {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             CustomResult::Ok => write!(f, "Ok"),
-            CustomResult::Wc => write!(f, "Wc"),
+            CustomResult::Wc => write!(f, "Wrong credentials"),
+            CustomResult::Mu => write!(f, "Multiple users"),
         }
     }
 }

@@ -1,4 +1,4 @@
-use hash::getResponse;
+use hash::get_response;
 use webserver::ThreadPool;
 use crate::lib::User;
 use std::fs;
@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::net::TcpListener;
 use std::net::TcpStream;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
 mod lib;
@@ -14,10 +15,10 @@ mod hash;
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
     let pool = ThreadPool::new(4);
-    let users = Arc::new(vec![User {
-        email: String::from("ligvigfui@gmail.com"),
-        password: String::from("hali0123"),
-    }]);
+    //todo load in users
+    let users = Arc::new(vec![
+        Mutex::new(User::new(String::from("ligvigfui@gmail.com"), String::from("hali0123")))
+    ]);
 
 
     for stream in listener.incoming() {
@@ -31,7 +32,7 @@ fn main() {
     println!("Shutting down.");
 }
 
-fn handle_connection(mut stream: TcpStream, users: Arc<Vec<User>>) {
+fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
     let mut buffer = [0; 1024];
     stream.read(&mut buffer).unwrap();
 
@@ -77,7 +78,7 @@ fn handle_connection(mut stream: TcpStream, users: Arc<Vec<User>>) {
     stream.flush().unwrap();
 }
 
-fn handle_login(buffer: [u8; 1024], users: Arc<Vec<User>>) -> String{
+fn handle_login(buffer: [u8; 1024], users: Arc<Vec<Mutex<User>>>) -> String{
     let string = match String::from_utf8(buffer.to_vec()) {
         Ok(v) => v,
         Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
@@ -100,6 +101,6 @@ fn handle_login(buffer: [u8; 1024], users: Arc<Vec<User>>) -> String{
     // extract the credentials string
     let credentials = &credentials[..line_end];
     // do something with the credentials
-    getResponse(credentials, users)
+    get_response(credentials, users)
     
 }
