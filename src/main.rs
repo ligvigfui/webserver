@@ -39,14 +39,14 @@ fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
     let get = b"GET / HTTP/1.1\r\n";
     let sleep = b"GET /sleep HTTP/1.1\r\n";
     let neptun = b"GET /neptun_fos HTTP/1.1\r\n";
-    let login_neptun = b"GET /login_neptun_fos HTTP/1.1\r\n";
+    let login_neptun = b"PUT /login_neptun_fos HTTP/1.1\r\n";
 
 
     if buffer.starts_with(login_neptun) {
-        let string = handle_login(buffer, users);
+        let (status, string) = handle_login(buffer, users);
         let response = format!(
-            "{}\r\nContent-Length: {}\r\n\r\n{}",
-            "HTTP/1.1 200 OK",
+            "HTTP/1.1 {}\r\nContent-Length: {}\r\n\r\n{}",
+            status,
             string.len(),
             string
         );
@@ -78,29 +78,22 @@ fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
     stream.flush().unwrap();
 }
 
-fn handle_login(buffer: [u8; 1024], users: Arc<Vec<Mutex<User>>>) -> String{
+fn handle_login(buffer: [u8; 1024], users: Arc<Vec<Mutex<User>>>) -> (String, String){
+    //return: status, response
+    // convert the buffer to a string
     let string = match String::from_utf8(buffer.to_vec()) {
         Ok(v) => v,
-        Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
-    };
-    let credentials_start = match string.find("Credentials: ") {
-        Some(index) => index,
-        None => {
-            // the substring was not found
-            println!("Credentials not found in the string");
-            return String::from("What are you looking for young man?");
+        Err(e) => {
+            println!("Invalid UTF-8 sequence: {}", e);
+            return ("400 Bad Request".to_string(), "Invalid UTF-8 sequence".to_string());
         }
     };
-    // extract the part of the string after "credentials:"
-    let credentials = &string[credentials_start + 13..];
-    // find the end of the line
-    let line_end = match credentials.find('\r') {
-        Some(index) => index,
-        None => credentials.len(),
-    };
-    // extract the credentials string
-    let credentials = &credentials[..line_end];
+
+
+
+    println!("Users: {:?}", users);
+    
     // do something with the credentials
-    get_response(credentials, users)
+    get_response(&string, users)
     
 }

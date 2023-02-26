@@ -1,5 +1,4 @@
 
-
 use std::{
     sync::{mpsc, Arc, Mutex},
     thread, fmt::Display, time,
@@ -24,7 +23,7 @@ pub struct User {
     pub password: String,
     sessions: Vec<Session>,
 }
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Session {
     pub id: String,
     pub time: i32,
@@ -38,14 +37,18 @@ impl User {
         }
     }
     fn add_session(&mut self, session_id: String) {
+        println!("searching sessions");
         for session in &mut self.sessions {
             if session.id == session_id {
+                println!("updating session");
                 session.time = now();
                 return;
             }
         }
+        println!("adding session");
         self.sessions.push(Session { id: session_id, time: now()});
         if self.sessions.len() > 5 {
+            println!("removing oldest");
             self.sessions.remove(0);
         }
     }
@@ -55,22 +58,48 @@ impl User {
         let mut logged_in_in_5 = 0;
         for session in &self.sessions {
             if session.id == *with_session_id && session.time+5 > now() && logged_in_in_5 == 0 {
+                println!("can login");
                 return true;
-            } else if session.time+5 > now() {
+        } else if session.time+5 > now() {
                 logged_in_in_5 += 1;
             }
         }
         if logged_in_in_5 == 0 {
+            println!("can login");
             return true;
         }
+        println!("can't login");
         return false;
     }
     pub fn login(&mut self, session_id: String) -> CustomResult {
+        println!("logining user: {}", self.email);
         if self.can_login(&session_id) {
+            println!("adding session: {} ", session_id);
             self.add_session(session_id);
             return CustomResult::Ok;
         }
         return CustomResult::Mu;
+    }
+    pub fn sessions(&self) -> Vec<Session> {
+        let sessions = self.sessions.clone();
+        sessions
+    }
+}
+
+impl IsHex for String {
+    fn is_hex(&self) -> bool {
+        for c in self.chars() {
+            if !c.is_digit(16) {
+                return false;
+            }
+        }
+        true
+    }
+}
+pub trait IsHex {
+    fn is_hex(&self) -> bool;
+    fn is_not_hex(&self) -> bool {
+        !self.is_hex()
     }
 }
 
@@ -82,13 +111,17 @@ pub enum CustomResult {
     Ok,
     Wc,
     Mu,
+    Br,
+    Rl
 }
 impl Display for CustomResult {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             CustomResult::Ok => write!(f, "Ok"),
-            CustomResult::Wc => write!(f, "Wrong credentials"),
-            CustomResult::Mu => write!(f, "Multiple users"),
+            CustomResult::Wc => write!(f, "Wc"),
+            CustomResult::Mu => write!(f, "Mu"),
+            CustomResult::Br => write!(f, "Br"),
+            CustomResult::Rl => write!(f, "Rl"),
         }
     }
 }
