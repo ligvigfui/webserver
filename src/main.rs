@@ -63,7 +63,7 @@ fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
 }
 
 fn default_handle_page_return(stream: &mut TcpStream, status: &str, html_name: &str){
-    let contents = fs::read_to_string("pages\\".to_owned() + html_name).unwrap();
+    let contents = fs::read_to_string("pages/".to_owned() + html_name).unwrap();
     default_handle(stream, status, &contents);
 }
 
