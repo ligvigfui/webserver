@@ -21,68 +21,18 @@ use std::{
 pub struct User {
     pub email: String,
     pub password: String,
-    sessions: Vec<Session>,
-}
-#[derive(Debug, Clone)]
-pub struct Session {
-    pub id: String,
+    pub MAC: String,
     pub time: i32,
 }
+
 impl User {
     pub fn new(email: String, password: String) -> User {
         User {
             email,
             password,
-            sessions: vec![],
+            MAC: String::from(""),
+            time: 0,
         }
-    }
-    fn add_session(&mut self, session_id: String) {
-        println!("searching sessions");
-        for session in &mut self.sessions {
-            if session.id == session_id {
-                println!("updating session");
-                session.time = now();
-                return;
-            }
-        }
-        println!("adding session");
-        self.sessions.push(Session { id: session_id, time: now()});
-        if self.sessions.len() > 5 {
-            println!("removing oldest");
-            self.sessions.remove(0);
-        }
-    }
-    fn can_login(&self, with_session_id: &String) -> bool {
-        // if user is in sessions and loged in in the last 5 secs
-        // or user is 
-        let mut logged_in_in_5 = 0;
-        for session in &self.sessions {
-            if session.id == *with_session_id && session.time+5 > now() && logged_in_in_5 == 0 {
-                println!("can login");
-                return true;
-        } else if session.time+5 > now() {
-                logged_in_in_5 += 1;
-            }
-        }
-        if logged_in_in_5 == 0 {
-            println!("can login");
-            return true;
-        }
-        println!("can't login");
-        return false;
-    }
-    pub fn login(&mut self, session_id: String) -> CustomResult {
-        println!("logining user: {}", self.email);
-        if self.can_login(&session_id) {
-            println!("adding session: {} ", session_id);
-            self.add_session(session_id);
-            return CustomResult::Ok;
-        }
-        return CustomResult::Mu;
-    }
-    pub fn sessions(&self) -> Vec<Session> {
-        let sessions = self.sessions.clone();
-        sessions
     }
 }
 
@@ -110,18 +60,15 @@ pub fn now() -> i32 {
 pub enum CustomResult {
     Ok,
     Wc,
-    Mu,
     Br,
-    Rl
 }
+
 impl Display for CustomResult {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             CustomResult::Ok => write!(f, "Ok"),
             CustomResult::Wc => write!(f, "Wc"),
-            CustomResult::Mu => write!(f, "Mu"),
             CustomResult::Br => write!(f, "Br"),
-            CustomResult::Rl => write!(f, "Rl"),
         }
     }
 }
