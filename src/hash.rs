@@ -1,37 +1,174 @@
-use std::{sync::{Arc, Mutex}, fmt::format};
-use crate::lib::IsHex;
+use std::{sync::{Arc, Mutex}};
+use crate::lib::{IsHex, extract_anything};
 use ripemd::{Ripemd160, Digest};
-use webserver::now;
+use webserver::{now, readable_time};
 
-use crate::lib::{CustomResult, User};
+use crate::lib::{User};
 
-fn decode_credentials(users: &Arc<Vec<Mutex<User>>>, credentials: String) -> (CustomResult, String) {
-    //check if string is hex
-    if credentials.is_not_hex() {
-        return (CustomResult::Br, "nothing".to_string());
+pub fn handle_neptun_login_first(messege: &str, users: &Arc<Vec<Mutex<User>>>) -> (String, String) {
+    // returns (status, response)
+    // get credentials
+    let credentials = match extract_anything(messege, "Credentials: ") {
+        Some(x) => x,
+        None => {
+            println!("{}: No credentials found in GET request", readable_time());
+            return ("404 Bad Request".to_owned(), "Error 1: No credentials found in GET request\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned());}
+    };
+    //check if credentials are correct length
+    if credentials.len() != 40 {
+        println!("{}: Credentials are not correct length" , readable_time());
+        return ("404 Bad Request".to_owned(), "Error 2: Credentials are not correct length\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
     }
+    // check if credentials are hex
+    if credentials.is_not_hex() {
+        println!("{}: Credentials are not hex" , readable_time());
+        return ("404 Bad Request".to_owned(), "Error 3: Credentials are not hex\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
+    }
+
+    // get mac from Id:
+    let id = match extract_anything(messege, "Id: ") {
+        Some(x) => x,
+        None => {
+            println!("{}: No Id found in GET request" , readable_time());
+            return ("404 Bad Request".to_owned(), "Error 4: No Id found in GET request\nPlease contact me at ligvigfui@gmail.com".to_owned())}
+    };
+    // check if id is correct length
+    if id.len() != 240 {
+        println!("{}: Id is not correct length" , readable_time());
+        return ("404 Bad Request".to_owned(), "Error 5: Id is not correct length\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
+    }
+    // check if id is hex
+    if id.is_not_hex() {
+        println!("{}: Id is not hex" , readable_time());
+        return ("404 Bad Request".to_owned(), "Error 6: Id is not hex\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
+    }
+
+    // get email from credentials
+    let email = match get_user_email(users, credentials, true) {
+        Some(x) => x,
+        None => {
+            println!("{}: User does not exist" , readable_time());
+            return ("200 Ok".to_owned(), "Error 7: User does not exist\nMeet me in room 211 or write to ligvigfui@gmail.com".to_owned())}
+    };
+
+    // get mac from id = hash(mac)
+    let mac = match get_mac_from_id(id) {
+        Some(x) => x,
+        None => {
+            println!("{}: Id does not exist" , readable_time());
+            return ("200 Ok".to_owned(), "Error 8: Id does not exist".to_owned())}
+    };
     
-    //return resutlt and email
-    //if result is ok, email is the email
-    //if result is wc, email is "nothing".as_string()
+    // set user mac to this
+    set_mac(users, &email, mac);
     
     
+
+    // send response with email, mac and count & update last login time
+    println!("{}: {} logged in" , readable_time() , email);
+    let response = response(users, email);
+    ("200 OK".to_owned() , response)
+}
+
+pub fn handle_neptun_login_other(messege: &str, users: &Arc<Vec<Mutex<User>>>) -> (String, String) {
+    // returns (status, response)
+    // get credentials
+    let credentials = match extract_anything(messege, "Credentials: ") {
+        Some(x) => x,
+        None => {
+            println!("{}: No credentials found in GET request", readable_time());
+            return ("404 Bad Request".to_owned(), "Error 1: No credentials found in GET request\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned());}
+    };
+    //check if credentials are correct length
+    if credentials.len() != 40 {
+        println!("{}: Credentials are not correct length" , readable_time());
+        return ("404 Bad Request".to_owned(), "Error 2: Credentials are not correct length\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
+    }
+    // check if credentials are hex
+    if credentials.is_not_hex() {
+        println!("{}: Credentials are not hex" , readable_time());
+        return ("404 Bad Request".to_owned(), "Error 3: Credentials are not hex\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
+    }
+
+    // get email from credentials
+    let email = match get_user_email(users, credentials, false) {
+        Some(x) => x,
+        None => {
+            println!("{}: User does not exist" , readable_time());
+            return ("200 Ok".to_owned(), "Error 7: User does not exist\nMeet me in room 211 or write to ligvigfui@gmail.com".to_owned())}
+    };
+
+    // send response with email, mac and count & update last login time
+    println!("{}: {} logged in" , readable_time() , email);
+    let response = response(users, email);
+    ("200 OK".to_owned() , response)
+}
+
+fn response(users: &Arc<Vec<Mutex<User>>>, email: String) -> String {
+    for user in users.iter() {
+        let mut user = user.lock().unwrap();
+        if user.email == email {
+            let response = format!("tKn.8M{}:{}:{}", user.email, user.MAC, user.count);
+            user.count += 2;
+            user.time = now();
+            return hash(response);
+        }
+    }
+    "".to_owned()
+}
+
+fn set_mac(users: &Arc<Vec<Mutex<User>>>, email: &str, mac: String) {
+    for user in users.iter() {
+        let mut user = user.lock().unwrap();
+        if user.email == email && user.time + 5 < now(){
+            user.MAC = mac;
+            user.count = 1;
+            return;
+        }
+    }
+}
+
+fn get_mac_from_id(id: String) -> Option<String> {
+    let mut mac = String::new();
+    for i in 0..6 {
+        assert!(i*40+40 <= id.len());
+        mac += &get_mac_2_chars(&id[i*40..i*40+40])?;
+        mac += ":"; // add : between mac chars
+    }
+    // remove last :
+    mac.pop();
+    Some(mac)
+}
+
+fn get_mac_2_chars(id_slice: &str) -> Option<String> {
+    for int1 in 0..16 {
+        for int2 in 0..16 {
+            let guess = format!("{}1pN?Qx\\jQvh{}", i32_to_hex_char(int1), i32_to_hex_char(int2));
+            let hash = hash(guess);
+            if hash == id_slice {
+                return Some(format!("{}{}", i32_to_hex_char(int1), i32_to_hex_char(int2)));
+            }
+        }
+    }
+    None
+}
+
+fn get_user_email(users: &Arc<Vec<Mutex<User>>>, credentials: String , zero_count: bool) -> Option<String> {
+    // returns email
     for user in users.iter() {
         let user = user.lock().unwrap();
-        let decoded = format!("{}:{}", user.email, user.password);
-        if hash(decoded) == credentials {
-            return (CustomResult::Ok, user.email.clone());
+        let decoded;
+        if zero_count {
+            decoded = format!("vcdjZVbvLFB1{}:{}:{}", user.email, user.password, 0);
         }
-        
+        else {
+            decoded = format!("vcdjZVbvLFB1{}:{}:{}", user.email, user.password, user.count-1);
+        }
+        if hash(decoded) == credentials {
+            return Some(user.email.clone());
+        }
     }
-    (CustomResult::Wc, String::from("nothing"))
-}
-//
-
-
-fn encode(result: CustomResult, email: &str) -> String {
-    let encoded = format!("{}:{}", &result, email);
-    hash(encoded)
+    None
 }
 
 fn hash(string: String) -> String {
@@ -40,109 +177,28 @@ fn hash(string: String) -> String {
     let result = hasher.finalize();
     format!("{:x}", result)
 }
-//------------------------------------------------------------------------------------------------
-
-pub fn get_response(messege: &str, users: Arc<Vec<Mutex<User>>>) -> (String, String) {
-    //returns (status, response)
-
-    //separate credentials
-    let credentials_start = match messege.find("Credentials: ") {
-        Some(index) => index,
-        None => {
-            // the substring was not found
-            println!("Credentials not found in the string");
-            return ("400 Bad Request".to_string() , "Credentials not found in the string".to_string());
-        }
-    };
-
-
-
-    // extract the part of the string after "credentials:"
-    let credentials = &messege[credentials_start + 13..];
-    // find the end of the line
-    let line_end = match credentials.find('\r') {
-        Some(index) => index,
-        None => credentials.len(),
-    };
-    // extract the credentials string
-    let credentials = &credentials[..line_end];
-    
-    //get hash of email, password from user
-    //returns result and user 
-    let (result, email) = decode_credentials(&users, credentials.to_owned());
-    
-
-
-    //extract sessionID
-    let sessionID_start = match messege.find("SessionID: ") {
-        Some(index) => index,
-        None => {
-            // the substring was not found
-            println!("SessionID not found in the string");
-            if result == CustomResult::Ok {
-                return ("200 Ok".to_string(), encode(CustomResult::Ok, &email));
-            }
-            else {
-                return ("200 Ok".to_string(), encode(CustomResult::Wc, "nothing"));
-            }
-            return ("400 Bad Request".to_string() , "Credentials not found in the string".to_string());
-        }
-    };
-    // extract the part of the string after "SessionID:"
-    let credentials = &messege[credentials_start + 13..];
-    // find the end of the line
-    let line_end = match credentials.find('\r') {
-        Some(index) => index,
-        None => credentials.len(),
-    };
-    // extract the credentials string
-    let credentials = &credentials[..line_end];
 
 
 
 
-    //if result is ok
-    if result == CustomResult::Ok {
-        //return 200 Ok hash(MAC)
-        println!("{}: {}", email, CustomResult::Ok);
-        return ("200 Ok".to_string(), encode(CustomResult::Ok, &email));
-    }
-    else {
-        //return 200 Ok "wrong credentials"
-        println!("{}: {}", email, CustomResult::Wc);
-        return ("200 Ok".to_string(), encode(CustomResult::Wc, "nothing"));
-    }
-
-}
-
-fn test_users() -> Arc<Vec<Mutex<User>>> {
-    Arc::new(vec![
-        Mutex::new(User::new(String::from("ligvigfui@gmail.com"), String::from("hali0123"))),
-        Mutex::new(User::new(String::from("regő@regő.hu"), String::from("hali"))),
-        Mutex::new(User::new(String::from("öüóőúűéáí@regő.hu"), String::from("hali")))
-    ])
-}
-
-
-
-fn i32_to_hex_char(number: i32) -> String {
+fn i32_to_hex_char(number: i32) -> char {
     match number {
-        0 => String::from("0"),
-        1 => String::from("1"),
-        2 => String::from("2"),
-        3 => String::from("3"),
-        4 => String::from("4"),
-        5 => String::from("5"),
-        6 => String::from("6"),
-        7 => String::from("7"),
-        8 => String::from("8"),
-        9 => String::from("9"),
-        10 => String::from("a"),
-        11 => String::from("b"),
-        12 => String::from("c"),
-        13 => String::from("d"),
-        14 => String::from("e"),
-        15 => String::from("f"),
+        0 => '0',
+        1 => '1',
+        2 => '2',
+        3 => '3',
+        4 => '4',
+        5 => '5',
+        6 => '6',
+        7 => '7',
+        8 => '8',
+        9 => '9',
+        10 => 'a',
+        11 => 'b',
+        12 => 'c',
+        13 => 'd',
+        14 => 'e',
+        15 => 'f',
         _ => panic!("number is not a hex number"),
     }
 }
@@ -150,21 +206,11 @@ fn i32_to_hex_char(number: i32) -> String {
 
 #[cfg(test)]
 mod tests {
-
+    use super::*;
     #[test]
-    fn test_decode_credentials(){
-    }
-    #[test]
-    fn decode_MAC(){
-
-    }
-    #[test]
-    fn can_login(){
-
-    } 
-    #[test]
-    fn encode (){
-
+    fn extract_anything_test(){
+        let str1 = "élnfskbvkaéjds va s\ré md";
+        assert_eq!(extract_anything(str1 , "nf").unwrap(),"skbvkaéjds va s".to_string());
     }
 
 }

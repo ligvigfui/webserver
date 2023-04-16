@@ -1,7 +1,7 @@
 
 use std::{
     sync::{mpsc, Arc, Mutex},
-    thread, fmt::Display, time,
+    thread, time::{self, SystemTime},
 };
 
 //what does this do?
@@ -16,13 +16,38 @@ use std::{
 //send email to email with password
 
 
+pub fn extract_anything(messege: &str, keyword: &str) -> Option<String> {
+    //separate keyword
+    let string_start = match messege.find(keyword) {
+        Some(index) => index,
+        None => {
+            // the substring was not found
+            println!("{} not found in the string" , keyword);
+            return None;
+        }
+    };
+
+
+
+    // extract the part of the string after "Id:"
+    let string0 = &messege[(keyword.len() + string_start)..];
+    // find the end of the line
+    let line_end = match string0.find('\r') {
+        Some(index) => index,
+        None => string0.len(),
+    };
+    // extract the credentials string
+    Some(string0[..line_end].to_string())
+}
 
 #[derive(Debug)]
 pub struct User {
     pub email: String,
     pub password: String,
     pub MAC: String,
-    pub time: i32,
+    pub time: u64,
+    // server sends even counts
+    pub count: i32,
 }
 
 impl User {
@@ -32,6 +57,7 @@ impl User {
             password,
             MAC: String::from(""),
             time: 0,
+            count: 0,
         }
     }
 }
@@ -53,25 +79,23 @@ pub trait IsHex {
     }
 }
 
-pub fn now() -> i32 {
-    time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_secs() as i32
-}
-#[derive(Debug, PartialEq)]
-pub enum CustomResult {
-    Ok,
-    Wc,
-    Br,
+pub fn now() -> u64 {
+    time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_secs()
 }
 
-impl Display for CustomResult {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            CustomResult::Ok => write!(f, "Ok"),
-            CustomResult::Wc => write!(f, "Wc"),
-            CustomResult::Br => write!(f, "Br"),
-        }
-    }
+pub fn readable_time() -> String {
+    let current_time = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .expect("Time went backwards")
+        .as_secs();
+    let current_date_time = chrono::NaiveDateTime::from_timestamp_opt(current_time as i64, 0)
+        .expect("Invalid timestamp");
+    let current_date_time = chrono::DateTime::<chrono::Utc>::from_utc(current_date_time, chrono::Utc);
+    let two_hours = chrono::Duration::hours(2);
+    let future_date_time = current_date_time + two_hours;
+    future_date_time.format("%Y-%m-%d %H:%M:%S").to_string()
 }
+
 
 pub struct ThreadPool {
     workers: Vec<Worker>,

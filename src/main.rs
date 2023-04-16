@@ -1,4 +1,6 @@
-use hash::get_response;
+use hash::handle_neptun_login_first;
+use hash::handle_neptun_login_other;
+use html_macro::html;
 use webserver::ThreadPool;
 use lib::User;
 use std::fs;
@@ -13,7 +15,10 @@ mod lib;
 mod hash;
 use std::process::{Command, exit};
 
+
+static VERSION: &str = "0.1.0";
 fn main() {
+    
     let listener = TcpListener::bind("0.0.0.0:7878").unwrap();
     let pool = ThreadPool::new(4);
     //todo load in users
@@ -47,12 +52,12 @@ fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
             println!("Sleeping for 5 seconds");
             thread::sleep(Duration::from_secs(5));
             default_handle_page_return(&mut stream, "200 OK", "hello.html");},
-        b"GET /neptun_fos HTTP/1.1" => {
-            println!("Handling neptun_fos");
-            default_handle_page_return(&mut stream, "200 OK", "neptun_fos.html");},
-        b"POST /neptun_fos/login HTTP/1.1" => {
-            println!("Handling neptun_fos login");
-            handle_neptun_fos_login(&mut stream, buffer, users);},
+        b"GET /neptunCRF HTTP/1.1" => {
+            println!("Handling neptunCRF");
+            default_handle_page_return(&mut stream, "200 OK", "NeptunCRF.html");},
+        b"POST /neptunCRF/login HTTP/1.1" => {
+            println!("Handling neptunCRF login");
+            handle_neptun_login(&mut stream, buffer, users);},
         b"GET /debug HTTP/1.1" => {
             println!("Providing debug info");
             handle_debug(&mut stream, buffer);},
@@ -75,11 +80,25 @@ fn default_handle(stream: &mut TcpStream , status: &str, contents: &str) {
         contents
     );
     stream.write_all(response.as_bytes()).unwrap();
-    stream.flush().unwrap();   
+    stream.flush().unwrap();
+    print!("\n");
 }
 
-fn handle_neptun_fos_login(stream: &mut TcpStream , buffer: [u8; 1024], users: Arc<Vec<Mutex<User>>>){
-
+fn handle_neptun_login(stream: &mut TcpStream, buffer: [u8; 1024], users: Arc<Vec<Mutex<User>>>) {
+    let (status, mut response);
+    let buffer_str = std::str::from_utf8(&buffer).unwrap();
+    if buffer_str.contains("Id: ") {
+        (status, response) = handle_neptun_login_first(buffer_str, &users);
+    } else {
+        (status, response) = handle_neptun_login_other(buffer_str, &users);
+    }
+    if response.contains("Error") {
+        if let Some(pos) = response.rfind("\r\n\r\n") {
+            // Insert the ServerVersion string before the last "\r\n"
+            response.insert_str(pos, &format!("ServerVersion: {}\r\n", VERSION));
+        }
+    }
+    default_handle(stream, &status, &response);
 }
 
 fn handle_debug(stream: &mut TcpStream , buffer: [u8; 1024]){
@@ -89,35 +108,14 @@ fn handle_debug(stream: &mut TcpStream , buffer: [u8; 1024]){
 }
 
 fn update() {
-    // Clone the repository
-    let repo_url = "https://github.com/ligvigfui/repo.git";
-    let repo_dir = "repo";
-    if let Err(err) = Command::new("git").args(&["clone", repo_url, repo_dir]).status() {
-        eprintln!("Failed to clone repository: {}", err);
-    }
+    // git pull
 
-    // Rename the old executable
-    let old_exe_path = std::env::current_exe().unwrap();
-    let old_exe_name = old_exe_path.file_name().unwrap();
-    let old_exe_backup = old_exe_path.with_file_name(format!("{}_old{}", old_exe_name.to_str().unwrap(), old_exe_path.extension().unwrap_or_default().to_str().unwrap()));
-    if let Err(err) = std::fs::rename(&old_exe_path, &old_exe_backup) {
-        eprintln!("Failed to rename old executable: {}", err);
-        exit(1);
-    }
+    // cargo build
 
-    // Build the latest executable
-    if let Err(err) = Command::new("cargo").args(&["build", "--release"]).current_dir(repo_dir).status() {
-        eprintln!("Failed to build latest executable: {}", err);
-        exit(1);
-    }
+    // run tests?
 
-    // Run the latest executable
-    let new_exe_path = format!("{}/target/release/main", repo_dir);
-    if let Err(err) = Command::new(&new_exe_path).spawn() {
-        eprintln!("Failed to run latest executable: {}", err);
-        exit(1);
-    }
+    // OK -> cargo build --release
+    
+    // OK -> restart the webserver service
 
-    // Close this instance of the program
-    exit(0);
 }
