@@ -60,7 +60,10 @@ pub fn handle_neptun_login_first(messege: &str, users: &Arc<Vec<Mutex<User>>>) -
     };
     
     // set user mac to this
-    set_mac(users, &email, mac);
+    if !set_mac(users, &email, mac) {
+        println!("{}: {} tried to log in with multiple accounts" , readable_time() , email);
+        return ("200 OK".to_owned() , "Error 11.2: you are trying to login with multiple accounts.  that's  not cool".to_owned())
+    }
     
     
 
@@ -117,15 +120,16 @@ fn response(users: &Arc<Vec<Mutex<User>>>, email: String) -> String {
     "".to_owned()
 }
 
-fn set_mac(users: &Arc<Vec<Mutex<User>>>, email: &str, mac: String) {
+fn set_mac(users: &Arc<Vec<Mutex<User>>>, email: &str, mac: String) -> bool{
     for user in users.iter() {
         let mut user = user.lock().unwrap();
         if user.email == email && user.time + 5 < now(){
             user.MAC = mac;
             user.count = 1;
-            return;
+            return true;
         }
     }
+    false
 }
 
 fn get_mac_from_id(id: String) -> Option<String> {
