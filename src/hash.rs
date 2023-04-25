@@ -229,5 +229,5 @@ mod tests {
         assert!(set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_owned()).is_ok());
         thread::sleep(Duration::from_secs(6));
         assert!(set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:01".to_owned()).is_ok());
-
+    }
 }
