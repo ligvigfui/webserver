@@ -57,11 +57,15 @@ impl User {
             password,
             MAC: String::from(""),
             time: 0,
-            count: 0,
+            count: 1,
         }
     }
 }
 
+
+/// Checks if a string is hex
+/// Returns true if the string is hex
+/// Returns false if the string is not hex
 impl IsHex for String {
     fn is_hex(&self) -> bool {
         for c in self.chars() {
@@ -72,6 +76,7 @@ impl IsHex for String {
         true
     }
 }
+
 pub trait IsHex {
     fn is_hex(&self) -> bool;
     fn is_not_hex(&self) -> bool {
@@ -79,10 +84,14 @@ pub trait IsHex {
     }
 }
 
+/// Returns the current time in seconds since the Unix epoch.
 pub fn now() -> u64 {
     time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap().as_secs()
 }
 
+
+/// Returns a string with the current time in the format "YYYY-MM-DD HH:MM:SS"
+/// with a two hour offset.
 pub fn readable_time() -> String {
     let current_time = SystemTime::now()
         .duration_since(SystemTime::UNIX_EPOCH)

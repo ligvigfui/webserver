@@ -60,7 +60,12 @@ pub fn handle_neptun_login_first(messege: &str, users: &Arc<Vec<Mutex<User>>>) -
     };
     
     // set user mac to this
-    set_mac(users, &email, mac);
+    match set_mac(users, &email, mac) {
+        Ok(_) => (),
+        Err(e) => {
+            println!("{}", e);
+            return ("200 Ok".to_owned(), "Error 9: Could not set mac".to_owned())}
+    };
     
     
 
@@ -117,15 +122,16 @@ fn response(users: &Arc<Vec<Mutex<User>>>, email: String) -> String {
     "".to_owned()
 }
 
-fn set_mac(users: &Arc<Vec<Mutex<User>>>, email: &str, mac: String) {
+fn set_mac<'a>(users: &'a Arc<Vec<Mutex<User>>>, email: &str, mac: String) -> Result<(), &'a str> {
     for user in users.iter() {
         let mut user = user.lock().unwrap();
-        if user.email == email && user.time + 5 < now(){
+        if user.email == email && user.time + 5 > now(){
             user.MAC = mac;
             user.count = 1;
-            return;
+            return Ok(());
         }
     }
+    Err("User already logged in with these credentials")
 }
 
 fn get_mac_from_id(id: String) -> Option<String> {
@@ -206,11 +212,23 @@ fn i32_to_hex_char(number: i32) -> char {
 
 #[cfg(test)]
 mod tests {
+    use std::{thread, time::Duration};
+
     use super::*;
     #[test]
     fn extract_anything_test(){
         let str1 = "élnfskbvkaéjds va s\ré md";
         assert_eq!(extract_anything(str1 , "nf").unwrap(),"skbvkaéjds va s".to_string());
     }
+    #[test]
+    fn login(){
+        let users = Arc::new(vec![Mutex::new(User::new("ligvigfui@fsda.capok".to_owned(), "password".to_owned()))]);
+        set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_owned()).unwrap();
+        thread::sleep(Duration::from_secs(3));
+        assert!(set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:01".to_owned()).is_err());
+        assert!(set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_owned()).is_ok());
+        thread::sleep(Duration::from_secs(6));
+        assert!(set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:01".to_owned()).is_ok());
 
+    }
 }

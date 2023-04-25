@@ -1,8 +1,8 @@
 use hash::handle_neptun_login_first;
 use hash::handle_neptun_login_other;
-use html_macro::html;
 use webserver::ThreadPool;
 use lib::User;
+use webserver::extract_anything;
 use std::fs;
 use std::io::prelude::*;
 use std::net::TcpListener;
@@ -16,7 +16,7 @@ mod hash;
 use std::process::{Command, exit};
 
 
-static VERSION: &str = "0.1.0";
+static VERSION: &str = "0.1.1-dev";
 fn main() {
     
     let listener = TcpListener::bind("0.0.0.0:7878").unwrap();
@@ -43,18 +43,32 @@ fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
     stream.read(&mut buffer).unwrap();
 
     let starts_with = buffer.split(|&x| x == b'\r').next().unwrap();
+    let str1 = std::str::from_utf8(&buffer).unwrap();
+    let mut language = match extract_anything(str1, "Accept-Language: ") {
+        Some(x) => x,
+        None => "en".to_owned(),
+    };
+    if language.contains("hu") {
+        language = "hu".to_owned();
+    } else {
+        language = "en".to_owned();
+    }
+
 
     match starts_with {
         b"GET / HTTP/1.1" => {
             println!("Handling root");
-            default_handle_page_return(&mut stream, "200 OK", "hello.html");},
+            default_handle_page_return(&mut stream, "200 OK", &(language + "/hello.html"));},
         b"GET /sleep HTTP/1.1" => {
             println!("Sleeping for 5 seconds");
             thread::sleep(Duration::from_secs(5));
-            default_handle_page_return(&mut stream, "200 OK", "hello.html");},
+            default_handle_page_return(&mut stream, "200 OK", &(language + "/hello.html"));},
         b"GET /neptunCRF HTTP/1.1" => {
             println!("Handling neptunCRF");
-            default_handle_page_return(&mut stream, "200 OK", "NeptunCRF.html");},
+            default_handle_page_return(&mut stream, "200 OK", &(language + "/neptunCRF.html"));},
+        b"GET /neptunCRF/EULA HTTP/1.1" => {
+            println!("Handling neptunCRF/EULA");
+            default_handle_page_return(&mut stream, "200 OK", &(language + "/neptunCRF/EULA.html"));},
         b"POST /neptunCRF/login HTTP/1.1" => {
             println!("Handling neptunCRF login");
             handle_neptun_login(&mut stream, buffer, users);},
@@ -63,12 +77,21 @@ fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
             handle_debug(&mut stream, buffer);},
         _ => {
             println!("404");
-            default_handle_page_return(&mut stream, "404 NOT FOUND", "404.html");}
+            default_handle_page_return(&mut stream, "404 NOT FOUND", &(language + "/404.html"));},
     }
 }
 
+
+
 fn default_handle_page_return(stream: &mut TcpStream, status: &str, html_name: &str){
-    let contents = fs::read_to_string("pages/".to_owned() + html_name).unwrap();
+    let contents = match fs::read_to_string("pages/".to_owned() + html_name)
+    {
+        Ok(x) => x,
+        Err(e) => {
+            println!("Error reading file: {}\n{}", e, html_name);
+            String::from("Error reading file")
+        }
+    };
     default_handle(stream, status, &contents);
 }
 
