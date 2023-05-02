@@ -16,7 +16,7 @@ mod hash;
 use std::process::{Command, exit};
 
 
-static VERSION: &str = "0.1.1-dev";
+static VERSION: &str = "0.1.1-dev.1";
 fn main() {
     
     let listener = TcpListener::bind("0.0.0.0:7878").unwrap();
@@ -59,10 +59,9 @@ fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
         b"GET / HTTP/1.1" => {
             println!("Handling root");
             default_handle_page_return(&mut stream, "200 OK", &(language + "/hello.html"));},
-        b"GET /sleep HTTP/1.1" => {
-            println!("Sleeping for 5 seconds");
-            thread::sleep(Duration::from_secs(5));
-            default_handle_page_return(&mut stream, "200 OK", &(language + "/hello.html"));},
+        b"GET /wedding_test HTTP/1.1" => {
+            println!("Handling wedding_test");
+            default_handle_page_return(&mut stream, "200 OK", "/hu/wedding_test/wedding.html");},
         b"GET /neptunCRF HTTP/1.1" => {
             println!("Handling neptunCRF");
             default_handle_page_return(&mut stream, "200 OK", &(language + "/neptunCRF.html"));},
