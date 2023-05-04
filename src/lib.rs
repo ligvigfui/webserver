@@ -1,8 +1,10 @@
 
 use std::{
     sync::{mpsc, Arc, Mutex},
-    thread, time::{self, SystemTime},
+    thread, time::{self, SystemTime}, clone,
 };
+
+use serde::{Deserialize, Serialize};
 
 //what does this do?
 //wait for requests
@@ -39,8 +41,8 @@ pub fn extract_anything(messege: &str, keyword: &str) -> Option<String> {
     // extract the credentials string
     Some(string0[..line_end].to_string())
 }
-
-#[derive(Debug)]
+ 
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct User {
     pub email: String,
     pub password: String,
@@ -61,6 +63,7 @@ impl User {
         }
     }
 }
+
 
 
 /// Checks if a string is hex

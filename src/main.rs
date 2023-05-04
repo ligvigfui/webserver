@@ -4,6 +4,7 @@ use webserver::ThreadPool;
 use lib::User;
 use webserver::extract_anything;
 use std::fs;
+use std::fs::File;
 use std::io::prelude::*;
 use std::net::TcpListener;
 use std::net::TcpStream;
@@ -21,12 +22,22 @@ fn main() {
     
     let listener = TcpListener::bind("0.0.0.0:7878").unwrap();
     let pool = ThreadPool::new(4);
-    //todo load in users
-    let users = Arc::new(vec![
-        Mutex::new(User::new(String::from("ligvigfui@gmail.com"), String::from("hali0123")))
-    ]);
+    
+    // load users from users.json
+    let mut users_noarc: Vec<Mutex<User>> = Vec::new();
+    let mut file = File::open("users.json").unwrap();
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap();
+    let users_vec: Vec<User> = serde_json::from_str(&contents).unwrap();
+    for user in users_vec {
+        users_noarc.push(Mutex::new(user));
+    }
+    let users = Arc::new(users_noarc);
+    println!("Loaded users from users.json");
 
 
+
+    // listen for connections
     for stream in listener.incoming() {
         let stream = stream.unwrap();
         let users = Arc::clone(&users);
@@ -35,6 +46,14 @@ fn main() {
         });
     }
 
+
+
+    // write users to users.json in a json format
+    let mut file = File::create("users.json").unwrap();
+    let users_vec = Arc::try_unwrap(users).unwrap().into_iter().map(|x| x.into_inner().unwrap()).collect::<Vec<User>>();
+    file.write_all(serde_json::to_string_pretty(&users_vec).unwrap().as_bytes()).unwrap();
+    println!("Saved users to users.json");
+    
     println!("Shutting down.");
 }
 
@@ -126,7 +145,25 @@ fn handle_neptun_login(stream: &mut TcpStream, buffer: [u8; 1024], users: Arc<Ve
 fn handle_debug(stream: &mut TcpStream , buffer: [u8; 1024]){
     println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
     stream.write_all(b"HTTP/1.1 200 OK\r\n\r\n").unwrap();
-    stream.flush().unwrap();
+    stream.flush().unwrap(); 
+}
+
+fn download_file() -> Result<impl warp::Reply, warp::Rejection> {
+    let file_path = "path/to/your/file";
+    let mut file = File::open(file_path)
+        .map_err(|_| warp::reject::not_found())?;
+    let mut contents = Vec::new();
+    file.read_to_end(&mut contents)
+        .map_err(|_| warp::reject::not_found())?;
+
+    let filename = "your_file";
+    let response = warp::http::Response::builder()
+        .header("Content-Disposition", format!(r#"attachment; filename="{}""#, filename))
+        .header("Content-Type", "application/octet-stream")
+        .header("Content-Length", contents.len())
+        .body(contents);
+
+    Ok(response)
 }
 
 fn update() {
