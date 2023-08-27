@@ -1,0 +1,4 @@
+/target
+/not logged
+/pages/*/debug.log
+/pages/*/*/debug.log
