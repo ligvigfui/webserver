@@ -10,8 +10,6 @@ use std::net::TcpListener;
 use std::net::TcpStream;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::thread;
-use std::time::Duration;
 mod lib;
 mod hash;
 use std::process::{Command, exit};
@@ -78,9 +76,6 @@ fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
         b"GET / HTTP/1.1" => {
             println!("Handling root");
             default_handle_page_return(&mut stream, "200 OK", &(language + "/hello.html"));},
-        b"GET /wedding_test HTTP/1.1" => {
-            println!("Handling wedding_test");
-            default_handle_page_return(&mut stream, "200 OK", "/hu/wedding_test/wedding.html");},
         b"GET /neptunCRF HTTP/1.1" => {
             println!("Handling neptunCRF");
             default_handle_page_return(&mut stream, "200 OK", &(language + "/neptunCRF.html"));},
