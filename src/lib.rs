@@ -1,7 +1,7 @@
 
 use std::{
     sync::{mpsc, Arc, Mutex},
-    thread, time::{self, SystemTime}, clone,
+    thread, time::{self, SystemTime},
 };
 
 use serde::{Deserialize, Serialize};

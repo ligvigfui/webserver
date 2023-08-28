@@ -5,17 +5,20 @@ use lib::User;
 use webserver::extract_anything;
 use std::fs;
 use std::fs::File;
+use std::io;
 use std::io::prelude::*;
 use std::net::TcpListener;
 use std::net::TcpStream;
+use std::ops::Add;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::vec;
 mod lib;
 mod hash;
-use std::process::{Command, exit};
 
 
 static VERSION: &str = "0.1.1-dev.1";
+static DEBUG: bool = false;
 fn main() {
     
     let listener = TcpListener::bind("0.0.0.0:7878").unwrap();
@@ -23,9 +26,9 @@ fn main() {
     
     // load users from users.json
     let mut users_noarc: Vec<Mutex<User>> = Vec::new();
-    let mut file = File::open("users.json").unwrap();
+    let mut users_file = File::open("src/users.json").unwrap();
     let mut contents = String::new();
-    file.read_to_string(&mut contents).unwrap();
+    users_file.read_to_string(&mut contents).unwrap();
     let users_vec: Vec<User> = serde_json::from_str(&contents).unwrap();
     for user in users_vec {
         users_noarc.push(Mutex::new(user));
@@ -76,20 +79,34 @@ fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
         b"GET / HTTP/1.1" => {
             println!("Handling root");
             default_handle_page_return(&mut stream, "200 OK", &(language + "/hello.html"));},
+        b"GET /wedding HTTP/1.1" => {
+            println!("Handling wedding_test");
+            default_handle_page_return(&mut stream, "200 OK", "/hu/wedding/wedding.html");},
+        b"GET /wedding/demo_image.jpg HTTP/1.1" => {
+            println!("Handling wedding/demo_image.jpg");
+            handle_image(&mut stream, "pages/hu/wedding/demo_image.jpg");},
+        b"POST /wedding/form HTTP/1.1" => {
+            println!("Handling wedding/form");
+            handle_debug(&mut stream, buffer);},
+        b"GET /vue_test HTTP/1.1" => {
+            println!("Handling vue_test");
+            default_handle_page_return(&mut stream, "200 OK", "/pages_vue/index.html");},
         b"GET /neptunCRF HTTP/1.1" => {
             println!("Handling neptunCRF");
-            default_handle_page_return(&mut stream, "200 OK", &(language + "/neptunCRF.html"));},
+            default_handle_page_return(&mut stream, "200 OK", &(language + "/neptunCRF/neptunCRF.html"));},
+        b"GET /neptunCRF/icon HTTP/1.1" => {
+            println!("Handling neptunCRF icon");
+            handle_image(&mut stream, "pages/assets/neptunCRF/icon.png");},
         b"GET /neptunCRF/EULA HTTP/1.1" => {
             println!("Handling neptunCRF/EULA");
-            default_handle_page_return(&mut stream, "200 OK", &(language + "/neptunCRF/EULA.html"));},
+            default_handle_page_return(&mut stream, "200 OK", &("/hu/neptunCRF/EULA.html"));},
         b"POST /neptunCRF/login HTTP/1.1" => {
             println!("Handling neptunCRF login");
             handle_neptun_login(&mut stream, buffer, users);},
         b"GET /debug HTTP/1.1" => {
-            println!("Providing debug info");
             handle_debug(&mut stream, buffer);},
         _ => {
-            println!("404");
+            println!("404 - {}", std::str::from_utf8(&starts_with).unwrap());
             default_handle_page_return(&mut stream, "404 NOT FOUND", &(language + "/404.html"));},
     }
 }
@@ -105,19 +122,22 @@ fn default_handle_page_return(stream: &mut TcpStream, status: &str, html_name: &
             String::from("Error reading file")
         }
     };
-    default_handle(stream, status, &contents);
+    default_handle(stream, status, vec![], &contents);
 }
 
-fn default_handle(stream: &mut TcpStream , status: &str, contents: &str) {
-    let response = format!(
-        "HTTP/1.1 {}\r\nContent-Length: {}\r\n\r\n{}",
-        status,
+fn default_handle(stream: &mut TcpStream, status: &str, headers: Vec<&str>, contents: &str) {
+    if DEBUG {
+        println!("Response: {}", contents);}
+    let mut response = format!(
+        "HTTP/1.1 {}\r\n",
+        status);
+    response.push_str(&headers.join("\r\n"));
+    response.push_str(&format!(
+        "Content-Length: {}\r\n\r\n{}",
         contents.len(),
         contents
-    );
-    stream.write_all(response.as_bytes()).unwrap();
-    stream.flush().unwrap();
-    print!("\n");
+    ));
+    send_response(stream, &response);
 }
 
 fn handle_neptun_login(stream: &mut TcpStream, buffer: [u8; 1024], users: Arc<Vec<Mutex<User>>>) {
@@ -130,35 +150,46 @@ fn handle_neptun_login(stream: &mut TcpStream, buffer: [u8; 1024], users: Arc<Ve
     }
     if response.contains("Error") {
         if let Some(pos) = response.rfind("\r\n\r\n") {
-            // Insert the ServerVersion string before the last "\r\n"
             response.insert_str(pos, &format!("ServerVersion: {}\r\n", VERSION));
         }
     }
-    default_handle(stream, &status, &response);
+    default_handle(stream, &status, vec![], &response);
 }
 
 fn handle_debug(stream: &mut TcpStream , buffer: [u8; 1024]){
     println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
-    stream.write_all(b"HTTP/1.1 200 OK\r\n\r\n").unwrap();
-    stream.flush().unwrap(); 
+    send_response(stream, "HTTP/1.1 200 OK\r\n\r\n");
 }
 
-fn download_file() -> Result<impl warp::Reply, warp::Rejection> {
-    let file_path = "path/to/your/file";
-    let mut file = File::open(file_path)
-        .map_err(|_| warp::reject::not_found())?;
+fn handle_image(stream: &mut TcpStream, path: &str) {
+    match handle_image_inner(stream, path) {
+        Err(e) => {
+            println!("{}", e);
+        }
+        Ok(_) => {}
+    }
+}
+
+fn handle_image_inner(stream: &mut TcpStream, path: &str) -> Result<(), io::Error> {
+    let mut file = File::open(&path)?;
+    let status = "200 OK";
+    let image_format = path.split(".").last().unwrap();
+    let content_type = String::from("Content-Type: image/").add(image_format);
+    let headers = vec![content_type.as_str(), "Connection: close"];
     let mut contents = Vec::new();
-    file.read_to_end(&mut contents)
-        .map_err(|_| warp::reject::not_found())?;
+    file.read_to_end(&mut contents)?;
+    stream.write_all(format!("HTTP/1.1 {}\r\n", status).as_bytes())?;
+    stream.write_all(headers.join("\r\n").as_bytes())?;
+    stream.write_all(format!("Content-Length: {}\r\n\r\n", contents.len()).as_bytes())?;
+    stream.write_all(&contents)?;
+    stream.flush()?;
+    Ok(())
+}
 
-    let filename = "your_file";
-    let response = warp::http::Response::builder()
-        .header("Content-Disposition", format!(r#"attachment; filename="{}""#, filename))
-        .header("Content-Type", "application/octet-stream")
-        .header("Content-Length", contents.len())
-        .body(contents);
-
-    Ok(response)
+fn send_response(stream: &mut TcpStream, response: &str) {
+    stream.write_all(response.as_bytes()).unwrap();
+    stream.flush().unwrap();
+    print!("\n");
 }
 
 fn update() {
