@@ -84,6 +84,9 @@ fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
         b"GET /wedding/demo_image.jpg HTTP/1.1" => {
             println!("Handling wedding/demo_image.jpg");
             handle_image(&mut stream, "pages/hu/wedding/demo_image.jpg");},
+        b"POST /wedding/form HTTP/1.1" => {
+            println!("Handling wedding/form");
+            handle_debug(&mut stream, buffer);},
         b"GET /neptunCRF HTTP/1.1" => {
             println!("Handling neptunCRF");
             default_handle_page_return(&mut stream, "200 OK", &(language + "/neptunCRF.html"));},
@@ -96,7 +99,7 @@ fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
         b"GET /debug HTTP/1.1" => {
             handle_debug(&mut stream, buffer);},
         _ => {
-            println!("404");
+            println!("404 - {}", std::str::from_utf8(&starts_with).unwrap());
             default_handle_page_return(&mut stream, "404 NOT FOUND", &(language + "/404.html"));},
     }
 }
