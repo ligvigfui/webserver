@@ -9,6 +9,7 @@ use std::io;
 use std::io::prelude::*;
 use std::net::TcpListener;
 use std::net::TcpStream;
+use std::ops::Add;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::vec;
@@ -87,12 +88,18 @@ fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
         b"POST /wedding/form HTTP/1.1" => {
             println!("Handling wedding/form");
             handle_debug(&mut stream, buffer);},
+        b"GET /vue_test HTTP/1.1" => {
+            println!("Handling vue_test");
+            default_handle_page_return(&mut stream, "200 OK", "/pages_vue/index.html");},
         b"GET /neptunCRF HTTP/1.1" => {
             println!("Handling neptunCRF");
-            default_handle_page_return(&mut stream, "200 OK", &(language + "/neptunCRF.html"));},
+            default_handle_page_return(&mut stream, "200 OK", &(language + "/neptunCRF/neptunCRF.html"));},
+        b"GET /neptunCRF/icon HTTP/1.1" => {
+            println!("Handling neptunCRF icon");
+            handle_image(&mut stream, "pages/assets/neptunCRF/icon.png");},
         b"GET /neptunCRF/EULA HTTP/1.1" => {
             println!("Handling neptunCRF/EULA");
-            default_handle_page_return(&mut stream, "200 OK", &(language + "/neptunCRF/EULA.html"));},
+            default_handle_page_return(&mut stream, "200 OK", &("/hu/neptunCRF/EULA.html"));},
         b"POST /neptunCRF/login HTTP/1.1" => {
             println!("Handling neptunCRF login");
             handle_neptun_login(&mut stream, buffer, users);},
@@ -164,9 +171,11 @@ fn handle_image(stream: &mut TcpStream, path: &str) {
 }
 
 fn handle_image_inner(stream: &mut TcpStream, path: &str) -> Result<(), io::Error> {
-    let mut file = File::open(path)?;
+    let mut file = File::open(&path)?;
     let status = "200 OK";
-    let headers = vec!["Content-Type: image/jpeg"];
+    let image_format = path.split(".").last().unwrap();
+    let content_type = String::from("Content-Type: image/").add(image_format);
+    let headers = vec![content_type.as_str(), "Connection: close"];
     let mut contents = Vec::new();
     file.read_to_end(&mut contents)?;
     stream.write_all(format!("HTTP/1.1 {}\r\n", status).as_bytes())?;
