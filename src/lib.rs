@@ -1,10 +1,14 @@
-
 use std::{
-    sync::{mpsc, Arc, Mutex},
-    thread, time::{self, SystemTime},
+    thread, 
+    time::{self, SystemTime},
+    sync::{ mpsc, Arc, Mutex},
 };
 
-use serde::{Deserialize, Serialize};
+pub mod routing;
+pub mod neptunCRF;
+
+pub static VERSION: &str = "0.1.1-dev.1";
+pub static DEBUG: bool = false;
 
 //what does this do?
 //wait for requests
@@ -42,27 +46,6 @@ pub fn extract_anything(messege: &str, keyword: &str) -> Option<String> {
     Some(string0[..line_end].to_string())
 }
  
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct User {
-    pub email: String,
-    pub password: String,
-    pub MAC: String,
-    pub time: u64,
-    // server sends even counts
-    pub count: i32,
-}
-
-impl User {
-    pub fn new(email: String, password: String) -> User {
-        User {
-            email,
-            password,
-            MAC: String::from(""),
-            time: 0,
-            count: 1,
-        }
-    }
-}
 
 
 

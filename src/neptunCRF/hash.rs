@@ -1,9 +1,11 @@
-use std::{sync::{Arc, Mutex}};
-use crate::lib::{IsHex, extract_anything};
+use std::sync::{Arc, Mutex};
 use ripemd::{Ripemd160, Digest};
-use webserver::{now, readable_time};
 
-use crate::lib::{User};
+use crate::{extract_anything, readable_time, IsHex, now};
+
+use super::User;
+
+
 
 pub fn handle_neptun_login_first(messege: &str, users: &Arc<Vec<Mutex<User>>>) -> (String, String) {
     // returns (status, response)

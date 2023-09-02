@@ -1,60 +1,43 @@
-use hash::handle_neptun_login_first;
-use hash::handle_neptun_login_other;
-use webserver::ThreadPool;
 use lib::User;
+use std::{
+    fs::{
+        self, 
+        File}, 
+    io::{
+        self, 
+        prelude::*}, 
+    net::{
+        TcpListener, 
+        TcpStream}, 
+    ops::Add, 
+    sync::{
+        Arc, 
+        Mutex}, 
+    vec};
+
+use webserver::ThreadPool;
 use webserver::extract_anything;
-use std::fs;
-use std::fs::File;
-use std::io;
-use std::io::prelude::*;
-use std::net::TcpListener;
-use std::net::TcpStream;
-use std::ops::Add;
-use std::sync::Arc;
-use std::sync::Mutex;
-use std::vec;
-mod lib;
-mod hash;
+
+pub mod lib;
 
 
-static VERSION: &str = "0.1.1-dev.1";
-static DEBUG: bool = false;
 fn main() {
     
     let listener = TcpListener::bind("0.0.0.0:7878").unwrap();
     let pool = ThreadPool::new(4);
-    
-    // load users from users.json
-    let mut users_noarc: Vec<Mutex<User>> = Vec::new();
-    let mut users_file = File::open("src/users.json").unwrap();
-    let mut contents = String::new();
-    users_file.read_to_string(&mut contents).unwrap();
-    let users_vec: Vec<User> = serde_json::from_str(&contents).unwrap();
-    for user in users_vec {
-        users_noarc.push(Mutex::new(user));
-    }
-    let users = Arc::new(users_noarc);
-    println!("Loaded users from users.json");
 
-
+    let neptun_users = neptunCRF_init();
 
     // listen for connections
     for stream in listener.incoming() {
         let stream = stream.unwrap();
-        let users = Arc::clone(&users);
+        let users = Arc::clone(&neptun_users);
         pool.execute(move || {
             handle_connection(stream, users);
         });
     }
 
-
-
-    // write users to users.json in a json format
-    let mut file = File::create("users.json").unwrap();
-    let users_vec = Arc::try_unwrap(users).unwrap().into_iter().map(|x| x.into_inner().unwrap()).collect::<Vec<User>>();
-    file.write_all(serde_json::to_string_pretty(&users_vec).unwrap().as_bytes()).unwrap();
-    println!("Saved users to users.json");
-    
+    neptunCRF_shutdown(&neptun_users);
     println!("Shutting down.");
 }
 
@@ -113,84 +96,6 @@ fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
 
 
 
-fn default_handle_page_return(stream: &mut TcpStream, status: &str, html_name: &str){
-    let contents = match fs::read_to_string("pages/".to_owned() + html_name)
-    {
-        Ok(x) => x,
-        Err(e) => {
-            println!("Error reading file: {}\n{}", e, html_name);
-            String::from("Error reading file")
-        }
-    };
-    default_handle(stream, status, vec![], &contents);
-}
-
-fn default_handle(stream: &mut TcpStream, status: &str, headers: Vec<&str>, contents: &str) {
-    if DEBUG {
-        println!("Response: {}", contents);}
-    let mut response = format!(
-        "HTTP/1.1 {}\r\n",
-        status);
-    response.push_str(&headers.join("\r\n"));
-    response.push_str(&format!(
-        "Content-Length: {}\r\n\r\n{}",
-        contents.len(),
-        contents
-    ));
-    send_response(stream, &response);
-}
-
-fn handle_neptun_login(stream: &mut TcpStream, buffer: [u8; 1024], users: Arc<Vec<Mutex<User>>>) {
-    let (status, mut response);
-    let buffer_str = std::str::from_utf8(&buffer).unwrap();
-    if buffer_str.contains("Id: ") {
-        (status, response) = handle_neptun_login_first(buffer_str, &users);
-    } else {
-        (status, response) = handle_neptun_login_other(buffer_str, &users);
-    }
-    if response.contains("Error") {
-        if let Some(pos) = response.rfind("\r\n\r\n") {
-            response.insert_str(pos, &format!("ServerVersion: {}\r\n", VERSION));
-        }
-    }
-    default_handle(stream, &status, vec![], &response);
-}
-
-fn handle_debug(stream: &mut TcpStream , buffer: [u8; 1024]){
-    println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
-    send_response(stream, "HTTP/1.1 200 OK\r\n\r\n");
-}
-
-fn handle_image(stream: &mut TcpStream, path: &str) {
-    match handle_image_inner(stream, path) {
-        Err(e) => {
-            println!("{}", e);
-        }
-        Ok(_) => {}
-    }
-}
-
-fn handle_image_inner(stream: &mut TcpStream, path: &str) -> Result<(), io::Error> {
-    let mut file = File::open(&path)?;
-    let status = "200 OK";
-    let image_format = path.split(".").last().unwrap();
-    let content_type = String::from("Content-Type: image/").add(image_format);
-    let headers = vec![content_type.as_str(), "Connection: close"];
-    let mut contents = Vec::new();
-    file.read_to_end(&mut contents)?;
-    stream.write_all(format!("HTTP/1.1 {}\r\n", status).as_bytes())?;
-    stream.write_all(headers.join("\r\n").as_bytes())?;
-    stream.write_all(format!("Content-Length: {}\r\n\r\n", contents.len()).as_bytes())?;
-    stream.write_all(&contents)?;
-    stream.flush()?;
-    Ok(())
-}
-
-fn send_response(stream: &mut TcpStream, response: &str) {
-    stream.write_all(response.as_bytes()).unwrap();
-    stream.flush().unwrap();
-    print!("\n");
-}
 
 fn update() {
     // git pull

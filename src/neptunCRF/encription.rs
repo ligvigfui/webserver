@@ -1,8 +1,10 @@
-use std::{sync::{Arc, Mutex}};
-
-use webserver::{User, CustomResult};
+use super::*;
 
 
+enum CustomResult {
+    Ok,
+    Wc,
+}
 
 pub fn login(mut users: Arc<Vec<Mutex<User>>>, credentials: (String, String, String)) -> CustomResult {
     //credentials: (email, password, MAC)
