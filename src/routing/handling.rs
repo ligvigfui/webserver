@@ -7,7 +7,7 @@ use std::{
 };
 
 
-fn default_handle_page_return(stream: &mut TcpStream, status: &str, html_name: &str) {
+pub fn default_handle_page_return(stream: &mut TcpStream, status: &str, html_name: &str) {
     let contents = match fs::read_to_string("pages/".to_owned() + html_name)
     {
         Ok(x) => x,
@@ -19,7 +19,7 @@ fn default_handle_page_return(stream: &mut TcpStream, status: &str, html_name: &
     default_handle(stream, status, vec![], &contents);
 }
 
-pub(crate) fn default_handle(stream: &mut TcpStream, status: &str, headers: Vec<&str>, contents: &str) {
+pub fn default_handle(stream: &mut TcpStream, status: &str, headers: Vec<&str>, contents: &str) {
     if crate::DEBUG {
         println!("Response: {}", contents);}
     let mut response = format!(
@@ -34,12 +34,12 @@ pub(crate) fn default_handle(stream: &mut TcpStream, status: &str, headers: Vec<
     send_response(stream, &response);
 }
 
-fn handle_debug(stream: &mut TcpStream , buffer: [u8; 1024]) {
+pub fn handle_debug(stream: &mut TcpStream , buffer: [u8; 1024]) {
     println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
     send_response(stream, "HTTP/1.1 200 OK\r\n\r\n");
 }
 
-fn handle_image(stream: &mut TcpStream, path: &str) {
+pub fn handle_image(stream: &mut TcpStream, path: &str) {
     match handle_image_inner(stream, path) {
         Err(e) => {
             println!("{}", e);

@@ -7,11 +7,10 @@ use std::{
 };
 use serde::{Deserialize, Serialize};
 
-use hash::{handle_neptun_login_first, handle_neptun_login_other};
 use crate::routing::handling::default_handle;
+use hash::{handle_neptun_login_first, handle_neptun_login_other};
 
-mod encription;
-mod hash;
+pub mod hash;
 
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

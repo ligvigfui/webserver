@@ -1,25 +1,13 @@
-use lib::User;
-use std::{
-    fs::{
-        self, 
-        File}, 
-    io::{
-        self, 
-        prelude::*}, 
+use std::{ 
+    io::prelude::*,
     net::{
         TcpListener, 
         TcpStream}, 
-    ops::Add, 
     sync::{
         Arc, 
-        Mutex}, 
-    vec};
+        Mutex}};
 
-use webserver::ThreadPool;
-use webserver::extract_anything;
-
-pub mod lib;
-
+use webserver::*;
 
 fn main() {
     
@@ -37,7 +25,7 @@ fn main() {
         });
     }
 
-    neptunCRF_shutdown(&neptun_users);
+    neptunCRF_shutdown(neptun_users);
     println!("Shutting down.");
 }
 
