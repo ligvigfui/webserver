@@ -17,7 +17,7 @@ pub mod hash;
 pub struct User {
     pub email: String,
     pub password: String,
-    pub MAC: String,
+    pub mac: String,
     pub time: u64,
     // server sends even counts
     pub count: i32,
@@ -28,14 +28,14 @@ impl User {
         User {
             email,
             password,
-            MAC: String::from(""),
+            mac: String::from(""),
             time: 0,
             count: 1,
         }
     }
 }
 
-pub fn neptunCRF_init() -> Arc<Vec<Mutex<User>>> {
+pub fn init() -> Arc<Vec<Mutex<User>>> {
     // load users from users.json
     let mut users_noarc: Vec<Mutex<User>> = Vec::new();
     let mut users_file = File::open("src/users.json").unwrap();
@@ -52,10 +52,9 @@ pub fn neptunCRF_init() -> Arc<Vec<Mutex<User>>> {
 
 pub fn handle_neptun_login(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<User>>>) {
     let (status, mut response);
-    if let _ = Some(request.get_header("Id")) {
-        (status, response) = handle_neptun_login_first(request, &users);
-    } else {
-        (status, response) = handle_neptun_login_other(request, &users);
+    match request.get_header("Id") {
+        Some(_) => (status, response) = handle_neptun_login_first(request, &users),
+        None    => (status, response) = handle_neptun_login_other(request, &users)
     }
     if response.contains("Error") {
         if let Some(pos) = response.rfind("\r\n\r\n") {
@@ -65,7 +64,7 @@ pub fn handle_neptun_login(stream: &mut TcpStream, request: Request, users: Arc<
     default_handle(stream, &status, vec![], &response);
 }
 
-pub fn neptunCRF_shutdown(users: Arc<Vec<Mutex<User>>>) {
+pub fn shutdown(users: Arc<Vec<Mutex<User>>>) {
     // write users to users.json in a json format
     let mut file = File::create("users.json").unwrap();
     let users_vec = Arc::try_unwrap(users).unwrap().into_iter().map(|x| x.into_inner().unwrap()).collect::<Vec<User>>();

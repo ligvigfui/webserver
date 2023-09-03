@@ -115,7 +115,7 @@ fn response(users: &Arc<Vec<Mutex<User>>>, email: String) -> String {
     for user in users.iter() {
         let mut user = user.lock().unwrap();
         if user.email == email {
-            let response = format!("tKn.8M{}:{}:{}", user.email, user.MAC, user.count);
+            let response = format!("tKn.8M{}:{}:{}", user.email, user.mac, user.count);
             user.count += 2;
             user.time = now();
             return hash(response);
@@ -128,7 +128,7 @@ fn set_mac<'a>(users: &'a Arc<Vec<Mutex<User>>>, email: &str, mac: String) -> Re
     for user in users.iter() {
         let mut user = user.lock().unwrap();
         if user.email == email && user.time + 5 > now(){
-            user.MAC = mac;
+            user.mac = mac;
             user.count = 1;
             return Ok(());
         }

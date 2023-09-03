@@ -7,14 +7,23 @@ use std::{
         Arc, 
         Mutex}};
 
-use webserver::*;
+use webserver::{
+    self,
+    ThreadPool,
+    Request,
+    routing::routing::*,
+    neptunCRF::{
+        self,
+        User,
+    },
+};
 
 fn main() {
     
     let listener = TcpListener::bind("0.0.0.0:7878").unwrap();
     let pool = ThreadPool::new(4);
 
-    let neptun_users = neptunCRF_init();
+    let neptun_users = neptunCRF::init();
 
     // listen for connections
     for stream in listener.incoming() {
@@ -25,7 +34,7 @@ fn main() {
         });
     }
 
-    neptunCRF_shutdown(neptun_users);
+    neptunCRF::shutdown(neptun_users);
     println!("Shutting down.");
 }
 
