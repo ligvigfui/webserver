@@ -18,11 +18,11 @@ pub fn routing(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<Us
     use Method as M;
     match (&request.method, request.path) {
         (M::GET, "/") => handle_page_return(stream, "200 OK", &(language + "/hello.html")),
-        (_, path) if path.contains("/wedding") => wedding::routing(stream, request),
-        (_, path) if path.contains("/neptunCRF") => neptunCRF::routing(stream, request, users),
+        (_, path) if path.contains("/wedding") => wedding::routing(stream, Request { path: path.split_once("/wedding").unwrap().1, .. request }),
+        (_, path) if path.contains("/neptunCRF") => neptunCRF::routing(stream, Request { path: path.split_once("/neptunCRF").unwrap().1, .. request }, users),
         (M::GET, "/vue_test") => handle_page_return(stream, "200 OK", "/pages_vue/index.html"),
         (M::GET, "/debug") => handle_debug(stream, request),
-        (_, "/favicon.ico") => handle_image(stream, "/assets/favicon.ico"),
+        (_, "/favicon.ico") => handle_image(stream, "/favicon.ico"),
         _ => {
             println!("404 Page not found");
             handle_page_return(stream, "404 NOT FOUND", &(language + "/404.html"));},

@@ -6,6 +6,8 @@ use std::{
     str, 
 };
 
+use chrono::format::format;
+
 use crate::Request;
 
 
@@ -51,7 +53,7 @@ pub fn handle_image(stream: &mut TcpStream, path: &str) {
 }
 
 fn handle_image_inner(stream: &mut TcpStream, path: &str) -> Result<(), io::Error> {
-    let mut file = File::open(&path)?;
+    let mut file = File::open(format!("pages/assets{}", &path))?;
     let status = "200 OK";
     let image_format = path.split(".").last().unwrap();
     let content_type = String::from("Content-Type: image/").add(image_format);
