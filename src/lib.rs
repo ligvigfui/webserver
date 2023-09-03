@@ -15,7 +15,7 @@ pub use crate::{
 pub mod routing;
 pub mod neptunCRF;
 
-pub static VERSION: &str = "0.1.1-dev.1";
+pub static VERSION: &str = "0.1.1-dev.2";
 pub static DEBUG: bool = false;
 
 //what does this do?
@@ -29,38 +29,85 @@ pub static DEBUG: bool = false;
 //get request from google server with email
 //send email to email with password
 
-
-pub fn extract_anything(messege: &str, keyword: &str) -> Option<String> {
-    //separate keyword
-    let string_start = match messege.find(keyword) {
-        Some(index) => index,
-        None => {
-            // the substring was not found
-            println!("{} not found in the string" , keyword);
-            return None;
-        }
-    };
-
-
-
-    // extract the part of the string after "Id:"
-    let string0 = &messege[(keyword.len() + string_start)..];
-    // find the end of the line
-    let line_end = match string0.find('\r') {
-        Some(index) => index,
-        None => string0.len(),
-    };
-    // extract the credentials string
-    Some(string0[..line_end].to_string())
+#[derive(Debug, PartialEq)]
+pub enum Method {
+    GET,
+    POST,
+    PUT,
+    DELETE,
+    HEAD,
+    CONNECT,
+    OPTIONS,
+    TRACE,
+    PATCH,
 }
- 
+
+#[derive(Debug)]
+pub struct Request<'a> {
+    pub method: Method,
+    pub path: &'a str,
+    pub protocol: &'a str,
+    pub headers: Vec<(&'a str, &'a str)>,
+    pub body: &'a str,
+}
+
+impl Method {
+    pub fn from(method: &str) -> Result<Method, &'static str> {
+        match method {
+            "GET" => Ok(Method::GET),
+            "HEAD" => Ok(Method::HEAD),
+            "POST" => Ok(Method::POST),
+            "PUT" => Ok(Method::PUT),
+            "DELETE" => Ok(Method::DELETE),
+            "CONNECT" => Ok(Method::CONNECT),
+            "OPTIONS" => Ok(Method::OPTIONS),
+            "TRACE" => Ok(Method::TRACE),
+            "PATCH" => Ok(Method::PATCH),
+            _ => Err("Invalid method"),
+        }
+    }
+}
+
+impl<'a> Request<'a> {
+    pub fn from(buffer: &'a [u8]) -> Request<'a> {
+        let str_buff = std::str::from_utf8(&buffer).unwrap();
+        let (start_line, headers_and_body) = str_buff.split_once("\r\n").unwrap();
+        let mut start_line_cut = start_line.split(" ");
+        let (method, path, protocol) = (start_line_cut.next().unwrap(), start_line_cut.next().unwrap(), start_line_cut.next().unwrap());
+        let (headers, body) = headers_and_body.split_once("\r\n\r\n").unwrap();
+        let headers_iter = headers.split("\r\n");
+        let mut headers_vec = Vec::new();
+        for header in headers_iter {
+            let mut header_cut = header.split(": ");
+            let (header_name, header_value) = (header_cut.next().unwrap(), header_cut.next().unwrap());
+            headers_vec.push((header_name, header_value));
+        }
+        Request {
+            method: Method::from(method).unwrap(),
+            path,
+            protocol,
+            headers: headers_vec,
+            body,
+        }
+    }
+
+    pub fn get_header(&self, header_name: &str) -> Option<&str> {
+        for header in &self.headers {
+            if header.0 == header_name {
+                return Some(header.1);
+            }
+        }
+        None
+    }
+}
 
 
-
-/// Checks if a string is hex
-/// Returns true if the string is hex
-/// Returns false if the string is not hex
 impl IsHex for String {
+    /// Checks if a string is hex
+    /// # Returns 
+    /// true if the string is hex
+    /// 
+    /// false if the string is not hex
     fn is_hex(&self) -> bool {
         for c in self.chars() {
             if !c.is_digit(16) {
@@ -185,5 +232,28 @@ impl Worker {
             id,
             thread: Some(thread),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_request_creation(){
+        let test = format!("GET / HTTP/1.1\r\n{}{}{}{}{}",
+            "Host: localhost:7878\r\n",
+            "Connection: keep-alive\r\n",
+            "Content-Length: 40\r\n",
+            "Accept-Language: en-US,en;q=0.9\r\n\r\n",
+            "hjafshfas\r\n\r\ndkgsgoaw sdhf\r\nasdkgfvs ewu");
+        let test_request = Request::from(test.as_bytes());
+        assert_eq!(test_request.method, Method::GET);
+        assert_eq!(test_request.path, "/");
+        assert_eq!(test_request.protocol, "HTTP/1.1");
+        assert_eq!(test_request.headers[0], ("Host", "localhost:7878"));
+        assert_eq!(test_request.headers[1], ("Connection", "keep-alive"));
+        assert_eq!(test_request.headers[2], ("Content-Length", "40"));
+        assert_eq!(test_request.headers[3], ("Accept-Language", "en-US,en;q=0.9"));
+        assert_eq!(test_request.body, "hjafshfas\r\n\r\ndkgsgoaw sdhf\r\nasdkgfvs ewu");
     }
 }

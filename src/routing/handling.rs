@@ -6,8 +6,10 @@ use std::{
     str, 
 };
 
+use crate::Request;
 
-pub fn default_handle_page_return(stream: &mut TcpStream, status: &str, html_name: &str) {
+
+pub fn handle_page_return(stream: &mut TcpStream, status: &str, html_name: &str) {
     let contents = match fs::read_to_string("pages/".to_owned() + html_name)
     {
         Ok(x) => x,
@@ -34,8 +36,8 @@ pub fn default_handle(stream: &mut TcpStream, status: &str, headers: Vec<&str>, 
     send_response(stream, &response);
 }
 
-pub fn handle_debug(stream: &mut TcpStream , buffer: [u8; 1024]) {
-    println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
+pub fn handle_debug(stream: &mut TcpStream, request: Request) {
+    println!("Debug request: {:?}", request);    
     send_response(stream, "HTTP/1.1 200 OK\r\n\r\n");
 }
 

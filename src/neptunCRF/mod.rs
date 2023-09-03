@@ -7,7 +7,7 @@ use std::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::routing::handling::default_handle;
+use crate::{routing::handling::default_handle, Request};
 use hash::{handle_neptun_login_first, handle_neptun_login_other};
 
 pub mod hash;
@@ -50,13 +50,12 @@ pub fn neptunCRF_init() -> Arc<Vec<Mutex<User>>> {
 }
 
 
-pub fn handle_neptun_login(stream: &mut TcpStream, buffer: [u8; 1024], users: Arc<Vec<Mutex<User>>>) {
+pub fn handle_neptun_login(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<User>>>) {
     let (status, mut response);
-    let buffer_str = str::from_utf8(&buffer).unwrap();
-    if buffer_str.contains("Id: ") {
-        (status, response) = handle_neptun_login_first(buffer_str, &users);
+    if let _ = Some(request.get_header("Id")) {
+        (status, response) = handle_neptun_login_first(request, &users);
     } else {
-        (status, response) = handle_neptun_login_other(buffer_str, &users);
+        (status, response) = handle_neptun_login_other(request, &users);
     }
     if response.contains("Error") {
         if let Some(pos) = response.rfind("\r\n\r\n") {

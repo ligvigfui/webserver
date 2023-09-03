@@ -7,11 +7,11 @@ use super::User;
 
 
 
-pub fn handle_neptun_login_first(messege: &str, users: &Arc<Vec<Mutex<User>>>) -> (String, String) {
+pub fn handle_neptun_login_first(request: Request, users: &Arc<Vec<Mutex<User>>>) -> (String, String) {
     // returns (status, response)
     // get credentials
-    let credentials = match extract_anything(messege, "Credentials: ") {
-        Some(x) => x,
+    let credentials = match request.get_header("Credentials") {
+        Some(x) => x.to_string(),
         None => {
             println!("{}: No credentials found in GET request", readable_time());
             return ("404 Bad Request".to_owned(), "Error 1: No credentials found in GET request\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned());}
@@ -28,8 +28,8 @@ pub fn handle_neptun_login_first(messege: &str, users: &Arc<Vec<Mutex<User>>>) -
     }
 
     // get mac from Id:
-    let id = match extract_anything(messege, "Id: ") {
-        Some(x) => x,
+    let id = match request.get_header("Id") {
+        Some(x) => x.to_string(),
         None => {
             println!("{}: No Id found in GET request" , readable_time());
             return ("404 Bad Request".to_owned(), "Error 4: No Id found in GET request\nPlease contact me at ligvigfui@gmail.com".to_owned())}
@@ -77,11 +77,11 @@ pub fn handle_neptun_login_first(messege: &str, users: &Arc<Vec<Mutex<User>>>) -
     ("200 OK".to_owned() , response)
 }
 
-pub fn handle_neptun_login_other(messege: &str, users: &Arc<Vec<Mutex<User>>>) -> (String, String) {
+pub fn handle_neptun_login_other(request: Request, users: &Arc<Vec<Mutex<User>>>) -> (String, String) {
     // returns (status, response)
     // get credentials
-    let credentials = match extract_anything(messege, "Credentials: ") {
-        Some(x) => x,
+    let credentials = match request.get_header("Credentials") {
+        Some(x) => x.to_string(),
         None => {
             println!("{}: No credentials found in GET request", readable_time());
             return ("404 Bad Request".to_owned(), "Error 1: No credentials found in GET request\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned());}
@@ -217,11 +217,6 @@ mod tests {
     use std::{thread, time::Duration};
 
     use super::*;
-    #[test]
-    fn extract_anything_test(){
-        let str1 = "élnfskbvkaéjds va s\ré md";
-        assert_eq!(extract_anything(str1 , "nf").unwrap(),"skbvkaéjds va s".to_string());
-    }
     #[test]
     fn login(){
         let users = Arc::new(vec![Mutex::new(User::new("ligvigfui@fsda.capok".to_owned(), "password".to_owned()))]);
