@@ -11,13 +11,15 @@ use crate::{routing::handling::default_handle, Request};
 use hash::{handle_neptun_login_first, handle_neptun_login_other};
 
 pub mod hash;
+pub mod routing;
+pub use routing::routing as routing;
 
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct User {
     pub email: String,
     pub password: String,
-    pub mac: String,
+    pub MAC: String,
     pub time: u64,
     // server sends even counts
     pub count: i32,
@@ -28,7 +30,7 @@ impl User {
         User {
             email,
             password,
-            mac: String::from(""),
+            MAC: String::from(""),
             time: 0,
             count: 1,
         }

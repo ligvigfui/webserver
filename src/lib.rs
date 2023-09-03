@@ -15,6 +15,7 @@ pub use crate::{
 pub mod routing;
 #[allow(non_snake_case)]
 pub mod neptunCRF;
+pub mod wedding;
 
 pub static VERSION: &str = "0.1.1-dev.2";
 pub static DEBUG: bool = false;
