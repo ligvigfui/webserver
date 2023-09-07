@@ -5,7 +5,9 @@ use crate::*;
 
 use super::User;
 
-
+fn _404() -> String {
+    "404 Bad Request".to_owned()
+}
 
 pub fn handle_neptun_login_first(request: Request, users: &Arc<Vec<Mutex<User>>>) -> (String, String) {
     // returns (status, response)
@@ -14,17 +16,17 @@ pub fn handle_neptun_login_first(request: Request, users: &Arc<Vec<Mutex<User>>>
         Some(x) => x.to_string(),
         None => {
             println!("{}: No credentials found in GET request", readable_time());
-            return ("404 Bad Request".to_owned(), "Error 1: No credentials found in GET request\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned());}
+            return (_404(), "Error 1: No credentials found in GET request\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned());}
     };
     //check if credentials are correct length
     if credentials.len() != 40 {
         println!("{}: Credentials are not correct length" , readable_time());
-        return ("404 Bad Request".to_owned(), "Error 2: Credentials are not correct length\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
+        return (_404(), "Error 2: Credentials are not correct length\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
     }
     // check if credentials are hex
     if credentials.is_not_hex() {
         println!("{}: Credentials are not hex" , readable_time());
-        return ("404 Bad Request".to_owned(), "Error 3: Credentials are not hex\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
+        return (_404(), "Error 3: Credentials are not hex\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
     }
 
     // get mac from Id:
@@ -32,17 +34,17 @@ pub fn handle_neptun_login_first(request: Request, users: &Arc<Vec<Mutex<User>>>
         Some(x) => x.to_string(),
         None => {
             println!("{}: No Id found in GET request" , readable_time());
-            return ("404 Bad Request".to_owned(), "Error 4: No Id found in GET request\nPlease contact me at ligvigfui@gmail.com".to_owned())}
+            return (_404(), "Error 4: No Id found in GET request\nPlease contact me at ligvigfui@gmail.com".to_owned())}
     };
     // check if id is correct length
     if id.len() != 240 {
         println!("{}: Id is not correct length" , readable_time());
-        return ("404 Bad Request".to_owned(), "Error 5: Id is not correct length\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
+        return (_404(), "Error 5: Id is not correct length\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
     }
     // check if id is hex
     if id.is_not_hex() {
         println!("{}: Id is not hex" , readable_time());
-        return ("404 Bad Request".to_owned(), "Error 6: Id is not hex\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
+        return (_404(), "Error 6: Id is not hex\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
     }
 
     // get email from credentials
@@ -84,17 +86,17 @@ pub fn handle_neptun_login_other(request: Request, users: &Arc<Vec<Mutex<User>>>
         Some(x) => x.to_string(),
         None => {
             println!("{}: No credentials found in GET request", readable_time());
-            return ("404 Bad Request".to_owned(), "Error 1: No credentials found in GET request\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned());}
+            return (_404(), "Error 1: No credentials found in GET request\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned());}
     };
     //check if credentials are correct length
     if credentials.len() != 40 {
         println!("{}: Credentials are not correct length" , readable_time());
-        return ("404 Bad Request".to_owned(), "Error 2: Credentials are not correct length\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
+        return (_404(), "Error 2: Credentials are not correct length\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
     }
     // check if credentials are hex
     if credentials.is_not_hex() {
         println!("{}: Credentials are not hex" , readable_time());
-        return ("404 Bad Request".to_owned(), "Error 3: Credentials are not hex\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
+        return (_404(), "Error 3: Credentials are not hex\nTry updating the client or contact me at ligvigfui@gmail.com".to_owned())
     }
 
     // get email from credentials

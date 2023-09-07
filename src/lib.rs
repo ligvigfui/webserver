@@ -5,20 +5,21 @@ use std::{
 };
 
 pub use crate::{
-    routing::{
+    server_functions::{
         routing::*,
         handling::*,
     },
     neptunCRF::*,
 };
 
-pub mod routing;
+pub mod server_functions;
 #[allow(non_snake_case)]
 pub mod neptunCRF;
 pub mod wedding;
+pub mod vue;
 
 pub static VERSION: &str = "0.1.1-dev.2";
-pub static DEBUG: bool = false;
+pub static DEBUG: bool = true;
 
 //what does this do?
 //wait for requests

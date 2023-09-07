@@ -7,7 +7,7 @@ use std::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::{routing::handling::default_handle, Request};
+use crate::{server_functions::handling::default_handle, Request};
 use hash::{handle_neptun_login_first, handle_neptun_login_other};
 
 pub mod hash;
@@ -63,7 +63,7 @@ pub fn handle_neptun_login(stream: &mut TcpStream, request: Request, users: Arc<
             response.insert_str(pos, &format!("ServerVersion: {}\r\n", crate::VERSION));
         }
     }
-    default_handle(stream, &status, vec![], &response);
+    default_handle(stream, &status, None, &response);
 }
 
 pub fn shutdown(users: Arc<Vec<Mutex<User>>>) {
