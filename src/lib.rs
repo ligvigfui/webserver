@@ -74,7 +74,10 @@ impl Method {
 impl<'a> Request<'a> {
     pub fn from(buffer: &'a [u8]) -> Request<'a> {
         let str_buff = std::str::from_utf8(&buffer).unwrap();
-        let (start_line, headers_and_body) = str_buff.split_once("\r\n").unwrap();
+        let (start_line, headers_and_body) = match str_buff.split_once("\r\n") {
+            Some(x) => x,
+            None => panic!("Invalid request: {}", str_buff),
+        };
         let mut start_line_cut = start_line.split(" ");
         let (method, path, protocol) = (start_line_cut.next().unwrap(), start_line_cut.next().unwrap(), start_line_cut.next().unwrap());
         let (headers, body) = headers_and_body.split_once("\r\n\r\n").unwrap();
