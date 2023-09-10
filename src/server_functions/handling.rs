@@ -28,7 +28,10 @@ pub fn default_handle(stream: &mut TcpStream, status: &str, headers: Option<Vec<
         "HTTP/1.1 {}\r\n",
         status);
     match headers {
-        Some(header_vec) => response.push_str(&header_vec.join("\r\n")),
+        Some(header_vec) => {
+            response.push_str(&header_vec.join("\r\n"));
+            response.push_str("\r\n");
+        },
         None => {}
     };
     response.push_str(&format!(
