@@ -14,7 +14,9 @@ pub fn routing(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<Us
     }
     let language = language.to_owned();
 
-    println!("handeling - {}", request.path);
+    if DEBUG >= DebugLevel::LOW {
+        println!("handeling - {}", request.path);
+    }
     use Method as M;
     match (&request.method, request.path) {
         (M::GET, "/") => handle_page_return(stream, "200 OK", None, &(language + "/hello.html")),

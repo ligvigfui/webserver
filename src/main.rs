@@ -41,7 +41,15 @@ fn main() {
 fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
     let mut buffer = [0; 1024];
     stream.read(&mut buffer).unwrap();
-    let request = Request::from(&buffer);
+    let request = match Request::from(&buffer) {
+        Some(x) => x,
+        None => {
+            if webserver::DEBUG == webserver::DebugLevel::HIGH {
+                println!("Error parsing request: {:?}", &buffer);
+            }
+            return;
+        }
+    };
     
     routing(&mut stream, request, users);
 }

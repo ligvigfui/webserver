@@ -22,23 +22,21 @@ pub fn handle_page_return(stream: &mut TcpStream, status: &str, headers: Option<
 }
 
 pub fn default_handle(stream: &mut TcpStream, status: &str, headers: Option<Vec<&str>>, contents: &str) {
-    if crate::DEBUG {
-        println!("Response: {}", contents);}
-    let mut response = format!(
-        "HTTP/1.1 {}\r\n",
-        status);
-    match headers {
+    let headers_together = match headers {
         Some(header_vec) => {
-            response.push_str(&header_vec.join("\r\n"));
-            response.push_str("\r\n");
+            format!("{}\r\n", header_vec.join("\r\n"))
         },
-        None => {}
+        None => String::new()
     };
-    response.push_str(&format!(
-        "Content-Length: {}\r\n\r\n{}",
+    let response = format!(
+        "HTTP/1.1 {}\r\n{}Content-Length: {}\r\n\r\n{}",
+        status,
+        headers_together,
         contents.len(),
         contents
-    ));
+    );
+    if crate::DEBUG >= crate::DebugLevel::HIGH {
+        println!("Response: {}", &response);}
     send_response(stream, &response);
 }
 
@@ -77,3 +75,5 @@ fn send_response(stream: &mut TcpStream, response: &str) {
     stream.flush().unwrap();
     print!("\n");
 }
+
+
