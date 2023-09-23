@@ -57,7 +57,10 @@ pub fn handle_image(stream: &mut TcpStream, path: &str) {
 pub(crate) fn handle_image_inner(stream: &mut TcpStream, path: String) -> Result<(), io::Error> {
     let mut file = File::open(&path)?;
     let status = "200 OK";
-    let image_format = path.split(".").last().unwrap();
+    let mut image_format = path.split(".").last().unwrap();
+    if image_format == "svg" {
+        image_format = "svg+xml";
+    }
     let content_type = String::from("Content-Type: image/").add(image_format);
     let headers = vec![content_type.as_str(), "Connection: close"];
     let mut contents = Vec::new();
