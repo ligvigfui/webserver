@@ -19,7 +19,7 @@ pub mod wedding;
 pub mod vue;
 
 pub static VERSION: &str = "0.1.1-dev.2";
-pub static DEBUG: DebugLevel = DebugLevel::MEDIUM;
+pub static DEBUG: DebugLevel = DebugLevel::HIGH;
 
 #[derive(PartialEq, PartialOrd)]
 pub enum DebugLevel {
