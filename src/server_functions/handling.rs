@@ -36,7 +36,10 @@ pub fn default_handle(stream: &mut TcpStream, status: &str, headers: Option<Vec<
         contents
     );
     if crate::DEBUG >= crate::DebugLevel::HIGH {
-        println!("Response: {}", &response);}
+        if response.len() > crate::DEBUG_LEN {
+            println!("Response: {}", &response[..crate::DEBUG_LEN]);}
+        else {println!("Response: {}", response);}
+    }
     send_response(stream, &response);
 }
 
