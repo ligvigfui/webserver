@@ -48,9 +48,10 @@ fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
             print!("Error parsing request");
             if webserver::DEBUG == webserver::DebugLevel::HIGH {
                 if buffer.len() > webserver::DEBUG_LEN {
-                    println!(": {:?}", &buffer[..webserver::DEBUG_LEN]);}
-                else {println!(": {:?}", &buffer);}
+                    print!(": {:?}", &buffer[..webserver::DEBUG_LEN]);}
+                else {print!(": {:?}", &buffer);}
             }
+            println!();
             return;
         }
     };
