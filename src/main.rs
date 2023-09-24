@@ -5,7 +5,8 @@ use std::{
         TcpStream}, 
     sync::{
         Arc, 
-        Mutex}};
+        Mutex},
+};
 
 use webserver::{
     self,

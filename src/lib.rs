@@ -29,7 +29,7 @@ pub enum DebugLevel {
     HIGH,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum Method {
     GET,
     POST,
@@ -102,6 +102,25 @@ impl<'a> Request<'a> {
             }
         }
         None
+    }
+
+    /// Sets a header to a new value.
+    /// # Returns
+    /// A NEW Request with the header set to the new value.
+    pub fn set_header(&self, header_name: &'a str, header_value: &'a str) -> Self {
+        let mut new_headers = Vec::new();
+        for header in &self.headers {
+            if header.0 == header_name {
+                new_headers.push((header_name, header_value));
+            }
+            else {
+                new_headers.push(*header);
+            }
+        }
+        Request {
+            headers: new_headers,
+            .. *self
+        }
     }
 }
 
