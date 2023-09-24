@@ -45,9 +45,6 @@ fn build_vue_apps(paths: Vec<&str>) -> Result<(), Error> {
     }
     for mut child in vue_site_path_handle {
         child.wait()?;
-        // replace vue page references
-        
-        
     }
     Ok(())
 }
