@@ -5,7 +5,7 @@ use std::{
 };
 
 pub use crate::{
-    server_functions::{
+    server_functions::{*,
         routing::*,
         handling::*,
     },
@@ -16,10 +16,11 @@ pub mod server_functions;
 #[allow(non_snake_case)]
 pub mod neptunCRF;
 pub mod wedding;
+pub mod dev;
 pub mod vue;
 
 pub static VERSION: &str = "0.1.1-dev.2";
-pub static DEBUG: DebugLevel = DebugLevel::MEDIUM;
+pub static DEBUG: DebugLevel = DebugLevel::HIGH;
 pub static DEBUG_LEN: usize = 200;
 
 #[derive(PartialEq, PartialOrd)]
@@ -109,13 +110,18 @@ impl<'a> Request<'a> {
     /// A NEW Request with the header set to the new value.
     pub fn set_header(&self, header_name: &'a str, header_value: &'a str) -> Self {
         let mut new_headers = Vec::new();
+        let mut found = false;
         for header in &self.headers {
             if header.0 == header_name {
                 new_headers.push((header_name, header_value));
+                found = true;
             }
             else {
                 new_headers.push(*header);
             }
+        }
+        if !found {
+            new_headers.push((header_name, header_value));
         }
         Request {
             headers: new_headers,

@@ -18,10 +18,7 @@ pub fn routing(stream: &mut TcpStream, request: Request){
             None | Some(_) => {
                 handle_page_return(stream, "200 OK", None, &format!("vue/{}", request.path))}
         },
-        _ => {
-            println!("404 Page not found");
-            handle_page_return(stream, "404 NOT FOUND", None, &("en/404.html"));
-        },
+        _ => code404(stream, request),
     }
 }
 
