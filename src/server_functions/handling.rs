@@ -6,7 +6,7 @@ use std::{
     str, 
 };
 
-use crate::Request;
+use crate::*;
 
 
 pub fn handle_page_return(stream: &mut TcpStream, status: &str, headers: Option<Vec<&str>>, html_name: &str) {
@@ -57,9 +57,9 @@ pub fn handle_image(stream: &mut TcpStream, path: &str) {
     }
 }
 
-pub(crate) fn handle_image_inner(stream: &mut TcpStream, path: String) -> Result<(), io::Error> {
+pub fn handle_image_inner(stream: &mut TcpStream, path: String) -> Result<(), io::Error> {
     let mut file = File::open(&path)?;
-    let status = "200 OK";
+    let status = CODES[&200];
     let mut image_format = path.split(".").last().unwrap();
     if image_format == "svg" {
         image_format = "svg+xml";

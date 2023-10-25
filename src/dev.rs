@@ -11,7 +11,7 @@ pub fn routing(stream: &mut TcpStream, request: Request) {
                 ..request
             }),
         (M::GET, "/favicon.ico") => handle_image(stream, "/favicon.ico"),
-        (M::GET, "/") => handle_page_return(stream, "200 OK", None, "/index.html"),
+        (M::GET, "/") => handle_page_return(stream, CODES[&200], None, "/index.html"),
         (M::GET, "/debug") => handle_debug(stream, request),
         _ => response404(stream, request),
     }

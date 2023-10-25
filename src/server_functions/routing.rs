@@ -3,6 +3,10 @@ use std::net::TcpStream;
 use crate::*;
 
 pub fn routing(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<User>>>){
+    if request.protocol != "HTTP/1.1" {
+        println!("Protocol not supported: {}", request.protocol);
+        handle_page_return(stream, CODES[&505], None, "/505.html");
+    }
     let request = match request.get_header("Accept-Language") {
         Some(x) => match x.contains("hu") {
             true => request.set_header("Accept-Language", "hu"),
@@ -40,5 +44,27 @@ pub fn routing(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<Us
             }
         }
         _ => response404(stream, request),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_routing() {
+        let request = Request {
+            method: Method::GET,
+            path: "/",
+            headers: [
+                ("Host", "nikiesboldi.ddnsfree.com"),
+                ("Accept-Language", "hu"),
+            ].iter().cloned().collect(),
+            body: "",
+            protocol: "HTTP/1.1",
+        };
+        let users = Arc::new(vec![Mutex::new(User::new("test".to_string(), "test".to_string()))]);
+        let mut stream = TcpStream::connect("").unwrap();
+        routing(&mut stream, request, users);
     }
 }
