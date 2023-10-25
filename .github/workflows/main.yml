@@ -2,3 +2,8 @@ name: Rust
 
 on:
   workflow_dispatch
+
+jobs:
+  test_job:
+    name: test
+    runs-on: ubuntu-latest
