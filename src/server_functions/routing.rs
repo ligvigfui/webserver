@@ -36,9 +36,9 @@ pub fn routing(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<Us
                         path: &request.path.replace("/wedding", ""),
                         ..request
                     }),
-                _ => code404(stream, request),
+                _ => response404(stream, request),
             }
         }
-        _ => code404(stream, request),
+        _ => response404(stream, request),
     }
 }

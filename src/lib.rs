@@ -6,7 +6,7 @@ use std::{
 
 pub use crate::{
     extensions::IsHex,
-    server_functions::{
+    server_functions::{*,
         routing::*,
         handling::*,
         status_codes::*,

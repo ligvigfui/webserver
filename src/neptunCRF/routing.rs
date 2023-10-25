@@ -10,6 +10,6 @@ pub fn routing(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<Us
         (M::GET, "/icon") => handle_image(stream, "/neptunCRF/icon.png"),
         (M::GET, "/EULA") => handle_page_return(stream, "200 OK", None, &("/hu/neptunCRF/EULA.html")),
         (M::POST, "/login") => handle_neptun_login(stream, request, users),
-        _ => code404(stream, request),
+        _ => response404(stream, request),
     }
 }
