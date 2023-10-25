@@ -8,7 +8,6 @@ use std::{
 use serde::{Deserialize, Serialize};
 
 use crate::{server_functions::handling::default_handle, Request};
-use hash::{handle_neptun_login_first, handle_neptun_login_other};
 
 pub mod hash;
 pub mod routing;
@@ -53,14 +52,10 @@ pub fn init() -> Arc<Vec<Mutex<User>>> {
 
 
 pub fn handle_neptun_login(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<User>>>) {
-    let (status, mut response);
-    match request.get_header("Id") {
-        Some(_) => (status, response) = handle_neptun_login_first(request, &users),
-        None    => (status, response) = handle_neptun_login_other(request, &users)
-    }
+    let (status, response) = hash::handle_neptun_login(request, &users);
     if response.contains("Error") {
         if let Some(pos) = response.rfind("\r\n\r\n") {
-            response.insert_str(pos, &format!("ServerVersion: {}\r\n", crate::VERSION));
+            response.to_string().insert_str(pos, &format!("ServerVersion: {}\r\n", crate::VERSION));
         }
     }
     default_handle(stream, &status, None, &response);
