@@ -1,69 +1,99 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Boldi és Niki esküvője</title>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Courgette">
+	<link rel="icon" href="C:/programming/rust/webserver/pages/assets/wedding/favicon.gif" type="image/gif" >
+	<!-- make the icon animated -->
+	<meta charset="UTF-8">
+	<title>Boldi és Niki esküvője</title>
 </head>
 <body>
-  <div class="container slideshow-container">
-    <header>
-      <h1>Boldi és Niki esküvője</h1>
-      <nav>
-        <ul>
-          <li><a href="#about">About</a></li>
-          <li><a href="#events">Events</a></li>
-          <li><a href="#rsvp">RSVP</a></li>
-        </ul>
-      </nav>
-    </header>
+	<header>
+		<nav>
+			<a href="#title">Kezdőlap</a>
+			<a href="#about">Rólunk</a>
+			<a href="#place&time">Helyszín és időpont</a>
+			<a href="#accommodations">Szállás</a>
+			<a href="#events">Események</a>
+			<a href="#rsvp">Foglalás</a>
+			<a href="#faq">Gyakori kérdések</a>
+			<!-- a href="#gallery">Galéria</a -->
+		</nav>
+	</header>
 
-    <section class="slide fade" id="about">
-      <h2>About Us</h2>
-      <p>John and Jane met at a mutual friend's party and have been inseparable ever since. They share a love of travel, good food, and spending time with family and friends.</p>
-      <p>Their wedding will be a celebration of their love and commitment to each other, surrounded by their loved ones.</p>
-    </section>
+	<section id="title" style="
+			background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/inbound6366005334592781563.jpg');
+			background-repeat: no-repeat;
+			background-size: auto 100%;
+			background-position: 50%;
+		">
+		<div style="
+			margin-top: 30%;
+			margin-left: 33%;
+			background-color: rgba(255, 255, 255, 0.6);
+			border-radius: 10px;
+			padding: 20px;
+			display: inline-block;
+		">
+			<h1 style="
+			font-weight: 300;
+			margin: 0;
+			">Boldi és Niki esküvője</h1>
+		</div>
+	</section>
+	
+	<section id="about">
+		<h2>Rólunk</h2>
+		<p>John and Jane met at a mutual friend's party and have been inseparable ever since. They share a love of travel, good food, and spending time with family and friends.</p>
+		<p>Their wedding will be a celebration of their love and commitment to each other, surrounded by their loved ones.</p>
+	</section>
 
-    <section class="slide fade" id="events">
-      <h2>Events</h2>
-      <p>Please join us for the following events:</p>
-      <ul>
-        <li><strong>Rehearsal Dinner:</strong> Friday, June 10th at 6:00pm at The Rusty Pelican</li>
-        <li><strong>Wedding Ceremony:</strong> Saturday, June 11th at 4:00pm at The Grand Ballroom</li>
-        <li><strong>Reception:</strong> Saturday, June 11th at 6:00pm at The Grand Ballroom</li>
-      </ul>
-    </section>
+	<section id="events">
+		<h2>Events</h2>
+		<p>Please join us for the following events:</p>
+		<ul>
+			<li><strong>14:00</strong> Templomi szertartás</li>
+			<li><strong>16:30</strong> Szertartás a Boróka táborban</li>
+			<li><strong>17:30</strong> Vacsora</li>
+			<li><strong>19:00</strong> Nyitótánc</li>
+			<li><strong>23:00</strong> Menyecske tánc</li>
+			<li><strong>00:00</strong> Éjféli menü</li>
+			<li>Buli Éjfélig</li>
+		</ul>
+	</section>
 
-    <section class="slide fade" id="rsvp">
-      <h2>Foglalás</h2>
-      <form autocomplete="on">
-        <div>
-          <label for="name">Name: </label>
-          <input type="text" id="name" name="name" required>
-        </div>
-        <div>
-          <label for="email">Email: </label>
-          <input type="email" id="email" name="email" required>
-        </div>
-        <div>
-          <label for="guests">Number of Guests:</label>
-          <input type="number" id="guests" name="guests" min="1" max="10">
-        </div>        
-        <button class="btn" type="submit">Submit</button>
-      </form>
-    </section>
-    <section class="slide fade" id="contact">
-      <h2>Kapcsolat</h2>
-      <p>Ha kérdésed van, vagy van ötleted, hogyan lehetne jobb ez az oldal, akkor írj nekünk egy 
-        <a href="mailto:ligvigfui@gmail.com?subject=Niki%20és%20Boldi%20Esküvője%20-%20ötlet/kérdés/hiba%20bejelentés">
-        e-mailt</a>!
-      </p>
-      <footer>
-        <p>&copy; 2023 Boldi és Niki Esküvője. All rights reserved.</p>
-      </footer>
-    </section>
-  </div>
+	<section id="rsvp">
+		<h2>RSVP</h2>
+		<form>
+			<label for="name">Name:</label>
+			<input type="text" id="name" name="name" required>
+
+			<label for="email">Email:</label>
+			<input type="email" id="email" name="email" required>
+
+			<label for="attend">Will you be attending?</label>
+			<select id="attend" name="attend" required>
+				<option value="">Select one</option>
+				<option value="yes">Yes, I'll be there!</option>
+				<option value="no">Sorry, I can't make it</option>
+			</select>
+
+			<label for="guests">Number of Guests:</label>
+			<input type="number" id="guests" name="guests" min="1" max="10">
+
+			<button class="btn" type="submit">Submit</button>
+		</form>
+	</section>
+	<footer>
+		<h2>Kapcsolat</h2>
+		<p>Ha kérdésed van, vagy van ötleted, hogyan lehetne jobb ez az oldal, akkor írj nekünk egy 
+		  <a href="mailto:ligvigfui@gmail.com?subject=Niki%20és%20Boldi%20Esküvője%20-%20ötlet/kérdés/hiba%20bejelentés">
+		  e-mailt</a>!
+		</p>
+		<p>&copy; 2023 Boldi és Niki Esküvője. All rights reserved.</p>
+	</footer>
 </body>
-
+</html>
 <script>
 const form = document.querySelector('form');
 form.addEventListener('submit', e => {
@@ -125,22 +155,37 @@ window.addEventListener('scroll', () => {
 
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  color: #333;
-  margin: 0;
-  padding: 0;
+	body {
+  		font-family: "Courgette", sans-serif;
+		color: #333;
+		height: 100%;
+		width: 100%;
+		margin: 0;
+		padding: 0;
+	}
 
-  background-image: url('http://localhost:7878/wedding/demo_image.jpg');
-  background-size: cover;
-  background-attachment: fixed;
-}
+	header {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		background-color: #fff;
+		z-index: 1;
+	}
 
-.container {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 30px;
-}
+	nav {
+		text-align: center;
+		a  {
+			display: inline-block;
+			margin-right: 20px;
+		}
+	}
+
+	section {
+		height: 99vh;
+		width: 99vw;
+  		padding-top: 50px;
+	}
 
 h1, h2 {
   text-align: center;
