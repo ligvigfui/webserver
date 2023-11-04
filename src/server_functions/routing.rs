@@ -24,7 +24,8 @@ pub fn routing(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<Us
         "neptunCRF.freeddns.org" => neptunCRF::routing(stream, request, users),
         "coder.ddnsfree.com" => dev::routing(stream, request),
         "localhost" => {
-            match request.path.split("/").next().unwrap() {
+            match request.path.split("/").nth(1).unwrap() {
+                "" => handle_page_return(stream, CODES[&200], None, "en/dev.html"),
                 "dev" => dev::routing(stream,
                     Request { 
                         path: &request.path.replace("/dev", ""),
