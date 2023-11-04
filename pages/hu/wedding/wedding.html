@@ -3,7 +3,6 @@
 <head>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Courgette">
 	<link rel="icon" href="C:/programming/rust/webserver/pages/assets/wedding/favicon.gif" type="image/gif">
-	<!-- <script src="C:/programming/rust/webserver/pages/hu/wedding/wedding.js"></script>
 	<!-- make the icon animated -->
 	<meta charset="UTF-8">
 	<title>Boldi és Niki esküvője</title>
@@ -145,6 +144,9 @@ for (let i = 0; i < sections.length; i++) {
 let currentSlide = 0;
 
 function goToNextSlide() {
+	if (currentSlide == sections.length - 1) {
+		return;
+	}
 	//move the view to the next section
 	window.scrollTo({
 		top: positions[currentSlide + 1],
@@ -154,6 +156,9 @@ function goToNextSlide() {
 }
 
 function goToPreviousSlide() {
+	if (currentSlide == 0) {
+		return;
+	}
 	//move the view to the previous section
 	window.scrollTo({
 		top: positions[currentSlide - 1],
