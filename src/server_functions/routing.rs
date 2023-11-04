@@ -44,7 +44,10 @@ pub fn routing(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<Us
                 _ => response404(stream, request),
             }
         }
-        _ => response404(stream, request),
+        _ => {
+            println!("Did not find host: \"{}\"", request.get_header("Host").unwrap());
+            response404(stream, request);
+        }
     }
 }
 
