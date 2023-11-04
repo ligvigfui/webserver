@@ -2,7 +2,8 @@
 <html>
 <head>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Courgette">
-	<link rel="icon" href="C:/programming/rust/webserver/pages/assets/wedding/favicon.gif" type="image/gif" >
+	<link rel="icon" href="C:/programming/rust/webserver/pages/assets/wedding/favicon.gif" type="image/gif">
+	<!-- <script src="C:/programming/rust/webserver/pages/hu/wedding/wedding.js"></script>
 	<!-- make the icon animated -->
 	<meta charset="UTF-8">
 	<title>Boldi és Niki esküvője</title>
@@ -17,6 +18,8 @@
 			<a href="#events">Események</a>
 			<a href="#rsvp">Foglalás</a>
 			<a href="#faq">Gyakori kérdések</a>
+			<button class="btn" onclick="goToNextSlide()">Next</button>
+			<button class="btn" onclick="goToPreviousSlide()">Previous</button>
 			<!-- a href="#gallery">Galéria</a -->
 		</nav>
 	</header>
@@ -122,7 +125,7 @@ form.addEventListener('submit', e => {
 	});
 });
 
-window.addEventListener('scroll', () => {
+/*window.addEventListener('scroll', () => {
 	const scrollDirection = window.scrollY > this.oldScroll ? 'down' : 'up';
 	this.oldScroll = window.scrollY;
 	if (scrollDirection == 'down') {
@@ -130,15 +133,16 @@ window.addEventListener('scroll', () => {
 	} else {
 		goToPreviousSlide();
 	}
-});
+});*/
 
-//get the sections position on the page
 const positions = [];
 const sections = document.querySelectorAll('section');
-sections.forEach(section => {
-	positions.push(section.offsetTop);
-});
-const currentSlide = 0;
+//get the window height
+const windowHeight = window.innerHeight;
+for (let i = 0; i < sections.length; i++) {
+	positions.push(i*windowHeight);
+}
+let currentSlide = 0;
 
 function goToNextSlide() {
 	//move the view to the next section
