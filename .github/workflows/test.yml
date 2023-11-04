@@ -23,7 +23,7 @@ on:
 
 jobs:
 
-    sudo docker stop webserver
-    sudo docker rm webserver
     sudo docker build -t webserver .
-    sudo docker run -dp 80:7878 --restart unless-stopped webserver
+    sudo docker stop webserver
+    sudo docker run -dp 80:7878 --restart unless-stopped --name webserver webserver
+    sudo docker rm webserver
