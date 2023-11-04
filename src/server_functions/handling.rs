@@ -49,7 +49,7 @@ pub fn handle_debug(stream: &mut TcpStream, request: Request) {
 }
 
 pub fn handle_image(stream: &mut TcpStream, path: &str) {
-    match handle_image_inner(stream, format!("pages/assets{}", path)) {
+    match handle_image_inner(stream, format!("pages/assets/{}", path)) {
         Err(e) => {
             println!("{}", e);
         }

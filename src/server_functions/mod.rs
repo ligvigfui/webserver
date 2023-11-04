@@ -7,7 +7,15 @@ pub mod method;
 pub mod request;
 
 pub fn response404(stream: &mut std::net::TcpStream, request: Request) {
-    println!("Requested page: {}{}\nError {}", &request.get_header("host").unwrap(), &request.path, CODES[&404]);
+    let host = match request.get_header("Host") {
+        Some(x) => x,
+        None => "noHost",
+    };
+    let accept_language = match request.get_header("Accept-Language") {
+        Some(x) => x,
+        None => "en",
+    };
+    println!("Requested page: {}{}\nError {}", host, &request.path, CODES[&404]);
     handle_page_return(stream, CODES[&404], None,
-    &(format!("{}/404.html", request.get_header("Accept-Language").unwrap())));
+    &(format!("{}/404.html", accept_language)));
 }

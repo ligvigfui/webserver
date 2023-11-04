@@ -10,8 +10,8 @@ pub fn routing(stream: &mut TcpStream, request: Request) {
                 path: &path.replace("/vue", ""),
                 ..request
             }),
-        (M::GET, "/favicon.ico") => handle_image(stream, "/favicon.ico"),
-        (M::GET, "/") => handle_page_return(stream, CODES[&200], None, "/index.html"),
+        (M::GET, "/favicon.ico") => handle_image(stream, "favicon.ico"),
+        (M::GET, "/" | "") => handle_page_return(stream, CODES[&200], None, "en/dev.html"),
         (M::GET, "/debug") => handle_debug(stream, request),
         _ => response404(stream, request),
     }

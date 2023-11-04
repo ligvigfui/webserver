@@ -24,7 +24,7 @@ pub mod dev;
 pub mod vue;
 pub mod extensions;
 
-pub static VERSION: &str = "0.1.1-dev.2";
+pub static VERSION: &str = "0.2.0";
 pub static DEBUG: DebugLevel = DebugLevel::HIGH;
 pub static DEBUG_LEN: usize = 200;
 
