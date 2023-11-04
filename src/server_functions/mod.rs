@@ -15,7 +15,7 @@ pub fn response404(stream: &mut std::net::TcpStream, request: Request) {
         Some(x) => x,
         None => "en",
     };
-    println!("Requested page: {}{}\nError {}", host, &request.path, CODES[&404]);
+    println!("Error {} - Requested page: {}{}", CODES[&404], host, &request.path);
     handle_page_return(stream, CODES[&404], None,
     &(format!("{}/404.html", accept_language)));
 }
