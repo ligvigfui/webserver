@@ -17,3 +17,13 @@ jobs:
         run: |
             echo "Building the app"
             echo "Build complete"
+
+on:
+    workflow_dispatch:
+
+jobs:
+
+    sudo docker stop webserver
+    sudo docker rm webserver
+    sudo docker build -t webserver .
+    sudo docker run -dp 80:7878 --restart unless-stopped webserver
