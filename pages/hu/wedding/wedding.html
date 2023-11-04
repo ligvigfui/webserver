@@ -8,159 +8,161 @@
 	<title>Boldi és Niki esküvője</title>
 </head>
 <body>
-	<!-- div class="slideshow-container" -->
-		<header>
-			<nav>
-				<a href="#title">Kezdőlap</a>
-				<a href="#about">Rólunk</a>
-				<a href="#place&time">Helyszín és időpont</a>
-				<a href="#accommodations">Szállás</a>
-				<a href="#events">Események</a>
-				<a href="#rsvp">Foglalás</a>
-				<a href="#faq">Gyakori kérdések</a>
-				<!-- a href="#gallery">Galéria</a -->
-			</nav>
-		</header>
+	<header>
+		<nav>
+			<a href="#title">Kezdőlap</a>
+			<a href="#about">Rólunk</a>
+			<a href="#place&time">Helyszín és időpont</a>
+			<a href="#accommodations">Szállás</a>
+			<a href="#events">Események</a>
+			<a href="#rsvp">Foglalás</a>
+			<a href="#faq">Gyakori kérdések</a>
+			<!-- a href="#gallery">Galéria</a -->
+		</nav>
+	</header>
+	
+	<section id="title" style="
+			background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/inbound6366005334592781563.jpg');
+			background-repeat: no-repeat;
+			background-size: auto 100%;
+			background-position: 50%;
+		">
+		<!-- todo move this h1 text to the correct position responsively-->
+		<div style="
+			background-color: rgba(255, 255, 255, 0.6);
+			border-radius: 10px;
+			padding: 20px;
+		">
+			<h1 style="
+			font-weight: 300;
+			margin: 0;
+			">Boldi és Niki esküvője</h1>
+		</div>
+	</section>
+	
+	<section id="about">
+		<h2>Rólunk</h2>
+		<p>John and Jane met at a mutual friend's party and have been inseparable ever since. They share a love of travel, good food, and spending time with family and friends.</p>
+		<p>Their wedding will be a celebration of their love and commitment to each other, surrounded by their loved ones.</p>
+	</section>
 
-		<section id="title" style="
-				background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/inbound6366005334592781563.jpg');
-				background-repeat: no-repeat;
-				background-size: auto 100%;
-				background-position: 50%;
-			">
-			<!-- todo move this h1 text to the correcto porition responsively-->
-			<div style="
-				margin-top: 30%;
-				margin-left: 33%;
-				background-color: rgba(255, 255, 255, 0.6);
-				border-radius: 10px;
-				padding: 20px;
-				display: inline-block;
-			">
-				<h1 style="
-				font-weight: 300;
-				margin: 0;
-				">Boldi és Niki esküvője</h1>
-			</div>
-		</section>
-		
-		<section id="about">
-			<h2>Rólunk</h2>
-			<p>John and Jane met at a mutual friend's party and have been inseparable ever since. They share a love of travel, good food, and spending time with family and friends.</p>
-			<p>Their wedding will be a celebration of their love and commitment to each other, surrounded by their loved ones.</p>
-		</section>
+	<section id="events">
+		<h2>Events</h2>
+		<p>Please join us for the following events:</p>
+		<ul>
+			<!-- todo fix number formatting-->
+			<li><strong>14:00</strong> Templomi szertartás</li>
+			<li><strong>16:30</strong> Szertartás a Boróka táborban</li>
+			<li><strong>17:30</strong> Vacsora</li>
+			<li><strong>19:00</strong> Nyitótánc</li>
+			<li><strong>23:00</strong> Menyecske tánc</li>
+			<li><strong>00:00</strong> Éjféli menü</li>
+			<li>Buli Éjfélig</li>
+		</ul>
+	</section>
 
-		<section id="events">
-			<h2>Events</h2>
-			<p>Please join us for the following events:</p>
-			<ul>
-				<!-- todo fix number formatting-->
-				<li><strong>14:00</strong> Templomi szertartás</li>
-				<li><strong>16:30</strong> Szertartás a Boróka táborban</li>
-				<li><strong>17:30</strong> Vacsora</li>
-				<li><strong>19:00</strong> Nyitótánc</li>
-				<li><strong>23:00</strong> Menyecske tánc</li>
-				<li><strong>00:00</strong> Éjféli menü</li>
-				<li>Buli Éjfélig</li>
-			</ul>
-		</section>
+	<section id="rsvp">
+		<h2>RSVP</h2>
+		<form>
+			<label for="name">Name:</label>
+			<input type="text" id="name" name="name" required>
 
-		<section id="rsvp">
-			<h2>RSVP</h2>
-			<form>
-				<label for="name">Name:</label>
-				<input type="text" id="name" name="name" required>
+			<label for="email">Email:</label>
+			<input type="email" id="email" name="email" required>
 
-				<label for="email">Email:</label>
-				<input type="email" id="email" name="email" required>
+			<label for="attend">Will you be attending?</label>
+			<select id="attend" name="attend" required>
+				<option value="">Select one</option>
+				<option value="yes">Yes, I'll be there!</option>
+				<option value="no">Sorry, I can't make it</option>
+			</select>
 
-				<label for="attend">Will you be attending?</label>
-				<select id="attend" name="attend" required>
-					<option value="">Select one</option>
-					<option value="yes">Yes, I'll be there!</option>
-					<option value="no">Sorry, I can't make it</option>
-				</select>
+			<label for="guests">Number of Guests:</label>
+			<input type="number" id="guests" name="guests" min="1" max="10">
 
-				<label for="guests">Number of Guests:</label>
-				<input type="number" id="guests" name="guests" min="1" max="10">
-
-				<button class="btn" type="submit">Submit</button>
-			</form>
-			<footer>
-				<h2>Kapcsolat</h2>
-				<p>Ha kérdésed van, vagy van ötleted, hogyan lehetne jobb ez az oldal, akkor írj nekünk egy 
-				<a href="mailto:ligvigfui@gmail.com?subject=Niki%20és%20Boldi%20Esküvője%20-%20ötlet/kérdés/hiba%20bejelentés">
-				e-mailt</a>!
-				</p>
-				<p>&copy; 2023 Boldi és Niki Esküvője. All rights reserved.</p>
-			</footer>
-		</section>
-	<!-- /div -->
+			<button class="btn" type="submit">Submit</button>
+		</form>
+		<footer>
+			<h2>Kapcsolat</h2>
+			<p>Ha kérdésed van, vagy van ötleted, hogyan lehetne jobb ez az oldal, akkor írj nekünk egy 
+			<a href="mailto:ligvigfui@gmail.com?subject=Niki%20és%20Boldi%20Esküvője%20-%20ötlet/kérdés/hiba%20bejelentés">
+			e-mailt</a>!
+			</p>
+			<p>&copy; 2023 Boldi és Niki Esküvője. All rights reserved.</p>
+		</footer>
+	</section>
 </body>
 </html>
 <script>
 const form = document.querySelector('form');
 form.addEventListener('submit', e => {
-  console.log('Form submitted!');
-  e.preventDefault(); // Prevent form from submitting
-  // Get form data
-  const form = new FormData();
-  form.append('name', document.getElementById('name').value);
-  form.append('email', document.getElementById('email').value);
-  form.append('attending', document.getElementById('attend').value);
-  form.append('guests', document.getElementById('guests').value);
-  // Send form data to server
-  fetch('http://localhost:7878/wedding/form', {
-    method: 'POST',
-    body: form
-  })
-  .then(response => {
-    if (response.ok) {
-      alert('Thank you for your RSVP!');
-    } else {
-      alert('Oops! Something went wrong.');
-    }
-  })
-  .catch(error => {
-    alert('Oops! Something went wrong.');
-    console.error(error);
-  });
+	console.log('Form submitted!');
+	e.preventDefault(); // Prevent form from submitting
+	// Get form data
+	const form = new FormData();
+	form.append('name', document.getElementById('name').value);
+	form.append('email', document.getElementById('email').value);
+	form.append('attending', document.getElementById('attend').value);
+	form.append('guests', document.getElementById('guests').value);
+	// Send form data to server
+	fetch('http://localhost:7878/wedding/form', {
+		method: 'POST',
+		body: form
+	})
+	.then(response => {
+		if (response.ok) {
+			alert('Thank you for your RSVP!');
+		} else {
+			alert('Oops! Something went wrong.');
+		}
+	})
+	.catch(error => {
+		alert('Oops! Something went wrong.');
+		console.error(error);
+	});
 });
 
+window.addEventListener('scroll', () => {
+	const scrollDirection = window.scrollY > this.oldScroll ? 'down' : 'up';
+	this.oldScroll = window.scrollY;
+	if (scrollDirection == 'down') {
+		goToNextSlide();
+	} else {
+		goToPreviousSlide();
+	}
+});
 
+//get the sections position on the page
+const positions = [];
+const sections = document.querySelectorAll('section');
+sections.forEach(section => {
+	positions.push(section.offsetTop);
+});
+const currentSlide = 0;
 
-// todo fix scrolling animation
-let slideIndex = 0;
-const slides = document.querySelectorAll('.slide');
-showSlides();
-
-function showSlides() {
-  for (let i = 0; i < slides.length; i++) {
-    slides[i].style.display = 'none';
-  }
-  slideIndex++;
-  if (slideIndex > slides.length) {
-    slideIndex = 1;
-  }
-  slides[slideIndex - 1].style.display = 'block';
+function goToNextSlide() {
+	//move the view to the next section
+	window.scrollTo({
+		top: positions[currentSlide + 1],
+		behavior: 'smooth'
+	});
+	currentSlide++;
 }
 
-// Fixate slide on scroll
-window.addEventListener('scroll', () => {
-  const scrollTop = window.scrollY;
-  const slideHeight = document.querySelector('.slideshow-container').offsetHeight;
-  if (scrollTop >= slideHeight) {
-    slides[slideIndex - 1].classList.add('fixed-slide');
-  } else {
-    slides[slideIndex - 1].classList.remove('fixed-slide');
-  }
-});
+function goToPreviousSlide() {
+	//move the view to the previous section
+	window.scrollTo({
+		top: positions[currentSlide - 1],
+		behavior: 'smooth'
+	});
+	currentSlide--;
+}
 </script>
 
 
 <style>
 	body {
-  		font-family: "Courgette", sans-serif;
+		font-family: "Courgette", sans-serif;
 		color: #333;
 		height: 100%;
 		width: 100%;
@@ -179,7 +181,7 @@ window.addEventListener('scroll', () => {
 
 	nav {
 		text-align: center;
-		a  {
+		a {
 			display: inline-block;
 			margin-right: 20px;
 		}
@@ -188,85 +190,73 @@ window.addEventListener('scroll', () => {
 	section {
 		height: 99vh;
 		width: 99vw;
-  		padding-top: 50px;
 	}
 
 h1, h2 {
-  text-align: center;
+	text-align: center;
 }
 
 h1 {
-  font-size: 48px;
-  margin-bottom: 20px;
+	font-size: 48px;
+	margin-bottom: 20px;
 }
 
 h2 {
-  font-size: 36px;
-  margin-bottom: 10px;
+	font-size: 36px;
+	margin-bottom: 10px;
 }
 
 p {
-  line-height: 1.5;
-  margin-bottom: 20px;
+	line-height: 1.5;
+	margin-bottom: 20px;
 }
 
 form {
-  > div {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-  > button {
-    margin: 20px auto;
-    align-self: center;
-  }
+	> div {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 10px;
+	}
+	> button {
+		margin: 20px auto;
+		align-self: center;
+	}
 }
 
 .btn {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #333;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
+	display: inline-block;
+	padding: 10px 20px;
+	background-color: #333;
+	color: #fff;
+	text-decoration: none;
+	border-radius: 5px;
+	transition: background-color 0.3s ease;
 }
 
 .btn:hover {
-  background-color: #555;
+	background-color: #555;
 }
 
 li {
-  list-style-type: '👉';
-  padding-inline-start: 2px;
-}
-
-.slideshow-container {
-  width: 100%;
-  height: 400px; /* Adjust the height as needed */
-  overflow: hidden;
-  position: relative;
-}
-
-.slide {
-  display: none;
+	list-style-type: '👉';
+	padding-inline-start: 2px;
 }
 
 img {
-  width: 100%;
-  height: 100%;
+	width: 100%;
+	height: 100%;
 }
 
 .fixed-slide {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 999;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 999;
 }
 
 footer {
-  text-align: center;
+	text-align: center;
 }
 </style>
