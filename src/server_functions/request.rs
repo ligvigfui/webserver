@@ -11,27 +11,37 @@ pub struct Request<'a> {
 
 impl<'a> Request<'a> {
     pub fn from(buffer: &'a [u8]) -> Option<Request<'a>> {
-        let str_buff = std::str::from_utf8(&buffer).unwrap();
-        let (start_line, headers_and_body) = match str_buff.split_once("\r\n") {
-            Some(x) => x,
-            None => return None,
+        let str_buff = match std::str::from_utf8(&buffer) {
+            Ok(x) => x,
+            Err(e) => {
+                println!("{}", e);
+                return None;
+            },
         };
+        let (start_line, headers_and_body) = str_buff.split_once("\r\n")?;
         let mut start_line_cut = start_line.split(" ");
         let (method, path, protocol) = 
-            (start_line_cut.next().unwrap(), start_line_cut.next().unwrap(), start_line_cut.next().unwrap());
-        let (headers, body) = headers_and_body.split_once("\r\n\r\n").unwrap();
+            (start_line_cut.next()?, start_line_cut.next()?, start_line_cut.next()?);
+        let (headers, body) = headers_and_body.split_once("\r\n\r\n")?;
         let headers_iter = headers.split("\r\n");
-        let mut headers_vec = Vec::new();
+        let mut headers = Vec::new();
         for header in headers_iter {
             let mut header_cut = header.split(": ");
-            let (header_name, header_value) = (header_cut.next().unwrap(), header_cut.next().unwrap());
-            headers_vec.push((header_name, header_value));
+            let (header_name, header_value) = (header_cut.next()?, header_cut.next()?);
+            headers.push((header_name, header_value));
         }
+        let method = match Method::from(method) {
+            Ok(x) => x,
+            Err(e) => {
+                println!("{}", e);
+                return None;
+            },
+        };
         Some(Request {
-            method: Method::from(method).unwrap(),
+            method,
             path,
             protocol,
-            headers: headers_vec,
+            headers,
             body,
         })
     }

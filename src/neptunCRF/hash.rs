@@ -35,7 +35,7 @@ fn handle_neptun_login_inner<'a>(request: Request, users: &'a Arc<Vec<Mutex<User
     }
 
     // get email from credentials
-    let email = match get_user_email(users, credentials, true) {
+    let email = match get_user_email(users, credentials, request.get_header("Id").is_some()) {
         Some(x) => x,
         None => {
             println!("{}: User does not exist" , readable_time());
@@ -166,9 +166,6 @@ fn hash(string: String) -> String {
     let result = hasher.finalize();
     format!("{:x}", result)
 }
-
-
-
 
 fn i32_to_hex_char(number: i32) -> char {
     match number {
