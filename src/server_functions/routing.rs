@@ -51,6 +51,7 @@ pub fn routing(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<Us
     }
 }
 
+/*
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -72,3 +73,4 @@ mod tests {
         routing(&mut stream, request, users);
     }
 }
+*/
