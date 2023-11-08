@@ -44,11 +44,18 @@ jobs:
     deploy_job:
         needs: build-and-test
 
+        if: github.event_name == 'workflow_dispatch'
+
         runs-on: ubuntu-latest
 
         steps:
         -   name: Checkout
             uses: actions/checkout@v2
+
+        -   name: Setup SSH
+            uses: webfactory/ssh-agent@v0.5.3
+            with:
+                ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
         -   name: Deploy
             run: |
