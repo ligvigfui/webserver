@@ -4,7 +4,6 @@ on:
     push:
         branches:
             - master
-    workflow_dispatch:
 
 jobs:
     # what should this build job do:
@@ -44,9 +43,9 @@ jobs:
     deploy_job:
         needs: build-and-test
 
-        if: github.event_name == 'workflow_dispatch'
-
         runs-on: ubuntu-latest
+
+        environment: Deployment
 
         steps:
         -   name: Checkout
@@ -59,10 +58,10 @@ jobs:
 
         -   name: Deploy
             run: |
-              ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.SERVER_IP }} -p ${{ secrets.PORT }} <<EOF
-              cd rust/webserver
-              sudo docker build -t webserver .
-              sudo docker stop webserver || true
-              sudo docker rm webserver || true
-              sudo docker run -dp 80:7878 --restart unless-stopped --name webserver webserver
-              EOF
+                ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.SERVER_IP }} -p ${{ secrets.PORT }} <<EOF
+                cd rust/webserver
+                sudo docker build -t webserver .
+                sudo docker stop webserver || true
+                sudo docker rm webserver || true
+                sudo docker run -dp 80:7878 --restart unless-stopped --name webserver webserver
+                EOF
