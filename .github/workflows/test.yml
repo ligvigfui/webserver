@@ -60,8 +60,8 @@ jobs:
             run: |
                 ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.SERVER_IP }} -p ${{ secrets.PORT }} <<EOF
                 cd rust/webserver
-                sudo docker build -t webserver .
-                sudo docker stop webserver || true
-                sudo docker rm webserver || true
-                sudo docker run -dp 80:7878 --restart unless-stopped --name webserver webserver
+                docker build -t webserver .
+                docker stop webserver || true
+                docker rm webserver || true
+                docker run -dp 80:7878 --restart unless-stopped --name webserver webserver
                 EOF
