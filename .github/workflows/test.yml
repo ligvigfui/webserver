@@ -1,29 +1,61 @@
-name: Build + Test
+name: Build and Test Job
 
-# on push to master, run the build and test jobs
 on:
     push:
         branches:
-        - master
-
-jobs:
-    build_job:
-        name: build
-        runs-on: ubuntu-latest
-        steps:
-        - name: Checkout
-        uses: actions/checkout@v2
-        - name: Build
-        run: |
-            echo "Building the app"
-            echo "Build complete"
-
-on:
+            - master
     workflow_dispatch:
 
 jobs:
+    # what should this build job do:
+    # 1 ssh to server
+    # 2 cd to rust/webserver
+    # 3 pull the latest code
+    # 4 build the code
+    # 5 test the code
+    build-and-test:
+        runs-on: ubuntu-latest
 
-    sudo docker build -t webserver .
-    sudo docker stop webserver
-    sudo docker run -dp 80:7878 --restart unless-stopped --name webserver webserver
-    sudo docker rm webserver
+        steps:
+        -   name: Checkout_code
+            uses: actions/checkout@v2
+
+        -   name: Setup SSH
+            uses: webfactory/ssh-agent@v0.5.3
+            with:
+                ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+        -   name: SSH and Build
+            run: |
+                ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.SERVER_IP }} -p ${{ secrets.PORT }} <<EOF
+                cd rust/webserver
+                git pull origin main
+                cargo build --release
+                cargo test
+                EOF
+    # what should this test job do:
+        # 1 ssh to server
+        # 2 cd to rust/webserver
+        # 3 build docker container
+        # 4 stop the running container
+        # 5 remove the container
+        # 6 run the new container
+        # 7 future: run smoke tests
+    deploy_job:
+        needs: build-and-test
+
+        runs-on: ubuntu-latest
+
+        steps:
+        -   name: Checkout
+            uses: actions/checkout@v2
+
+        -   name: Deploy
+            run: |
+              ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.SERVER_IP }} -p ${{ secrets.PORT }} <<EOF
+              cd rust/webserver
+              sudo docker build -t webserver .
+              sudo docker stop webserver || true
+              sudo docker rm webserver || true
+              sudo docker run -dp 80:7878 --restart unless-stopped --name webserver webserver
+              EOF
