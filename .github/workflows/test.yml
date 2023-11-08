@@ -64,4 +64,5 @@ jobs:
                 docker stop webserver || true
                 docker rm webserver || true
                 docker run -dp 80:7878 --restart unless-stopped --name webserver webserver
+                docker system prune -f
                 EOF
