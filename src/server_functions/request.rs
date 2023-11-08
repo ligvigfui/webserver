@@ -4,6 +4,7 @@ use crate::*;
 pub struct Request<'a> {
     pub method: Method,
     pub path: &'a str,
+    pub query: Option<&'a str>,
     pub protocol: &'a str,
     pub headers: Vec<(&'a str, &'a str)>,
     pub body: &'a str,
@@ -20,9 +21,16 @@ impl<'a> Request<'a> {
         };
         let (start_line, headers_and_body) = str_buff.split_once("\r\n")?;
         let mut start_line_cut = start_line.split(" ");
-        let (method, path, protocol) = 
+
+        let (method, path_and_query, protocol) = 
             (start_line_cut.next()?, start_line_cut.next()?, start_line_cut.next()?);
+
+        let (path, query) = match path_and_query.split_once("?") {
+            Some((path, query)) => (path, Some(query)),
+            None => (path_and_query, None)
+        };
         let (headers, body) = headers_and_body.split_once("\r\n\r\n")?;
+        
         let headers_iter = headers.split("\r\n");
         let mut headers = Vec::new();
         for header in headers_iter {
@@ -40,6 +48,7 @@ impl<'a> Request<'a> {
         Some(Request {
             method,
             path,
+            query,
             protocol,
             headers,
             body,

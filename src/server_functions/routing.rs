@@ -20,7 +20,7 @@ pub fn routing(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<Us
     }
 
     match request.get_header("Host").unwrap().split(":").next().unwrap() {
-        "nikiesboldi.ddnsfree.com" => wedding::routing(stream, request ),
+        "nikiesboldi.ddnsfree.com" => wedding::routing(stream, request),
         "neptuncrf.freeddns.org" => neptunCRF::routing(stream, request, users),
         "coder.ddnsfree.com" => dev::routing(stream, request),
         "localhost" => {
