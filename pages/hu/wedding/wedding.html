@@ -7,7 +7,7 @@
 	<meta charset="UTF-8">
 	<title>Boldi és Niki esküvője</title>
 </head>
-<body>
+<body style="background-color: #333;">
 	<header>
 		<nav>
 			<a href="#title">Kezdőlap</a>
@@ -24,22 +24,32 @@
 	</header>
 	
 	<section id="title" style="
-			background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/inbound6366005334592781563.jpg');
-			background-repeat: no-repeat;
-			background-size: auto 100%;
-			background-position: 50%;
-		">
-		<!-- todo move this h1 text to the correct position responsively-->
+		background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/inbound6366005334592781563.jpg');
+		background-repeat: no-repeat;
+		background-size: auto 100%;
+		background-position: 50%;
+		display: flex;
+		flex-direction: column;
+	">
+		<div style="flex-grow: 5;"></div>
 		<div style="
-			background-color: rgba(255, 255, 255, 0.6);
-			border-radius: 10px;
-			padding: 20px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-grow: 2;
 		">
-			<h1 style="
-			font-weight: 300;
-			margin: 0;
-			">Boldi és Niki esküvője</h1>
+			<div style="
+				background-color: rgba(255, 255, 255, 0.6);
+				border-radius: 10px;
+				padding: 20px;
+			">
+				<h1 style="
+					font-weight: 300;
+					margin: 0;
+				">Boldi és Niki esküvője</h1>
+			</div>
 		</div>
+		<div style="flex-grow: 3;"></div>
 	</section>
 	
 	<section id="about">
@@ -124,15 +134,19 @@ form.addEventListener('submit', e => {
 	});
 });
 
-/*window.addEventListener('scroll', () => {
-	const scrollDirection = window.scrollY > this.oldScroll ? 'down' : 'up';
-	this.oldScroll = window.scrollY;
+let canScrollAgain = true;
+let oldScroll = 0;
+
+window.addEventListener('scroll', () => {
+	console.log(window.scrollY);
+	canScrollAgain = false;
+	const scrollDirection = window.scrollY > oldScroll ? 'down' : 'up';
 	if (scrollDirection == 'down') {
 		goToNextSlide();
 	} else {
 		goToPreviousSlide();
 	}
-});*/
+});
 
 const positions = [];
 const sections = document.querySelectorAll('section');
@@ -147,24 +161,24 @@ function goToNextSlide() {
 	if (currentSlide == sections.length - 1) {
 		return;
 	}
-	//move the view to the next section
-	window.scrollTo({
-		top: positions[currentSlide + 1],
-		behavior: 'smooth'
-	});
 	currentSlide++;
+	goToSlide();
 }
 
 function goToPreviousSlide() {
 	if (currentSlide == 0) {
 		return;
 	}
-	//move the view to the previous section
+	currentSlide--;
+	goToSlide();
+}
+
+function goToSlide() {
 	window.scrollTo({
-		top: positions[currentSlide - 1],
+		top: positions[currentSlide],
 		behavior: 'smooth'
 	});
-	currentSlide--;
+	oldScroll = window.scrollY;
 }
 </script>
 
