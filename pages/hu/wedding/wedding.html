@@ -7,7 +7,7 @@
 	<meta charset="UTF-8">
 	<title>Boldi és Niki esküvője</title>
 </head>
-<body style="background-color: #333;">
+<body style="background-color: black;">
 	<header>
 		<nav>
 			<a href="#title">Kezdőlap</a>
@@ -94,6 +94,7 @@
 
 			<button class="btn" type="submit">Submit</button>
 		</form>
+
 		<footer>
 			<h2>Kapcsolat</h2>
 			<p>Ha kérdésed van, vagy van ötleted, hogyan lehetne jobb ez az oldal, akkor írj nekünk egy 
@@ -134,20 +135,10 @@ form.addEventListener('submit', e => {
 	});
 });
 
-let canScrollAgain = true;
 let oldScroll = 0;
-
-window.addEventListener('scroll', () => {
-	console.log(window.scrollY);
-	canScrollAgain = false;
-	const scrollDirection = window.scrollY > oldScroll ? 'down' : 'up';
-	if (scrollDirection == 'down') {
-		goToNextSlide();
-	} else {
-		goToPreviousSlide();
-	}
-});
-
+let scrollDirection = 'down';
+let currentSlide = 0;
+let lastSlide = 0;
 const positions = [];
 const sections = document.querySelectorAll('section');
 //get the window height
@@ -155,27 +146,47 @@ const windowHeight = window.innerHeight;
 for (let i = 0; i < sections.length; i++) {
 	positions.push(i*windowHeight);
 }
-let currentSlide = 0;
 
-function goToNextSlide() {
-	if (currentSlide == sections.length - 1) {
-		return;
+window.addEventListener('scroll', () => {
+	oldScroll = window.scrollY
+	scrollDirection = window.scrollY > oldScroll ? 'down' : 'up';
+});
+
+const windowScrollYs = [0, 0, 0, 0, 0, 0];
+
+function tick() {
+	// Move each item forward one
+	for (let i = 0; i < windowScrollYs.length - 1; i++) {
+		windowScrollYs[i] = windowScrollYs[i + 1];
 	}
-	currentSlide++;
-	goToSlide();
+
+	// Set the last item to window.scrollY
+	windowScrollYs[windowScrollYs.length - 1] = window.scrollY;
+
+	// If all items except the last one are the same and the last one is different
+	if (windowScrollYs.slice(0, windowScrollYs.length - 1).every(x => x == windowScrollYs[0]) &&
+		windowScrollYs[windowScrollYs.length - 1] != windowScrollYs[0]) {
+		if (scrollDirection == 'down') {
+			if (window.scrollY > positions[lastSlide]) {
+				goToPosition(positions[currentSlide + 1] - 1);
+				lastSlide = currentSlide;
+			}
+			
+		} else {
+			if (window.scrollY < positions[lastSlide]) {
+				currentSlide = lastSlide - 1 < 0 ? 0 : currentSlide - 1;
+				goToPosition(positions[currentSlide - 1] + 1);
+			}
+		}
+	}
+	setTimeout(tick, 17);
 }
 
-function goToPreviousSlide() {
-	if (currentSlide == 0) {
-		return;
-	}
-	currentSlide--;
-	goToSlide();
-}
+tick();
 
-function goToSlide() {
+function goToPosition(fromTop) {
 	window.scrollTo({
-		top: positions[currentSlide],
+		top: fromTop,
 		behavior: 'smooth'
 	});
 	oldScroll = window.scrollY;
@@ -184,6 +195,17 @@ function goToSlide() {
 
 
 <style>
+/* Hide scrollbar for Chrome, Safari and Opera */
+html::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+html {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
 body {
 	font-family: "Courgette", sans-serif;
 	color: #333;
@@ -198,7 +220,7 @@ header {
 	top: 0;
 	left: 0;
 	width: 100%;
-	background-color: #fff;
+	background-color: rgba(255, 255, 255, 0.6); /* 10% opacity */
 	z-index: 1;
 }
 
@@ -211,8 +233,8 @@ nav {
 }
 
 section {
-	height: 99vh;
-	width: 99vw;
+	height: 100vh;
+	width: 100vw;
 }
 
 h1, h2 {
