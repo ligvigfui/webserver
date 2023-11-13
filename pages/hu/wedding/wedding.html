@@ -159,34 +159,20 @@ for (let i = 0; i < sections.length; i++) {
 	positions.push(i * windowHeight);
 }
 
-let debounceTimeout;
-function debounce(func, delay) {
-    clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(func, delay);
-}
-
 window.addEventListener('wheel', function(e) {
-    e.preventDefault();
-    let currentSectionIndex = Math.round(window.scrollY / windowHeight);
-    let scroll = function() {
-        if (e.deltaY > 0) {
-            // Scrolling down
-            if (currentSectionIndex < sections.length - 1) {
-                window.scrollTo({ top: positions[currentSectionIndex + 1], behavior: 'smooth' });
-            }
-        } else {
-            // Scrolling up
-            if (currentSectionIndex > 0) {
-                window.scrollTo({ top: positions[currentSectionIndex - 1], behavior: 'smooth' });
-            }
-        }
-    };
-    // Check if the event is likely from a mouse wheel
-    if (e.deltaY % 120 === 0) {
-        scroll();
-    } else {
-        debounce(scroll, 200); // Adjust this delay to your liking
-    }
+	e.preventDefault();
+	let currentSectionIndex = Math.round(window.scrollY / windowHeight);
+	if (e.deltaY > 0) {
+		// Scrolling down
+		if (currentSectionIndex < sections.length - 1) {
+			window.scrollTo({ top: positions[currentSectionIndex + 1], behavior: 'smooth' });
+		}
+	} else {
+		// Scrolling up
+		if (currentSectionIndex > 0) {
+			window.scrollTo({ top: positions[currentSectionIndex - 1], behavior: 'smooth' });
+		}
+	}
 }, { passive: false });
 
 window.addEventListener('touchstart', function(e) {
