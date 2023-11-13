@@ -17,8 +17,6 @@
 			<a href="#events">Események</a>
 			<a href="#rsvp">Foglalás</a>
 			<a href="#faq">Gyakori kérdések</a>
-			<button class="btn" onclick="goToNextSlide()">Next</button>
-			<button class="btn" onclick="goToPreviousSlide()">Previous</button>
 		</nav>
 	</header>
 	
@@ -51,13 +49,22 @@
 		<div style="flex-grow: 3;"></div>
 	</section>
 	
-	<section id="about">
-		<h2>Rólunk</h2>
-		<p>John and Jane met at a mutual friend's party and have been inseparable ever since. They share a love of travel, good food, and spending time with family and friends.</p>
-		<p>Their wedding will be a celebration of their love and commitment to each other, surrounded by their loved ones.</p>
+	<section id="about" style="
+		display: flex;
+		flex-direction: column;
+		background-color: rgb(72, 195, 136);"
+	>
+		<div style="flex-grow: 1;"></div>
+		<div style="
+			flex-grow: 1;
+		">
+			<h2>Rólunk</h2>
+			<p>John and Jane met at a mutual friend's party and have been inseparable ever since. They share a love of travel, good food, and spending time with family and friends.</p>
+			<p>Their wedding will be a celebration of their love and commitment to each other, surrounded by their loved ones.</p>
+		</div>
 	</section>
 
-	<section id="events">
+	<section id="events" style="background-color: brown;">
 		<h2>Events</h2>
 		<p>Please join us for the following events:</p>
 		<ul>
@@ -72,7 +79,7 @@
 		</ul>
 	</section>
 
-	<section id="rsvp">
+	<section id="rsvp" style="background-color: rgb(72, 195, 195);">
 		<h2>RSVP</h2>
 		<form>
 			<label for="name">Name:</label>
@@ -97,7 +104,7 @@
 		<footer>
 			<h2>Kapcsolat</h2>
 			<p>Ha kérdésed van, vagy van ötleted, hogyan lehetne jobb ez az oldal, akkor írj nekünk egy 
-			<a href="mailto:ligvigfui@gmail.com?subject=Niki%20és%20Boldi%20Esküvője%20-%20ötlet/kérdés/hiba%20bejelentés">
+			<a href="mailto:nemeth.boldizsar0@gmail.com?subject=Niki%20és%20Boldi%20Esküvője%20-%20ötlet/kérdés/hiba%20bejelentés">
 			e-mailt</a>!
 			</p>
 			<p>&copy; 2023 Boldi és Niki Esküvője. All rights reserved.</p>
@@ -267,6 +274,8 @@ section {
 
 h1, h2 {
 	text-align: center;
+	margin-block-start: 0;
+	margin-block-end: 0;
 }
 
 h1 {
