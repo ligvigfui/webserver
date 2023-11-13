@@ -198,11 +198,11 @@ function tick() {
 			let closestSlide = 0;
 			for (let i = 0; i < positions.length; i++) {
 				if (positions[i] > window.scrollY) {
-					closestSlide = i-1;
+					closestSlide = i;
 					break;
 				}
 			}
-			goToPosition(positions[closestSlide + 1]);
+			goToPosition(positions[closestSlide]);
 		} else if (scrollDirection == 'up') {
 			// determine the closest slide from the bottom
 			let closestSlide = positions.length - 1;
@@ -214,6 +214,9 @@ function tick() {
 			}
 			goToPosition(positions[closestSlide]);
 		}
+	} else if (windowScrollYs.slice(1, windowScrollYs.length).every(x => x == windowScrollYs[1]) &&
+	windowScrollYs[windowScrollYs.length - 1] != windowScrollYs[1]) {
+		setTimeout(tick, 34);
 	}
 	setTimeout(tick, 17);
 }
