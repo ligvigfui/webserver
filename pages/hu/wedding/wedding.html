@@ -152,85 +152,49 @@ form.addEventListener('submit', e => {
 
 const positions = [];
 const sections = document.querySelectorAll('section');
-//get the window height
 const windowHeight = window.innerHeight;
+let startY;
+
 for (let i = 0; i < sections.length; i++) {
-	positions.push(i*windowHeight);
+	positions.push(i * windowHeight);
 }
 
-// todo fix this function. it does not emit the correct events
-/*
 window.addEventListener('wheel', function(e) {
-	var event;
-    if (e.deltaY > 0) {
-		// Scrolling down
-        event = new KeyboardEvent('keydown', {key: 'ArrowDown'});
-    } else {
-		// Scrolling up
-        event = new KeyboardEvent('keydown', {key: 'ArrowUp'});
-    }
-    document.dispatchEvent(event);
 	e.preventDefault();
-}, { passive: false });*/
-
-const windowScrollYs = [0, 0, 0, 0, 0, 0];
-
-function tick() {
-	// Move each item forward one
-	for (let i = 0; i < windowScrollYs.length - 1; i++) {
-		windowScrollYs[i] = windowScrollYs[i + 1];
-	}
-
-	// Set the last item to window.scrollY
-	windowScrollYs[windowScrollYs.length - 1] = window.scrollY;
-
-	// If all items except the last one are the same and the last one is different
-	if (windowScrollYs.slice(0, windowScrollYs.length - 1).every(x => x == windowScrollYs[0]) &&
-		windowScrollYs[windowScrollYs.length - 1] != windowScrollYs[0]) {
-		// Determine scroll direction
-		let scrollDirection = 'down';
-		if (windowScrollYs[windowScrollYs.length - 1] < windowScrollYs[0]) {
-			scrollDirection = 'up';
+	let currentSectionIndex = Math.round(window.scrollY / windowHeight);
+	if (e.deltaY > 0) {
+		// Scrolling down
+		if (currentSectionIndex < sections.length - 1) {
+			window.scrollTo({ top: positions[currentSectionIndex + 1], behavior: 'smooth' });
 		}
-		
-		if (scrollDirection == 'down') {
-			// determine the closest slide from the top
-			let closestSlide = 0;
-			for (let i = 0; i < positions.length; i++) {
-				if (positions[i] > window.scrollY) {
-					closestSlide = i;
-					break;
-				}
-			}
-			goToPosition(positions[closestSlide]);
-		} else if (scrollDirection == 'up') {
-			// determine the closest slide from the bottom
-			let closestSlide = positions.length - 1;
-			for (let i = closestSlide; i >= 0; i--) {
-				if (positions[i] < window.scrollY) {
-					closestSlide = i;
-					break;
-				}
-			}
-			goToPosition(positions[closestSlide]);
+	} else {
+		// Scrolling up
+		if (currentSectionIndex > 0) {
+			window.scrollTo({ top: positions[currentSectionIndex - 1], behavior: 'smooth' });
 		}
-	} else if (windowScrollYs.slice(1, windowScrollYs.length).every(x => x == windowScrollYs[1]) &&
-	windowScrollYs[windowScrollYs.length - 1] != windowScrollYs[1]) {
-		setTimeout(34);
 	}
-	setTimeout(tick, 17);
-}
+}, { passive: false });
 
-tick();
+window.addEventListener('touchstart', function(e) {
+	startY = e.touches[0].pageY;
+}, false);
 
-function goToPosition(fromTop) {
-	window.scrollTo({
-		top: fromTop,
-		behavior: 'smooth'
-	});
-}
+window.addEventListener('touchmove', function(e) {
+	e.preventDefault();
+	let currentSectionIndex = Math.round(window.scrollY / windowHeight);
+	if (e.touches[0].pageY > startY) {
+		// Scrolling up
+		if (currentSectionIndex > 0) {
+			window.scrollTo({ top: positions[currentSectionIndex - 1], behavior: 'smooth' });
+		}
+	} else {
+		// Scrolling down
+		if (currentSectionIndex < sections.length - 1) {
+			window.scrollTo({ top: positions[currentSectionIndex + 1], behavior: 'smooth' });
+		}
+	}
+}, { passive: false });
 </script>
-
 
 <style>
 /* Hide scrollbar for Chrome, Safari and Opera */
