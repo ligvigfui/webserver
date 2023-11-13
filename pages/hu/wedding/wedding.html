@@ -7,11 +7,10 @@
 	<meta charset="UTF-8">
 	<title>Boldi és Niki esküvője</title>
 </head>
-<body style="background-color: black;">
-	<!--
+<body>
 	<header>
 		<nav>
-			<a href="#title">Kezdőlap</a>
+			<button onclick="window.screenY = 0">Kezdőlap</button>
 			<a href="#about">Rólunk</a>
 			<a href="#place&time">Helyszín és időpont</a>
 			<a href="#accommodations">Szállás</a>
@@ -20,10 +19,8 @@
 			<a href="#faq">Gyakori kérdések</a>
 			<button class="btn" onclick="goToNextSlide()">Next</button>
 			<button class="btn" onclick="goToPreviousSlide()">Previous</button>
-			!-- a href="#gallery">Galéria</a --
 		</nav>
 	</header>
-	-->
 	
 	<section id="title" style="
 		background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/inbound6366005334592781563.jpg');
@@ -154,6 +151,8 @@ for (let i = 0; i < sections.length; i++) {
 	positions.push(i*windowHeight);
 }
 
+// todo fix this function. it does not emit the correct events
+/*
 window.addEventListener('wheel', function(e) {
 	var event;
     if (e.deltaY > 0) {
@@ -165,7 +164,7 @@ window.addEventListener('wheel', function(e) {
     }
     document.dispatchEvent(event);
 	e.preventDefault();
-}, { passive: false });
+}, { passive: false });*/
 
 const windowScrollYs = [0, 0, 0, 0, 0, 0];
 
@@ -186,22 +185,27 @@ function tick() {
 		if (windowScrollYs[windowScrollYs.length - 1] < windowScrollYs[0]) {
 			scrollDirection = 'up';
 		}
-		console.log('scroll direction: ' + scrollDirection);
-
-		// determine the closest slide
-		let closestSlide = 0;
-		for (let i = 0; i < positions.length; i++) {
-			if (Math.abs(window.scrollY - positions[i]) < Math.abs(window.scrollY - positions[closestSlide])) {
-				closestSlide = i;
-			}
-		}
-
+		
 		if (scrollDirection == 'down') {
-			console.log('scrolling down');	
+			// determine the closest slide from the top
+			let closestSlide = 0;
+			for (let i = 0; i < positions.length; i++) {
+				if (positions[i] > window.scrollY) {
+					closestSlide = i-1;
+					break;
+				}
+			}
 			goToPosition(positions[closestSlide + 1]);
 		} else if (scrollDirection == 'up') {
-			console.log('scrolling up');
-			goToPosition(positions[closestSlide - 1]);
+			// determine the closest slide from the bottom
+			let closestSlide = positions.length - 1;
+			for (let i = closestSlide; i >= 0; i--) {
+				if (positions[i] < window.scrollY) {
+					closestSlide = i;
+					break;
+				}
+			}
+			goToPosition(positions[closestSlide]);
 		}
 	}
 	setTimeout(tick, 17);
