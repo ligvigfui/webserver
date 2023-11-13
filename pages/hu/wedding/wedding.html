@@ -10,7 +10,7 @@
 <body>
 	<header>
 		<nav>
-			<a href="#title">Kezdőlap</a>
+			<button onclick="window.screenY = 0">Kezdőlap</button>
 			<a href="#about">Rólunk</a>
 			<a href="#place&time">Helyszín és időpont</a>
 			<a href="#accommodations">Szállás</a>
@@ -19,27 +19,36 @@
 			<a href="#faq">Gyakori kérdések</a>
 			<button class="btn" onclick="goToNextSlide()">Next</button>
 			<button class="btn" onclick="goToPreviousSlide()">Previous</button>
-			<!-- a href="#gallery">Galéria</a -->
 		</nav>
 	</header>
 	
 	<section id="title" style="
-			background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/inbound6366005334592781563.jpg');
-			background-repeat: no-repeat;
-			background-size: auto 100%;
-			background-position: 50%;
-		">
-		<!-- todo move this h1 text to the correct position responsively-->
+		background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/inbound6366005334592781563.jpg');
+		background-repeat: no-repeat;
+		background-size: auto 100%;
+		background-position: 50%;
+		display: flex;
+		flex-direction: column;
+	">
+		<div style="flex-grow: 5;"></div>
 		<div style="
-			background-color: rgba(255, 255, 255, 0.6);
-			border-radius: 10px;
-			padding: 20px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-grow: 2;
 		">
-			<h1 style="
-			font-weight: 300;
-			margin: 0;
-			">Boldi és Niki esküvője</h1>
+			<div style="
+				background-color: rgba(255, 255, 255, 0.6);
+				border-radius: 10px;
+				padding: 20px;
+			">
+				<h1 style="
+					font-weight: 300;
+					margin: 0;
+				">Boldi és Niki esküvője</h1>
+			</div>
 		</div>
+		<div style="flex-grow: 3;"></div>
 	</section>
 	
 	<section id="about">
@@ -84,6 +93,7 @@
 
 			<button class="btn" type="submit">Submit</button>
 		</form>
+
 		<footer>
 			<h2>Kapcsolat</h2>
 			<p>Ha kérdésed van, vagy van ötleted, hogyan lehetne jobb ez az oldal, akkor írj nekünk egy 
@@ -95,7 +105,16 @@
 	</section>
 </body>
 </html>
+
 <script>
+window.onload = function() {
+	if (window.innerWidth / window.innerHeight > 11 / 9) {
+		document.body.classList.add('big');
+	} else {
+		document.body.classList.add('small');
+	}
+}
+
 const form = document.querySelector('form');
 form.addEventListener('submit', e => {
 	console.log('Form submitted!');
@@ -124,16 +143,6 @@ form.addEventListener('submit', e => {
 	});
 });
 
-/*window.addEventListener('scroll', () => {
-	const scrollDirection = window.scrollY > this.oldScroll ? 'down' : 'up';
-	this.oldScroll = window.scrollY;
-	if (scrollDirection == 'down') {
-		goToNextSlide();
-	} else {
-		goToPreviousSlide();
-	}
-});*/
-
 const positions = [];
 const sections = document.querySelectorAll('section');
 //get the window height
@@ -141,65 +150,120 @@ const windowHeight = window.innerHeight;
 for (let i = 0; i < sections.length; i++) {
 	positions.push(i*windowHeight);
 }
-let currentSlide = 0;
 
-function goToNextSlide() {
-	if (currentSlide == sections.length - 1) {
-		return;
+// todo fix this function. it does not emit the correct events
+/*
+window.addEventListener('wheel', function(e) {
+	var event;
+    if (e.deltaY > 0) {
+		// Scrolling down
+        event = new KeyboardEvent('keydown', {key: 'ArrowDown'});
+    } else {
+		// Scrolling up
+        event = new KeyboardEvent('keydown', {key: 'ArrowUp'});
+    }
+    document.dispatchEvent(event);
+	e.preventDefault();
+}, { passive: false });*/
+
+const windowScrollYs = [0, 0, 0, 0, 0, 0];
+
+function tick() {
+	// Move each item forward one
+	for (let i = 0; i < windowScrollYs.length - 1; i++) {
+		windowScrollYs[i] = windowScrollYs[i + 1];
 	}
-	//move the view to the next section
-	window.scrollTo({
-		top: positions[currentSlide + 1],
-		behavior: 'smooth'
-	});
-	currentSlide++;
+
+	// Set the last item to window.scrollY
+	windowScrollYs[windowScrollYs.length - 1] = window.scrollY;
+
+	// If all items except the last one are the same and the last one is different
+	if (windowScrollYs.slice(0, windowScrollYs.length - 1).every(x => x == windowScrollYs[0]) &&
+		windowScrollYs[windowScrollYs.length - 1] != windowScrollYs[0]) {
+		// Determine scroll direction
+		let scrollDirection = 'down';
+		if (windowScrollYs[windowScrollYs.length - 1] < windowScrollYs[0]) {
+			scrollDirection = 'up';
+		}
+		
+		if (scrollDirection == 'down') {
+			// determine the closest slide from the top
+			let closestSlide = 0;
+			for (let i = 0; i < positions.length; i++) {
+				if (positions[i] > window.scrollY) {
+					closestSlide = i-1;
+					break;
+				}
+			}
+			goToPosition(positions[closestSlide + 1]);
+		} else if (scrollDirection == 'up') {
+			// determine the closest slide from the bottom
+			let closestSlide = positions.length - 1;
+			for (let i = closestSlide; i >= 0; i--) {
+				if (positions[i] < window.scrollY) {
+					closestSlide = i;
+					break;
+				}
+			}
+			goToPosition(positions[closestSlide]);
+		}
+	}
+	setTimeout(tick, 17);
 }
 
-function goToPreviousSlide() {
-	if (currentSlide == 0) {
-		return;
-	}
-	//move the view to the previous section
+tick();
+
+function goToPosition(fromTop) {
 	window.scrollTo({
-		top: positions[currentSlide - 1],
+		top: fromTop,
 		behavior: 'smooth'
 	});
-	currentSlide--;
 }
 </script>
 
 
 <style>
-	body {
-		font-family: "Courgette", sans-serif;
-		color: #333;
-		height: 100%;
-		width: 100%;
-		margin: 0;
-		padding: 0;
-	}
+/* Hide scrollbar for Chrome, Safari and Opera */
+html::-webkit-scrollbar {
+    display: none;
+}
 
-	header {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		background-color: #fff;
-		z-index: 1;
-	}
+/* Hide scrollbar for IE, Edge and Firefox */
+html {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
 
-	nav {
-		text-align: center;
-		a {
-			display: inline-block;
-			margin-right: 20px;
-		}
-	}
+body {
+	font-family: "Courgette", sans-serif;
+	color: #333;
+	margin: 0px;
+	padding: 0;
+}
 
-	section {
-		height: 99vh;
-		width: 99vw;
+header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	background-color: rgba(255, 255, 255, 0.6); /* 10% opacity */
+	z-index: 1;
+}
+
+nav {
+	text-align: center;
+	a {
+		display: inline-block;
+		margin-right: 20px;
 	}
+}
+
+section {
+	height: 100vh;
+	width: 100vw;
+	margin: 0;
+	padding: 0;
+}
 
 h1, h2 {
 	text-align: center;
@@ -252,17 +316,8 @@ li {
 }
 
 img {
-	width: 100%;
+	width: auto;
 	height: 100%;
-}
-
-.fixed-slide {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 999;
 }
 
 footer {
