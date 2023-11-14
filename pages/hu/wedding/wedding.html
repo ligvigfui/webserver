@@ -152,17 +152,17 @@ form.addEventListener('submit', e => {
 
 const positions = [];
 const sections = document.querySelectorAll('section');
-const windowHeight = window.innerHeight;
+const sectionHeight = sections[0].offsetHeight;
 
 for (let i = 0; i < sections.length; i++) {
-	positions.push(i * windowHeight);
+	positions.push(i * sectionHeight);
 }
 
 let lastDeltaY = 0;
 
 window.addEventListener('wheel', function(e) {
 	console.log(e.deltaY);
-    let currentSectionIndex = Math.round(window.scrollY / windowHeight);
+    let currentSectionIndex = Math.round(window.scrollY / sectionHeight);
     if (e.deltaY % 125 === 0 && lastDeltaY % 125 === 0) {
         e.preventDefault();
         if (e.deltaY > 0) {
@@ -187,7 +187,7 @@ window.addEventListener('touchstart', function(e) {
 
 window.addEventListener('touchmove', function(e) {
 	e.preventDefault();
-	let currentSectionIndex = Math.round(window.scrollY / windowHeight);
+	let currentSectionIndex = Math.round(window.scrollY / sectionHeight);
 	if (e.touches[0].pageY > startY) {
 		// Scrolling up
 		if (currentSectionIndex > 0) {
