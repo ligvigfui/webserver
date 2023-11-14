@@ -171,7 +171,8 @@ window.addEventListener('wheel', function(e) {
 	console.log(e.deltaY);
     let currentSectionIndex = Math.round(window.scrollY / sectionHeight);
 	// check if the user scrolled with a mouse wheel
-    if (e.deltaY % 125 === 0 && lastDeltaY % 125 === 0) {
+    if ((e.deltaY % 125 === 0 && lastDeltaY % 125 === 0) ||
+		(e.deltaY % 20 === 0 && lastDeltaY % 20 === 0)) {
         e.preventDefault();
         if (e.deltaY > 0) {
             // Scrolling down
