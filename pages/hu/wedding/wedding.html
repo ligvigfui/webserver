@@ -152,14 +152,14 @@ form.addEventListener('submit', e => {
 
 const positions = [];
 const sections = document.querySelectorAll('section');
-const sectionHeight = sections[0].offsetHeight;
+// on mobile this is not the same as 100vh on the sections
+const sectionHeight = window.innerHeight;
 
 for (let i = 0; i < sections.length; i++) {
 	positions.push(i * sectionHeight);
 }
 
 let lastDeltaY = 0;
-
 window.addEventListener('wheel', function(e) {
 	console.log(e.deltaY);
     let currentSectionIndex = Math.round(window.scrollY / sectionHeight);
