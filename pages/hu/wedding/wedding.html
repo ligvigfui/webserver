@@ -153,9 +153,18 @@ form.addEventListener('submit', e => {
 const positions = [];
 const sections = document.querySelectorAll('section');
 let sectionHeight = window.innerHeight;
-for (let i = 0; i < sections.length; i++) {
-	positions.push(i * sectionHeight);
+
+function getPositions() {
+	sectionHeight = window.innerHeight;
+	positions.length = 0;
+	for (let i = 0; i < sections.length; i++) {
+		positions.push(i * sectionHeight);
+	}
 }
+
+getPositions();
+window.addEventListener('resize', getPositions);
+window.addEventListener('orientationchange', getPositions);
 
 let lastDeltaY = 0;
 window.addEventListener('wheel', function(e) {
@@ -218,6 +227,13 @@ body {
 	color: #333;
 	margin: 0px;
 	padding: 0;
+	overflow-x: hidden;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
 header {
