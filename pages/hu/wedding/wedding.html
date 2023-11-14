@@ -152,9 +152,7 @@ form.addEventListener('submit', e => {
 
 const positions = [];
 const sections = document.querySelectorAll('section');
-// on mobile this is not the same as 100vh on the sections
-const sectionHeight = window.innerHeight;
-
+let sectionHeight = window.innerHeight;
 for (let i = 0; i < sections.length; i++) {
 	positions.push(i * sectionHeight);
 }
@@ -163,6 +161,7 @@ let lastDeltaY = 0;
 window.addEventListener('wheel', function(e) {
 	console.log(e.deltaY);
     let currentSectionIndex = Math.round(window.scrollY / sectionHeight);
+	// check if the user scrolled with a mouse wheel
     if (e.deltaY % 125 === 0 && lastDeltaY % 125 === 0) {
         e.preventDefault();
         if (e.deltaY > 0) {
@@ -240,7 +239,6 @@ nav {
 
 section {
 	height: 100vh;
-	width: 100vw;
 	margin: 0;
 	padding: 0;
 }
