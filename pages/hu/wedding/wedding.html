@@ -153,28 +153,34 @@ form.addEventListener('submit', e => {
 const positions = [];
 const sections = document.querySelectorAll('section');
 const windowHeight = window.innerHeight;
-let startY;
 
 for (let i = 0; i < sections.length; i++) {
 	positions.push(i * windowHeight);
 }
 
+let lastDeltaY = 0;
+
 window.addEventListener('wheel', function(e) {
-	e.preventDefault();
-	let currentSectionIndex = Math.round(window.scrollY / windowHeight);
-	if (e.deltaY > 0) {
-		// Scrolling down
-		if (currentSectionIndex < sections.length - 1) {
-			window.scrollTo({ top: positions[currentSectionIndex + 1], behavior: 'smooth' });
-		}
-	} else {
-		// Scrolling up
-		if (currentSectionIndex > 0) {
-			window.scrollTo({ top: positions[currentSectionIndex - 1], behavior: 'smooth' });
-		}
-	}
+	console.log(e.deltaY);
+    let currentSectionIndex = Math.round(window.scrollY / windowHeight);
+    if (e.deltaY % 125 === 0 && lastDeltaY % 125 === 0) {
+        e.preventDefault();
+        if (e.deltaY > 0) {
+            // Scrolling down
+            if (currentSectionIndex < sections.length - 1) {
+                window.scrollTo({ top: positions[currentSectionIndex + 1], behavior: 'smooth' });
+            }
+        } else {
+            // Scrolling up
+            if (currentSectionIndex > 0) {
+                window.scrollTo({ top: positions[currentSectionIndex - 1], behavior: 'smooth' });
+            }
+        }
+    }
+    lastDeltaY = e.deltaY;
 }, { passive: false });
 
+let startY;
 window.addEventListener('touchstart', function(e) {
 	startY = e.touches[0].pageY;
 }, false);
