@@ -11,13 +11,10 @@
 <body>
 	<header>
 		<nav>
-			<button onclick="window.screenY = 0">Kezdőlap</button>
-			<a href="#about">Rólunk</a>
-			<a href="#place&time">Helyszín és időpont</a>
-			<a href="#accommodations">Szállás</a>
-			<a href="#events">Események</a>
-			<a href="#rsvp">Foglalás</a>
-			<a href="#faq">Gyakori kérdések</a>
+			<button onclick="scrollToSection(0)">Kezdőlap</button>
+			<button onclick="scrollToSection(1)">Rólunk</button>
+			<button onclick="scrollToSection(2)">Program</button>
+			<button onclick="scrollToSection(3)">Foglalás</button>
 		</nav>
 	</header>
 	
@@ -126,6 +123,7 @@ window.onload = function() {
 			sections[i].id = 'small';
 		}
 	}
+	window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 const form = document.querySelector('form');
@@ -215,6 +213,10 @@ window.addEventListener('touchmove', function(e) {
 		}
 	}
 }, { passive: false });
+
+function scrollToSection(sectionIndex) {
+	window.scrollTo({ top: positions[sectionIndex], behavior: 'smooth' });
+}
 </script>
 
 <style>
