@@ -4,6 +4,7 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Courgette">
 	<link rel="icon" href="C:/programming/rust/webserver/pages/assets/wedding/favicon.gif" type="image/gif">
 	<!-- make the icon animated -->
+	<meta name="google-site-verification" content="biicoPSTteciFgHy8rVubvdJ2P4U-UvjQYKDOk5jMq4" />
 	<meta charset="UTF-8">
 	<title>Boldi és Niki esküvője</title>
 </head>
@@ -115,10 +116,15 @@
 
 <script>
 window.onload = function() {
-	if (window.innerWidth / window.innerHeight > 11 / 9) {
-		document.body.classList.add('big');
+	var sections = document.getElementsByTagName('section');
+	if (window.innerWidth / window.innerHeight >= 11 / 9) {
+		for (var i = 1; i < sections.length; i++) {
+			sections[i].id = 'big';
+		}
 	} else {
-		document.body.classList.add('small');
+		for (var i = 1; i < sections.length; i++) {
+			sections[i].id = 'small';
+		}
 	}
 }
 
@@ -260,7 +266,7 @@ section {
 	padding: 0;
 }
 
-h1, h2 {
+h1, h2, p {
 	text-align: center;
 	margin-block-start: 0;
 	margin-block-end: 0;
