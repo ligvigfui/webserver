@@ -5,6 +5,8 @@ pub mod handling;
 pub mod status_codes;
 pub mod method;
 pub mod request;
+pub mod debug;
+pub mod thread;
 
 pub fn response404(stream: &mut std::net::TcpStream, request: &Request) {
     let host = match request.headers.get("Host") {

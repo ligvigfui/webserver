@@ -5,10 +5,8 @@ use std::{
 
 use webserver::{
     self,
-    ThreadPool,
-    neptunCRF::{
-        self,
-    },
+    thread::ThreadPool,
+    neptunCRF,
 };
 
 fn main() {

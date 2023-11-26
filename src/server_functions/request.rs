@@ -55,3 +55,26 @@ impl<'a> Request<'a> {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_request_creation(){
+        let test = format!("GET / HTTP/1.1\r\n{}{}{}{}{}",
+            "Host: localhost:7878\r\n",
+            "Connection: keep-alive\r\n",
+            "Content-Length: 40\r\n",
+            "Accept-Language: en-US,en;q=0.9\r\n\r\n",
+            "hjafshfas\r\n\r\ndkgsgoaw sdhf\r\nasdkgfvs ewu");
+        let test_request = Request::from(test.as_bytes()).unwrap();
+        assert_eq!(test_request.method, Method::GET);
+        assert_eq!(test_request.path, "/");
+        assert_eq!(test_request.protocol, "HTTP/1.1");
+        assert_eq!(test_request.headers.get("Host"), Some(&"localhost:7878"));
+        assert_eq!(test_request.headers.get("Connection"), Some(&"keep-alive"));
+        assert_eq!(test_request.headers.get("Content-Length"), Some(&"40"));
+        assert_eq!(test_request.headers.get("Accept-Language"), Some(&"en-US,en;q=0.9"));
+        assert_eq!(test_request.body, "hjafshfas\r\n\r\ndkgsgoaw sdhf\r\nasdkgfvs ewu");
+    }
+}
