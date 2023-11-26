@@ -1,51 +1,46 @@
-use std::net::TcpStream;
-
 use crate::*;
 
-pub fn routing(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<User>>>){
+pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mutex<User>>>){
     /*if request.protocol != "HTTP/1.1" {
         println!("Protocol not supported: {}", request.protocol);
         handle_page_return(stream, CODES[&505], None, "505.html");
     }*/
-    let request = match request.get_header("Accept-Language") {
+    match request.headers.get("Accept-Language") {
         Some(x) => match x.contains("hu") {
-            true => request.set_header("Accept-Language", "hu"),
-            false => request.set_header("Accept-Language", "en"),
+            true => *request.headers.get_mut("Accept-Language").unwrap() = "hu",
+            false => *request.headers.get_mut("Accept-Language").unwrap() = "en",
         },
-        None => request.set_header("Accept-Language", "en"),
+        None => *request.headers.get_mut("Accept-Language").unwrap() = "en",
     };
 
     if DEBUG >= DebugLevel::LOW {
         println!("handeling - {}", request.path);
     }
 
-    match request.get_header("Host").unwrap().split(":").next().unwrap() {
+    match request.headers.get("Host").unwrap().split(":").next().unwrap() {
         "nikiesboldi.ddnsfree.com" => wedding::routing(stream, request),
         "neptuncrf.freeddns.org" => neptunCRF::routing(stream, request, users),
         "coder.ddnsfree.com" => dev::routing(stream, request),
         "localhost" => {
             match request.path.split("/").nth(1).unwrap() {
                 "" => handle_page_return(stream, CODES[&200], None, "en/dev.html"),
-                "dev" => dev::routing(stream,
-                    Request { 
-                        path: &request.path.replacen("/dev", "", 1),
-                        ..request
-                    }),
-                "neptunCRF" => neptunCRF::routing(stream,
-                    Request { 
-                        path: &request.path.replacen("/neptunCRF", "", 1),
-                        ..request
-                    }, users),
-                "wedding" => wedding::routing(stream,
-                    Request {
-                        path: &request.path.replacen("/wedding", "", 1),
-                        ..request
-                    }),
+                "dev" => {
+                    let _ = request.path.replacen("/dev", "", 1);
+                    dev::routing(stream, request)
+                },
+                "neptunCRF" => {
+                    let _ = request.path.replacen("/neptunCRF", "", 1);
+                    neptunCRF::routing(stream, request, users)
+                },
+                "wedding" => {
+                    let _ = request.path.replacen("/wedding", "", 1);
+                    wedding::routing(stream,&request)
+                },
                 _ => response404(stream, request),
             }
         }
         _ => {
-            println!("Did not find host: \"{}\"", request.get_header("Host").unwrap());
+            println!("Did not find host: \"{}\"", request.headers.get("Host").unwrap());
             response404(stream, request);
         }
     }

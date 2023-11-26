@@ -1,8 +1,6 @@
-use std::net::TcpStream;
-
 use crate::*;
 
-pub fn routing(stream: &mut TcpStream, request: Request) {
+pub fn routing(stream: &mut TcpStream, request: &Request) {
     use Method as M;
     match (&request.method, request.path) {
         (M::GET, "/favicon.ico") => handle_image(stream, "favicon.ico"),

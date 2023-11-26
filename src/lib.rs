@@ -1,7 +1,13 @@
+pub use std::{
+    collections::HashMap,
+    net::TcpStream,
+    sync::{ Arc, Mutex},
+};
+
 use std::{
-    thread, 
+    thread,
     time,
-    sync::{ mpsc, Arc, Mutex},
+    sync::mpsc,
 };
 
 pub use crate::{
@@ -159,10 +165,10 @@ mod tests {
         assert_eq!(test_request.method, Method::GET);
         assert_eq!(test_request.path, "/");
         assert_eq!(test_request.protocol, "HTTP/1.1");
-        assert_eq!(test_request.headers[0], ("Host", "localhost:7878"));
-        assert_eq!(test_request.headers[1], ("Connection", "keep-alive"));
-        assert_eq!(test_request.headers[2], ("Content-Length", "40"));
-        assert_eq!(test_request.headers[3], ("Accept-Language", "en-US,en;q=0.9"));
+        assert_eq!(test_request.headers.get("Host"), Some(&"localhost:7878"));
+        assert_eq!(test_request.headers.get("Connection"), Some(&"keep-alive"));
+        assert_eq!(test_request.headers.get("Content-Length"), Some(&"40"));
+        assert_eq!(test_request.headers.get("Accept-Language"), Some(&"en-US,en;q=0.9"));
         assert_eq!(test_request.body, "hjafshfas\r\n\r\ndkgsgoaw sdhf\r\nasdkgfvs ewu");
     }
 }

@@ -1,12 +1,8 @@
-use std::{
-    sync::{Arc, Mutex},
-    net::TcpStream
-};
 use ripemd::{Ripemd160, Digest};
 
 use crate::*;
 
-pub fn handle_neptun_login(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<User>>>) {
+pub fn handle_neptun_login(stream: &mut TcpStream, request: &Request, users: Arc<Vec<Mutex<User>>>) {
     let (code, response) = match handle_neptun_login_inner(request, &users) {
         Ok(email) => {
             println!("{}: {} logged in" , readable_time() , email);
@@ -18,9 +14,9 @@ pub fn handle_neptun_login(stream: &mut TcpStream, request: Request, users: Arc<
     default_handle(stream, &CODES[&code], None, &response)
 }
 
-fn handle_neptun_login_inner<'a>(request: Request, users: &'a Arc<Vec<Mutex<User>>>) -> Result<String,&'a str> {
+fn handle_neptun_login_inner<'a>(request: &Request, users: &'a Arc<Vec<Mutex<User>>>) -> Result<String,&'a str> {
     // get credentials
-    let credentials = match request.get_header("Credentials") {
+    let credentials = match request.headers.get("Credentials") {
         Some(x) => x.to_string(),
         None => {
             println!("{}: No credentials found in GET request", readable_time());
@@ -38,7 +34,7 @@ fn handle_neptun_login_inner<'a>(request: Request, users: &'a Arc<Vec<Mutex<User
     }
 
     // get email from credentials
-    let email = match get_user_email(users, credentials, request.get_header("Id").is_some()) {
+    let email = match get_user_email(users, credentials, request.headers.get("Id").is_some()) {
         Some(x) => x,
         None => {
             println!("{}: User does not exist" , readable_time());
@@ -47,7 +43,7 @@ fn handle_neptun_login_inner<'a>(request: Request, users: &'a Arc<Vec<Mutex<User
     };
     
     // get mac from Id:
-    let id = match request.get_header("Id") {
+    let id = match request.headers.get("Id") {
         Some(x) => x.to_string(),
         None => return Ok(email),
     };

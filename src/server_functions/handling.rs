@@ -1,9 +1,6 @@
 use std::{
     fs::{self, File},
     io::{Write, Read, self},
-    net::TcpStream, 
-    ops::Add,
-    str, 
 };
 
 use crate::*;
@@ -11,7 +8,7 @@ use crate::*;
 pub fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
     let mut buffer = Vec::new();
     stream.read_to_end(&mut buffer).unwrap();
-    let request = match Request::from(&buffer) {
+    let mut request = match Request::from(&buffer) {
         Some(x) => x,
         None => {
             print!("Error parsing request");
@@ -25,7 +22,7 @@ pub fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
         }
     };
     
-    routing(&mut stream, request, users);
+    routing(&mut stream, &mut request, users);
 }
 
 pub fn handle_page_return(stream: &mut TcpStream, status: &str, headers: Option<Vec<&str>>, html_name: &str) {
@@ -60,7 +57,7 @@ pub fn default_handle(stream: &mut TcpStream, status: &str, headers: Option<Vec<
     send_response(stream, &response);
 }
 
-pub fn handle_debug(stream: &mut TcpStream, request: Request) {
+pub fn handle_debug(stream: &mut TcpStream, request: &Request) {
     println!("Debug request: {:?}", request);    
     send_response(stream, "HTTP/1.1 200 OK\r\n\r\n");
 }
@@ -81,7 +78,7 @@ pub fn handle_image_inner(stream: &mut TcpStream, path: String) -> Result<(), io
     if image_format == "svg" {
         image_format = "svg+xml";
     }
-    let content_type = String::from("Content-Type: image/").add(image_format);
+    let content_type = format!("Content-Type: image/{image_format}");
     let headers = vec![content_type.as_str(), "Connection: close"];
     let mut contents = Vec::new();
     file.read_to_end(&mut contents)?;

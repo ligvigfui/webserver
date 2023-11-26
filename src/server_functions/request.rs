@@ -1,12 +1,12 @@
 use crate::*;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Request<'a> {
     pub method: Method,
     pub path: &'a str,
     pub query: Option<&'a str>,
     pub protocol: &'a str,
-    pub headers: Vec<(&'a str, &'a str)>,
+    pub headers: HashMap<&'a str, &'a str>,
     pub body: &'a str,
 }
 
@@ -32,11 +32,11 @@ impl<'a> Request<'a> {
         let (headers, body) = headers_and_body.split_once("\r\n\r\n")?;
         
         let headers_iter = headers.split("\r\n");
-        let mut headers = Vec::new();
+        let mut headers = HashMap::new();
         for header in headers_iter {
             let mut header_cut = header.split(": ");
             let (header_name, header_value) = (header_cut.next()?, header_cut.next()?);
-            headers.push((header_name, header_value));
+            headers.insert(header_name, header_value);
         }
         let method = match Method::from(method) {
             Ok(x) => x,
@@ -53,33 +53,5 @@ impl<'a> Request<'a> {
             headers,
             body,
         })
-    }
-
-    pub fn get_header(&self, header_name: &str) -> Option<&str> {
-        for header in &self.headers {
-            if header.0 == header_name {
-                return Some(header.1);
-            }
-        }
-        None
-    }
-
-    /// Sets a header to a new value.
-    /// # Returns
-    /// A NEW Request with the header set to the new value.
-    pub fn set_header(&self, header_name: &'a str, header_value: &'a str) -> Self {
-        let mut new_headers = Vec::new();
-        for header in &self.headers {
-            if header.0 == header_name {
-                new_headers.push((header_name, header_value));
-            }
-            else {
-                new_headers.push(*header);
-            }
-        }
-        Request {
-            headers: new_headers,
-            .. *self
-        }
     }
 }

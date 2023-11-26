@@ -6,12 +6,12 @@ pub mod status_codes;
 pub mod method;
 pub mod request;
 
-pub fn response404(stream: &mut std::net::TcpStream, request: Request) {
-    let host = match request.get_header("Host") {
+pub fn response404(stream: &mut std::net::TcpStream, request: &Request) {
+    let host = match request.headers.get("Host") {
         Some(x) => x,
         None => "noHost",
     };
-    let accept_language = match request.get_header("Accept-Language") {
+    let accept_language = match request.headers.get("Accept-Language") {
         Some(x) => x,
         None => "en",
     };
