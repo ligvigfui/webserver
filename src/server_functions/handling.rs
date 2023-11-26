@@ -8,6 +8,25 @@ use std::{
 
 use crate::*;
 
+pub fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
+    let mut buffer = Vec::new();
+    stream.read_to_end(&mut buffer).unwrap();
+    let request = match Request::from(&buffer) {
+        Some(x) => x,
+        None => {
+            print!("Error parsing request");
+            if DEBUG == DebugLevel::HIGH {
+                if buffer.len() > DEBUG_LEN {
+                    print!(": {:?}", &buffer[..DEBUG_LEN]);}
+                else {print!(": {:?}", &buffer);}
+            }
+            println!();
+            return;
+        }
+    };
+    
+    routing(&mut stream, request, users);
+}
 
 pub fn handle_page_return(stream: &mut TcpStream, status: &str, headers: Option<Vec<&str>>, html_name: &str) {
     let contents = match fs::read_to_string("pages/".to_owned() + html_name)
@@ -22,18 +41,16 @@ pub fn handle_page_return(stream: &mut TcpStream, status: &str, headers: Option<
 }
 
 pub fn default_handle(stream: &mut TcpStream, status: &str, headers: Option<Vec<&str>>, contents: &str) {
+    let constant_headers = format!("Server: ligvigfui's rust webserver/{VERSION}\r\nContent-Length: {}\r\n",
+        contents.len());
     let headers_together = match headers {
         Some(header_vec) => {
-            format!("{}\r\n", header_vec.join("\r\n"))
+            format!("{}{}", constant_headers, header_vec.join("\r\n"))
         },
-        None => String::new()
+        None => constant_headers,
     };
     let response = format!(
-        "HTTP/1.1 {}\r\n{}Content-Length: {}\r\n\r\n{}",
-        status,
-        headers_together,
-        contents.len(),
-        contents
+        "HTTP/1.1 {status}\r\n{headers_together}\r\n{contents}",
     );
     if crate::DEBUG >= crate::DebugLevel::HIGH {
         if response.len() > crate::DEBUG_LEN {

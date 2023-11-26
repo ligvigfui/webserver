@@ -13,7 +13,7 @@ pub use crate::{
         method::*,
         request::*,
     },
-    neptunCRF::*,
+    neptunCRF::{User, hash::handle_neptun_login}
 };
 
 pub mod server_functions;

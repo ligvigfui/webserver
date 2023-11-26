@@ -1,18 +1,21 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    sync::{Arc, Mutex},
+    net::TcpStream
+};
 use ripemd::{Ripemd160, Digest};
 
 use crate::*;
 
-pub fn handle_neptun_login<'a>(request: Request, users: &'a Arc<Vec<Mutex<User>>>) -> (&'a str, String) {
-    let email = match handle_neptun_login_inner(request, users) {
-        Ok(x) => x,
-        Err(response) => return (CODES[&400], response.to_string()),
+pub fn handle_neptun_login(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<User>>>) {
+    let (code, response) = match handle_neptun_login_inner(request, &users) {
+        Ok(email) => {
+            println!("{}: {} logged in" , readable_time() , email);
+            let response = response(&users, email);
+            (200, response)
+        },
+        Err(response) => (400, response.to_string())
     };
-
-    // send response with email, mac and count & update last login time
-    println!("{}: {} logged in" , readable_time() , email);
-    let response = response(users, email);
-    (CODES[&200] , response.to_string())
+    default_handle(stream, &CODES[&code], None, &response)
 }
 
 fn handle_neptun_login_inner<'a>(request: Request, users: &'a Arc<Vec<Mutex<User>>>) -> Result<String,&'a str> {

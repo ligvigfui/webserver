@@ -1,18 +1,14 @@
 use std::{
     fs::File,
-    net::TcpStream, 
     io::{Write, Read},
     sync::{Arc, Mutex},
     str, 
 };
 use serde::{Deserialize, Serialize};
 
-use crate::{server_functions::handling::default_handle, Request};
-
 pub mod hash;
 pub mod routing;
 pub use routing::routing as routing;
-
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct User {
@@ -48,17 +44,6 @@ pub fn init() -> Arc<Vec<Mutex<User>>> {
     }
     println!("Loaded users from users.json");
     Arc::new(users_noarc)
-}
-
-
-pub fn handle_neptun_login(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<User>>>) {
-    let (status, response) = hash::handle_neptun_login(request, &users);
-    if response.contains("Error") {
-        if let Some(pos) = response.rfind("\r\n\r\n") {
-            response.to_string().insert_str(pos, &format!("ServerVersion: {}\r\n", crate::VERSION));
-        }
-    }
-    default_handle(stream, &status, None, &response);
 }
 
 pub fn shutdown(users: Arc<Vec<Mutex<User>>>) {

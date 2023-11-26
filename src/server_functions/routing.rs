@@ -28,17 +28,17 @@ pub fn routing(stream: &mut TcpStream, request: Request, users: Arc<Vec<Mutex<Us
                 "" => handle_page_return(stream, CODES[&200], None, "en/dev.html"),
                 "dev" => dev::routing(stream,
                     Request { 
-                        path: &request.path.replace("/dev", ""),
+                        path: &request.path.replacen("/dev", "", 1),
                         ..request
                     }),
                 "neptunCRF" => neptunCRF::routing(stream,
                     Request { 
-                        path: &request.path.replace("/neptunCRF", ""),
+                        path: &request.path.replacen("/neptunCRF", "", 1),
                         ..request
                     }, users),
                 "wedding" => wedding::routing(stream,
                     Request {
-                        path: &request.path.replace("/wedding", ""),
+                        path: &request.path.replacen("/wedding", "", 1),
                         ..request
                     }),
                 _ => response404(stream, request),
