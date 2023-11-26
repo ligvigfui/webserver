@@ -103,37 +103,24 @@
 		</div>
 	</section>
 
-	<section style="background-color: rgb(62, 102, 182);">
+	<section style="background-color: rgb(72, 195, 195);">
 		<div class="needsbackgroundimage">
-
+			<h2>RSVP</h2>
+			<form style="
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+			">
+				<label for="name">Név:</label>
+				<input type="text" id="name" name="name" required>
+				<label for="email">E-mail cím:</label>
+				<input type="email" id="email" name="email" required>
+				<label for="guests">Hányan jöttök:</label>
+				<input type="number" id="guests" name="guests" min="1" max="10">
+				<button class="btn" type="submit">Submit</button>
+			</form>
 		</div>
-		<div class="willdisapear" 
-			style="background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/20200711_103457.jpg');">
-		</div>
-	</section>
-
-	<section id="rsvp" style="background-color: rgb(72, 195, 195);">
-		<h2>RSVP</h2>
-		<form>
-			<label for="name">Name:</label>
-			<input type="text" id="name" name="name" required>
-
-			<label for="email">Email:</label>
-			<input type="email" id="email" name="email" required>
-
-			<label for="attend">Will you be attending?</label>
-			<select id="attend" name="attend" required>
-				<option value="">Select one</option>
-				<option value="yes">Yes, I'll be there!</option>
-				<option value="no">Sorry, I can't make it</option>
-			</select>
-
-			<label for="guests">Number of Guests:</label>
-			<input type="number" id="guests" name="guests" min="1" max="10">
-
-			<button class="btn" type="submit">Submit</button>
-		</form>
-
+			
 		<footer>
 			<h2>Kapcsolat</h2>
 			<p>Ha kérdésed van, vagy van ötleted, hogyan lehetne jobb ez az oldal, akkor írj nekünk egy 
@@ -142,6 +129,15 @@
 			</p>
 			<p>&copy; 2023 Boldi és Niki Esküvője. All rights reserved.</p>
 		</footer>
+	</section>
+
+	<section style="background-color: rgb(62, 102, 182);">
+		<div class="needsbackgroundimage">
+
+		</div>
+		<div class="willdisapear" 
+			style="background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/20200711_103457.jpg');">
+		</div>
 	</section>
 </body>
 </html>
@@ -168,7 +164,6 @@ form.addEventListener('submit', e => {
 	const form = new FormData();
 	form.append('name', document.getElementById('name').value);
 	form.append('email', document.getElementById('email').value);
-	form.append('attending', document.getElementById('attend').value);
 	form.append('guests', document.getElementById('guests').value);
 	// Send form data to server
 	fetch('http://localhost:7878/wedding/form', {
@@ -270,11 +265,6 @@ body {
 	margin: 0px;
 	padding: 0;
 	overflow-x: hidden;
-}
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
 }
 header {
 	position: fixed;
