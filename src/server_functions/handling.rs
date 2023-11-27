@@ -31,6 +31,9 @@ fn read_to_buffer(stream: &mut TcpStream) -> Result<String, Error> {
     let mut reader = BufReader::new(stream);
     let mut buffer: String = String::new();
     reader.read_line(&mut buffer)?;
+    if buffer.len() < 4 {
+        return Err(Error::new(ErrorKind::Other, "Error reading request"));
+    }
     while &buffer[buffer.len()-4..] != "\r\n\r\n" {
         reader.read_line(&mut buffer)?;
     }
