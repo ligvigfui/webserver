@@ -25,22 +25,22 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
             match request.path.split("/").nth(1).unwrap() {
                 "" => handle_page_return(stream, CODES[&200], None, "en/dev.html"),
                 "dev" => {
-                    let _ = request.path.replacen("/dev", "", 1);
+                    request.path = request.path.replacen("/dev", "", 1);
                     dev::routing(stream, request)
                 },
                 "neptunCRF" => {
-                    let _ = request.path.replacen("/neptunCRF", "", 1);
+                    request.path = request.path.replacen("/neptunCRF", "", 1);
                     neptunCRF::routing(stream, request, users)
                 },
                 "wedding" => {
-                    let _ = request.path.replacen("/wedding", "", 1);
-                    wedding::routing(stream,&request)
+                    request.path = request.path.replacen("/wedding", "", 1);
+                    wedding::routing(stream, request)
                 },
                 _ => response404(stream, request),
             }
         }
         _ => {
-            println!("Did not find host: \"{}\"", request.headers.get("Host").unwrap());
+            println!("Did not find host: \"{:?}\"", request.headers.get("Host"));
             response404(stream, request);
         }
     }

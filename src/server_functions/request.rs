@@ -3,7 +3,7 @@ use crate::*;
 #[derive(Debug, Clone)]
 pub struct Request<'a> {
     pub method: Method,
-    pub path: &'a str,
+    pub path: String,
     pub query: Option<&'a str>,
     pub protocol: &'a str,
     pub headers: HashMap<&'a str, &'a str>,
@@ -11,23 +11,16 @@ pub struct Request<'a> {
 }
 
 impl<'a> Request<'a> {
-    pub fn from(buffer: &'a [u8]) -> Option<Request<'a>> {
-        let str_buff = match std::str::from_utf8(&buffer) {
-            Ok(x) => x,
-            Err(e) => {
-                println!("{}", e);
-                return None;
-            },
-        };
-        let (start_line, headers_and_body) = str_buff.split_once("\r\n")?;
+    pub fn from(buffer: &'a String) -> Option<Request<'a>> {
+        let (start_line, headers_and_body) = buffer.split_once("\r\n")?;
         let mut start_line_cut = start_line.split(" ");
 
         let (method, path_and_query, protocol) = 
             (start_line_cut.next()?, start_line_cut.next()?, start_line_cut.next()?);
 
         let (path, query) = match path_and_query.split_once("?") {
-            Some((path, query)) => (path, Some(query)),
-            None => (path_and_query, None)
+            Some((path, query)) => (path.to_string(), Some(query)),
+            None => (path_and_query.to_string(), None)
         };
         let (headers, body) = headers_and_body.split_once("\r\n\r\n")?;
         
@@ -67,7 +60,7 @@ mod tests {
             "Content-Length: 40\r\n",
             "Accept-Language: en-US,en;q=0.9\r\n\r\n",
             "hjafshfas\r\n\r\ndkgsgoaw sdhf\r\nasdkgfvs ewu");
-        let test_request = Request::from(test.as_bytes()).unwrap();
+        let test_request = Request::from(&test).unwrap();
         assert_eq!(test_request.method, Method::GET);
         assert_eq!(test_request.path, "/");
         assert_eq!(test_request.protocol, "HTTP/1.1");

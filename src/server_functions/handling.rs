@@ -1,8 +1,15 @@
+use std::io::{BufReader, BufRead, Error, ErrorKind};
+
 use crate::*;
 
 pub fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
-    let mut buffer = Vec::new();
-    stream.read_to_end(&mut buffer).unwrap();
+    let buffer = match read_to_buffer(&mut stream) {
+        Ok(x) => x,
+        Err(e) => {
+            println!("{}", e);
+            return;
+        }
+    };
     let mut request = match Request::from(&buffer) {
         Some(x) => x,
         None => {
@@ -18,6 +25,36 @@ pub fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
     };
     
     routing(&mut stream, &mut request, users);
+}
+
+fn read_to_buffer(stream: &mut TcpStream) -> Result<String, Error> {
+    let mut reader = BufReader::new(stream);
+    let mut buffer: String = String::new();
+    reader.read_line(&mut buffer)?;
+    while &buffer[buffer.len()-4..] != "\r\n\r\n" {
+        reader.read_line(&mut buffer)?;
+    }
+    if let Some(content_len) = buffer.split("Content-Length: ").nth(1) {
+
+        let content_length = match content_len.split("\r\n").next() {
+            Some(x) => x,
+            None => return Err(Error::new(ErrorKind::Other, "Error parsing content length"))
+        }.parse();
+
+        let content_length = match content_length {
+            Ok(x) => x,
+            Err(e) => return Err(Error::new(ErrorKind::Other, e))
+        };
+        let mut content_buffer = vec![0; content_length];
+        reader.read_exact(&mut content_buffer)?;
+        
+        let content_buffer = match String::from_utf8(content_buffer) {
+            Ok(x) => x,
+            Err(e) => return Err(Error::new(ErrorKind::Other, e))
+        };
+        buffer.push_str(&content_buffer);
+    }
+    Ok(buffer)
 }
 
 pub fn handle_page_return(stream: &mut TcpStream, status: &str, headers: Option<Vec<&str>>, html_name: &str) {

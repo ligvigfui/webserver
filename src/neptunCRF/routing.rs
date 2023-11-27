@@ -5,7 +5,7 @@ pub fn routing(stream: &mut TcpStream, request: &Request, users: Arc<Vec<Mutex<U
     if DEBUG >= DebugLevel::LOW {
         println!("Request.path: {}, Request.method: {:?}", request.path, request.method);
     }
-    match (&request.method, request.path) {
+    match (&request.method, request.path.as_str()) {
         (M::GET, "" | "/") => handle_page_return(stream, CODES[&200], None,
         &(format!("{}/neptunCRF/neptunCRF.html", request.headers.get("Accept-Language").unwrap()))),
         (M::GET, "/icon") => handle_image(stream, "neptunCRF/icon.png"),

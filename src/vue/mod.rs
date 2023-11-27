@@ -3,7 +3,7 @@ use server_functions as SF;
 
 pub fn routing(stream: &mut TcpStream, request: &Request){
     use Method as M;
-    match (&request.method, request.path) {
+    match (&request.method, request.path.as_str()) {
         (M::GET, "" | "/") => handle_page_return(stream, CODES[&200], Some(vec![]), "vue/dist/index.html"),
         (M::GET, path) => match path.split(".").last() {
             Some("png") | Some("jpg") | Some("jpeg") | Some("gif") | Some("svg") => {
