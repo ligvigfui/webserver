@@ -12,13 +12,14 @@
 	<header>
 		<nav>
 			<button onclick="scrollToSection(0)">Kezdőlap</button>
-			<button onclick="scrollToSection(1)">Rólunk</button>
+			<button onclick="scrollToSection(1)">Időpont és Helyszín</button>
 			<button onclick="scrollToSection(2)">Program</button>
-			<button onclick="scrollToSection(3)">Foglalás</button>
+			<button onclick="scrollToSection(3)">Menü</button>
+			<button onclick="scrollToSection(4)">Foglalás</button>
 		</nav>
 	</header>
 	
-	<section id="title" style="
+	<section style="
 		background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/inbound6366005334592781563.jpg');
 		background-repeat: no-repeat;
 		background-size: auto 100%;
@@ -47,58 +48,79 @@
 		<div style="flex-grow: 3;"></div>
 	</section>
 	
-	<section id="about" style="
-		display: flex;
-		flex-direction: column;
-		background-color: rgb(72, 195, 136);"
-	>
-		<div style="flex-grow: 1;"></div>
-		<div style="
-			flex-grow: 1;
-		">
-			<h2>Rólunk</h2>
-			<p>John and Jane met at a mutual friend's party and have been inseparable ever since. They share a love of travel, good food, and spending time with family and friends.</p>
-			<p>Their wedding will be a celebration of their love and commitment to each other, surrounded by their loved ones.</p>
+	<section style="background-color: rgb(63, 165, 42);">
+		<div class="needsbackgroundimage">
+			<h2>Helyszín és Időpont</h2>
+			<p>2024.07.06. Dédestapolcsányi Szent György Templom Boróka Tábor</p>
+			<p>Pontos helyszínek: 3643 Dédestapolcsány, Hunyadi utca 70. 3349 Nagyvisnyó Bánvölgye út 1.</p>
+		</div>
+		<div class="willdisapear"
+			style="background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/20200530_130219place.png');">
 		</div>
 	</section>
 
-	<section id="events" style="background-color: brown;">
-		<h2>Events</h2>
-		<p>Please join us for the following events:</p>
-		<ul>
-			<!-- todo fix number formatting-->
-			<li><strong>14:00</strong> Templomi szertartás</li>
-			<li><strong>16:30</strong> Szertartás a Boróka táborban</li>
-			<li><strong>17:30</strong> Vacsora</li>
-			<li><strong>19:00</strong> Nyitótánc</li>
-			<li><strong>23:00</strong> Menyecske tánc</li>
-			<li><strong>00:00</strong> Éjféli menü</li>
-			<li>Buli Éjfélig</li>
-		</ul>
+	<section style="background-color: brown;">
+		<div class="needsbackgroundimage">
+			<h2>Events</h2>
+			<p>Please join us for the following events:</p>
+			<ul>
+				<!-- todo fix number formatting-->
+				<li><strong>14:00</strong> Templomi szertartás</li>
+				<li><strong>16:30</strong> Szertartás a Boróka táborban</li>
+				<li><strong>17:30</strong> Vacsora</li>
+				<li><strong>19:00</strong> Nyitótánc</li>
+				<li><strong>23:00</strong> Menyecske tánc</li>
+				<li><strong>00:00</strong> Éjféli menü</li>
+				<li>Buli Éjfélig</li>
+			</ul>
+		</div>
+		<div class="willdisapear" 
+			style="background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/20200711_103457.jpg');">
+		</div>
 	</section>
 
-	<section id="rsvp" style="background-color: rgb(72, 195, 195);">
-		<h2>RSVP</h2>
-		<form>
-			<label for="name">Name:</label>
-			<input type="text" id="name" name="name" required>
+	<section style="background-color: rgb(62, 102, 182);">
+		<div class="needsbackgroundimage">
+			<h2>Menü</h2>
+			<ul>
+				<li>Húsleves gazdagon</li>
+				<li>Rántott csirkemell</li>
+				<li>Bécsi szelet</li>
+				<li>Sajttal-aszaltszilvával töltött csirkemell</li>
+				<li>Rántott sajt</li>
+				<li>Kolbásszal töltött karaj</li>
+				<li>Gombás szelet</li>
+				<li>Rozmaringos kacsacomb</li>
+				<br>
+				<li>Grill zöldség</li>
+				<li>Zöld saláta</li>
+				<li>Rizs</li>
+				<li>Steak burgonya</li>
+			</ul>
+		</div>
+		<div class="willdisapear" 
+			style="background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/Boroka-Tabor-etel2.jpg');">
+		</div>
+	</section>
 
-			<label for="email">Email:</label>
-			<input type="email" id="email" name="email" required>
-
-			<label for="attend">Will you be attending?</label>
-			<select id="attend" name="attend" required>
-				<option value="">Select one</option>
-				<option value="yes">Yes, I'll be there!</option>
-				<option value="no">Sorry, I can't make it</option>
-			</select>
-
-			<label for="guests">Number of Guests:</label>
-			<input type="number" id="guests" name="guests" min="1" max="10">
-
-			<button class="btn" type="submit">Submit</button>
-		</form>
-
+	<section style="background-color: rgb(72, 195, 195);">
+		<div class="needsbackgroundimage">
+			<h2>RSVP</h2>
+			<form style="
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+			">
+				<label for="name">Név:</label>
+				<input type="text" id="name" name="name" required>
+				<label for="email">E-mail cím:</label>
+				<input type="email" id="email" name="email" required>
+				<label for="guests">Hányan jöttök:</label>
+				<input type="number" id="guests" name="guests" min="1" max="10">
+				<button class="btn" type="submit">Submit</button>
+			</form>
+		</div>
+			
 		<footer>
 			<h2>Kapcsolat</h2>
 			<p>Ha kérdésed van, vagy van ötleted, hogyan lehetne jobb ez az oldal, akkor írj nekünk egy 
@@ -108,19 +130,27 @@
 			<p>&copy; 2023 Boldi és Niki Esküvője. All rights reserved.</p>
 		</footer>
 	</section>
+
+	<section style="background-color: rgb(62, 102, 182);">
+		<div class="needsbackgroundimage">
+
+		</div>
+		<div class="willdisapear" 
+			style="background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/20200711_103457.jpg');">
+		</div>
+	</section>
 </body>
 </html>
 
 <script>
 window.onload = function() {
-	var sections = document.getElementsByTagName('section');
-	if (window.innerWidth / window.innerHeight >= 11 / 9) {
-		for (var i = 1; i < sections.length; i++) {
-			sections[i].id = 'big';
-		}
-	} else {
-		for (var i = 1; i < sections.length; i++) {
-			sections[i].id = 'small';
+	var willDisapears = document.getElementsByClassName('willdisapear');
+	var needsBackgroundImages = document.getElementsByClassName('needsbackgroundimage');
+	if (window.innerWidth / window.innerHeight < 3 / 2 ) {
+		// add the hidden property to the willdisapear class in css
+		for (var i = 1; i < needsBackgroundImages.length; i++) {
+			// add bgi from the hidden > img.src
+			// to .needsbackgroundimage > div
 		}
 	}
 	window.scrollTo({ top: 0, behavior: "smooth" });
@@ -134,7 +164,6 @@ form.addEventListener('submit', e => {
 	const form = new FormData();
 	form.append('name', document.getElementById('name').value);
 	form.append('email', document.getElementById('email').value);
-	form.append('attending', document.getElementById('attend').value);
 	form.append('guests', document.getElementById('guests').value);
 	// Send form data to server
 	fetch('http://localhost:7878/wedding/form', {
@@ -170,13 +199,15 @@ getPositions();
 window.addEventListener('resize', getPositions);
 window.addEventListener('orientationchange', getPositions);
 
-let lastDeltaY = 0;
+let lastDeltaYs = [0, 0, 0];
 window.addEventListener('wheel', function(e) {
 	console.log(e.deltaY);
+    lastDeltaYs.shift();
+	lastDeltaYs.push(e.deltaY)
     let currentSectionIndex = Math.round(window.scrollY / sectionHeight);
 	// check if the user scrolled with a mouse wheel
-    if ((e.deltaY % 125 === 0 && lastDeltaY % 125 === 0) ||
-		(e.deltaY % 20 === 0 && lastDeltaY % 20 === 0)) {
+    if ((lastDeltaYs.every((x) => x % 125 === 0)) ||
+		(lastDeltaYs.every((x) => x % 20 === 0))) {
         e.preventDefault();
         if (e.deltaY > 0) {
             // Scrolling down
@@ -190,7 +221,6 @@ window.addEventListener('wheel', function(e) {
             }
         }
     }
-    lastDeltaY = e.deltaY;
 }, { passive: false });
 
 let startY;
@@ -224,13 +254,11 @@ function scrollToSection(sectionIndex) {
 html::-webkit-scrollbar {
     display: none;
 }
-
 /* Hide scrollbar for IE, Edge and Firefox */
 html {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
-
 body {
 	font-family: "Courgette", sans-serif;
 	color: #333;
@@ -238,13 +266,6 @@ body {
 	padding: 0;
 	overflow-x: hidden;
 }
-
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-}
-
 header {
 	position: fixed;
 	top: 0;
@@ -253,7 +274,6 @@ header {
 	background-color: rgba(255, 255, 255, 0.6); /* 10% opacity */
 	z-index: 1;
 }
-
 nav {
 	text-align: center;
 	a {
@@ -261,34 +281,52 @@ nav {
 		margin-right: 20px;
 	}
 }
-
 section {
 	height: 100vh;
+	display: flex;
+	flex-direction: row;
 	margin: 0;
 	padding: 0;
 }
-
+.needsbackgroundimage, .willdisapear {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 5%;
+}
+.needsbackgroundimage {
+	flex-direction: column;
+}
+.willdisapear {
+	background-repeat: no-repeat;
+	background-size: auto 100%;
+	background-position: 50%;
+}
+section > .container {
+	width: 90%;
+	height: 90%;
+}
+.container.hidden {
+	display: none;
+}
 h1, h2, p {
 	text-align: center;
 	margin-block-start: 0;
 	margin-block-end: 0;
 }
-
 h1 {
 	font-size: 48px;
 	margin-bottom: 20px;
 }
-
 h2 {
 	font-size: 36px;
 	margin-bottom: 10px;
 }
-
 p {
 	line-height: 1.5;
 	margin-bottom: 20px;
 }
-
 form {
 	> div {
 		display: flex;
@@ -300,7 +338,6 @@ form {
 		align-self: center;
 	}
 }
-
 .btn {
 	display: inline-block;
 	padding: 10px 20px;
@@ -310,21 +347,17 @@ form {
 	border-radius: 5px;
 	transition: background-color 0.3s ease;
 }
-
 .btn:hover {
 	background-color: #555;
 }
-
 li {
 	list-style-type: '👉';
 	padding-inline-start: 2px;
 }
-
 img {
 	width: auto;
 	height: 100%;
 }
-
 footer {
 	text-align: center;
 }
