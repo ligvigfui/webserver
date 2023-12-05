@@ -22,6 +22,7 @@ fn main() {
         let users = Arc::clone(&neptun_users);
         pool.execute(move || {
             webserver::handling::handle_connection(stream, users);
+            println!("\x1b[38;5;22mDone with request\x1b[0m");
         });
     }
 

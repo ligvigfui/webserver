@@ -2,7 +2,7 @@ use crate::*;
 
 use phf::phf_map;
 
-pub static CODES: phf::Map<u16, &'static str> = phf_map! {
+pub static CODE: phf::Map<u16, &'static str> = phf_map! {
     200u16 => "200 OK",
     400u16 => "400 Bad Request",
     404u16 => "404 Not Found",
@@ -20,7 +20,7 @@ pub fn response404(stream: &mut std::net::TcpStream, request: &Request) {
         Some(x) => x,
         None => "en",
     };
-    println!("Error {} - Requested page: {}{}", CODES[&404], host, &request.path);
-    handle_page_return(stream, CODES[&404], None,
+    println!("Error {} - Requested page: {}{}", CODE[&404], host, &request.path);
+    handle_page_return(stream, CODE[&404], None,
     &(format!("{}/404.html", accept_language)));
 }

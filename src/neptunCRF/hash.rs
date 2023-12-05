@@ -11,7 +11,7 @@ pub fn handle_neptun_login(stream: &mut TcpStream, request: &Request, users: Arc
         },
         Err(response) => (400, response.to_string())
     };
-    default_handle(stream, &CODES[&code], None, &response)
+    default_handle(stream, &CODE[&code], None, &response)
 }
 
 fn handle_neptun_login_inner<'a>(request: &Request, users: &'a Arc<Vec<Mutex<User>>>) -> Result<String,&'a str> {

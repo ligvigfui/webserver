@@ -10,11 +10,13 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
             true => *request.headers.get_mut("Accept-Language").unwrap() = "hu",
             false => *request.headers.get_mut("Accept-Language").unwrap() = "en",
         },
-        None => *request.headers.get_mut("Accept-Language").unwrap() = "en",
+        None => {
+            request.headers.insert("Accept-Language", "en");
+        },
     };
 
     if DEBUG >= DebugLevel::LOW {
-        println!("handeling - {}", request.path);
+        println!("\x1b[38;5;21mhandling - {}\x1b[0m", request.path);
     }
 
     match request.headers.get("Host").unwrap().split(":").next().unwrap() {
@@ -23,7 +25,7 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
         "coder.ddnsfree.com" => dev::routing(stream, request),
         "localhost" => {
             match request.path.split("/").nth(1).unwrap() {
-                "" => handle_page_return(stream, CODES[&200], None, "en/dev.html"),
+                "" => handle_page_return(stream, CODE[&200], None, "en/dev.html"),
                 "dev" => {
                     request.path = request.path.replacen("/dev", "", 1);
                     dev::routing(stream, request)

@@ -1,4 +1,4 @@
-use std::io::{BufReader, BufRead, Error, ErrorKind};
+use std::io::{BufReader, BufRead, Error, ErrorKind, BufWriter};
 
 use crate::*;
 
@@ -73,8 +73,11 @@ pub fn handle_page_return(stream: &mut TcpStream, status: &str, headers: Option<
 }
 
 pub fn default_handle(stream: &mut TcpStream, status: &str, headers: Option<Vec<&str>>, contents: &str) {
-    let constant_headers = format!("Server: ligvigfui's rust webserver/{VERSION}\r\nContent-Length: {}\r\n",
-        contents.len());
+    let constant_headers = format!(
+        "Server: ligvigfui's rust webserver/{VERSION}\r\n\
+        Content-Length: {}\r\n",
+        contents.len()
+    );
     let headers_together = match headers {
         Some(header_vec) => {
             format!("{}{}", constant_headers, header_vec.join("\r\n"))
@@ -82,23 +85,92 @@ pub fn default_handle(stream: &mut TcpStream, status: &str, headers: Option<Vec<
         None => constant_headers,
     };
     let response = format!(
-        "HTTP/1.1 {status}\r\n{headers_together}\r\n{contents}",
+        "HTTP/1.1 {status}\r\n\
+        {headers_together}\r\n\
+        {contents}",
     );
     if crate::DEBUG >= crate::DebugLevel::HIGH {
         if response.len() > crate::DEBUG_LEN {
-            println!("Response: {}", &response[..crate::DEBUG_LEN]);}
-        else {println!("Response: {}", response);}
+            println!(
+                "Response: \n\
+                {}",
+                &response[..crate::DEBUG_LEN]
+        );}
+        else {
+            println!(
+                "Response: \n\
+                {}",
+                response
+        );}
     }
-    send_response(stream, &response);
+    if let Err(e) = send_response(stream, &response, None) {
+        println!("{}", e);
+    }
+}
+
+fn default_handle_files(stream: &mut TcpStream, status: &str, headers: Option<Vec<&str>>, contents: Vec<u8>) {
+    let chunked = contents.len() > 1024;
+    let constant_headers = if chunked {
+        "Transfer-Encoding: chunked\r\n".to_string()
+    } else {
+        format!(
+            "Content-Length: {}\r\n",
+            contents.len()
+        )
+    };
+    let headers_together = match headers {
+        Some(header_vec) => {
+            format!("{}{}", constant_headers, header_vec.join("\r\n"))
+        },
+        None => constant_headers,
+    };
+    let response = format!(
+        "HTTP/1.1 {status}\r\n\
+        {headers_together}\r\n\
+        \r\n"
+    );
+    if crate::DEBUG >= crate::DebugLevel::HIGH {
+        if response.len() > crate::DEBUG_LEN {
+            println!(
+                "Response: \n\
+                {}",
+                &response[..crate::DEBUG_LEN]
+        );}
+        else {
+            println!(
+                "Response: \n\
+                {}",
+                response
+        );}
+    }
+    if chunked {
+        if let Err(e) = send_chunked_response(stream, &response, None, Some(contents)) {
+            println!("{}", e);
+        }
+    } else {
+        if let Err(e) = send_response(stream, &response, Some(contents)) {
+            println!("{}", e);
+        }
+    }
 }
 
 pub fn handle_debug(stream: &mut TcpStream, request: &Request) {
-    println!("Debug request: {:?}", request);    
-    send_response(stream, "HTTP/1.1 200 OK\r\n\r\n");
+    let request_str = format!("{:?}", request);
+    println!("Debug request: {request_str}");
+    if let Err(e) = send_response(stream, &format!(
+        "HTTP/1.1 200 OK\r\n\
+        Content-Length: {}\r\n\
+        \r\n\
+        {}",
+        request_str.len(),
+        request_str
+    ), None) {
+        println!("{}", e);
+    }
 }
 
-pub fn handle_image(stream: &mut TcpStream, path: &str) {
-    match handle_image_inner(stream, format!("pages/assets/{}", path)) {
+pub fn handle_file(stream: &mut TcpStream, path: &str) {
+    match handle_file_inner(stream, format!("pages/assets/{}", path)) {
         Err(e) => {
             println!("{}", e);
         }
@@ -106,29 +178,53 @@ pub fn handle_image(stream: &mut TcpStream, path: &str) {
     }
 }
 
-pub fn handle_image_inner(stream: &mut TcpStream, path: String) -> Result<(), io::Error> {
+pub fn handle_file_inner(stream: &mut TcpStream, path: String) -> Result<(), io::Error> {
     let mut file = File::open(&path)?;
-    let status = CODES[&200];
-    let mut image_format = path.split(".").last().unwrap();
-    if image_format == "svg" {
-        image_format = "svg+xml";
-    }
-    let content_type = format!("Content-Type: image/{image_format}");
-    let headers = vec![content_type.as_str(), "Connection: close"];
+    let image_format = match path.split(".").last().unwrap() {
+        "svg" => "image/svg+xml",
+        "exe" => "application/vnd.microsoft.portable-executable",
+        "png" => "image/png",
+        "gif" => "image/gif",
+        "jpeg" | "jpg" => "image/jpeg",
+        format => return Err(Error::new(ErrorKind::Unsupported, format!("format {format} is not jet supported")))
+    };
     let mut contents = Vec::new();
     file.read_to_end(&mut contents)?;
-    stream.write_all(format!("HTTP/1.1 {}\r\n", status).as_bytes())?;
-    stream.write_all(headers.join("\r\n").as_bytes())?;
-    stream.write_all(format!("Content-Length: {}\r\n\r\n", contents.len()).as_bytes())?;
-    stream.write_all(&contents)?;
-    stream.flush()?;
+
+    default_handle_files(
+        stream,
+        CODE[&200],
+        Some(vec![
+            format!("Content-Type: {image_format}").as_str(),
+        ]),
+        contents
+    );
     Ok(())
 }
 
-fn send_response(stream: &mut TcpStream, response: &str) {
-    stream.write_all(response.as_bytes()).unwrap();
-    stream.flush().unwrap();
+fn send_response(stream: &mut TcpStream, response: &str, contents: Option<Vec<u8>>) -> Result<(),  Error> {
+    stream.write_all(response.as_bytes())?;
+    if contents.is_some() {
+        stream.write_all(&contents.unwrap())?;
+    }
     print!("\n");
+    stream.flush()
 }
 
-
+fn send_chunked_response(stream: &mut TcpStream, headers: &str, body: Option<&str>, contents: Option<Vec<u8>>) -> Result<(),  Error> {
+    let mut writer = BufWriter::new(stream);
+    writer.write_all(headers.as_bytes())?;
+    let chunkable = match (body, contents) {
+        (Some(x), None) => x.as_bytes().into(),
+        (None, Some(x)) => x,
+        _ => panic!("send_chunked_response: You should only provide one option or the other")
+    };
+    let chunks = chunkable.chunks(8192);
+    for chunk in chunks {
+        let len = format!("{:X}\r\n", chunk.len());
+        let chunk_data = [len.as_bytes(), chunk, b"\r\n"].concat();
+        writer.write_all(&chunk_data)?;
+    }
+    writer.write_all(b"0\r\n\r\n")?;
+    writer.flush()
+}

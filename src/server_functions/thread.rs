@@ -77,13 +77,14 @@ impl Worker {
             match message {
                 Ok(job) => {
                     if DEBUG >= DebugLevel::HIGH {
-                        println!("Worker {id} got a job; executing.");}
-
+                        println!("Worker {id} got a job; executing.");
+                    }
                     job();
                 }
                 Err(_) => {
                     if DEBUG >= DebugLevel::MEDIUM {
-                        println!("Worker {id} disconnected; shutting down.");}
+                        println!("Worker {id} disconnected; shutting down.");
+                    }
                     break;
                 }
             }
