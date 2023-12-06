@@ -185,6 +185,7 @@ pub fn handle_file_inner(stream: &mut TcpStream, path: String) -> Result<(), io:
         "exe" => "application/vnd.microsoft.portable-executable",
         "png" => "image/png",
         "gif" => "image/gif",
+        "webp" => "image/webp",
         "jpeg" | "jpg" => "image/jpeg",
         format => return Err(Error::new(ErrorKind::Unsupported, format!("format {format} is not jet supported")))
     };
