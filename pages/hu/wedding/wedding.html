@@ -164,14 +164,15 @@ form.addEventListener('submit', e => {
 	console.log('Form submitted!');
 	e.preventDefault(); // Prevent form from submitting
 	// Get form data
-	const form = new FormData();
-	form.append('name', document.getElementById('name').value);
-	form.append('email', document.getElementById('email').value);
-	form.append('guests', document.getElementById('guests').value);
+	const form = {
+		name: document.getElementById('name').value,
+		email: document.getElementById('email').value,
+		guests: Number(document.getElementById('guests').value)
+	};
 	// Send form data to server
 	fetch('http://localhost:7878/wedding/form', {
 		method: 'POST',
-		body: form
+		body: JSON.stringify(form),
 	})
 	.then(response => {
 		if (response.ok) {

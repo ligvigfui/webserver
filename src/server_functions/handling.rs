@@ -80,7 +80,11 @@ pub fn default_handle(stream: &mut TcpStream, status: &str, headers: Option<Vec<
     );
     let headers_together = match headers {
         Some(header_vec) => {
-            format!("{}{}", constant_headers, header_vec.join("\r\n"))
+            format!(
+                "{}{}\r\n",
+                constant_headers,
+                header_vec.join("\r\n")
+            )
         },
         None => constant_headers,
     };
@@ -120,14 +124,13 @@ fn default_handle_files(stream: &mut TcpStream, status: &str, headers: Option<Ve
     };
     let headers_together = match headers {
         Some(header_vec) => {
-            format!("{}{}", constant_headers, header_vec.join("\r\n"))
+            format!("{}{}\r\n", constant_headers, header_vec.join("\r\n"))
         },
         None => constant_headers,
     };
     let response = format!(
         "HTTP/1.1 {status}\r\n\
-        {headers_together}\r\n\
-        \r\n"
+        {headers_together}\r\n"
     );
     if crate::DEBUG >= crate::DebugLevel::HIGH {
         if response.len() > crate::DEBUG_LEN {
@@ -171,16 +174,16 @@ pub fn handle_debug(stream: &mut TcpStream, request: &Request) {
 
 pub fn handle_file(stream: &mut TcpStream, path: &str) {
     match handle_file_inner(stream, format!("pages/assets/{}", path)) {
+        Ok(_) => {}
         Err(e) => {
             println!("{}", e);
         }
-        Ok(_) => {}
     }
 }
 
 pub fn handle_file_inner(stream: &mut TcpStream, path: String) -> Result<(), io::Error> {
     let mut file = File::open(&path)?;
-    let image_format = match path.split(".").last().unwrap() {
+    let file_format = match path.split(".").last().unwrap() {
         "svg" => "image/svg+xml",
         "exe" => "application/vnd.microsoft.portable-executable",
         "png" => "image/png",
@@ -196,7 +199,7 @@ pub fn handle_file_inner(stream: &mut TcpStream, path: String) -> Result<(), io:
         stream,
         CODE[&200],
         Some(vec![
-            format!("Content-Type: {image_format}").as_str(),
+            format!("Content-Type: {file_format}").as_str(),
         ]),
         contents
     );

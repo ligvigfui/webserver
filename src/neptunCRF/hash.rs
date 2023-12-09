@@ -3,6 +3,9 @@ use ripemd::{Ripemd160, Digest};
 use crate::*;
 
 pub fn handle_neptun_login(stream: &mut TcpStream, request: &Request, users: Arc<Vec<Mutex<User>>>) {
+    if DEBUG >= DebugLevel::HIGH {
+        println!("Request: {:?}", request);
+    }
     let (code, response) = match handle_neptun_login_inner(request, &users) {
         Ok(email) => {
             println!("{}: {} logged in" , readable_time() , email);
@@ -84,7 +87,7 @@ fn response<'a>(users: &'a Arc<Vec<Mutex<User>>>, email: String) -> String {
             let response = format!("tKn.8M{}:{}:{}", user.email, user.MAC, user.count);
             user.count += 2;
             user.time = now();
-            return hash(response);
+            return hash(response)
         }
     }
     "".to_owned()
@@ -104,14 +107,14 @@ fn set_mac<'a>(users: &'a Arc<Vec<Mutex<User>>>, email: &str, mac: String) -> Re
         if user.time + 5 > now() {
             if &user.MAC == &mac {
                 user.count += 2;
-                return Ok(());
+                return Ok(())
             }
             return Err("Error 8: User already logged in with these credentials")
         }
         user.time = now();
         user.MAC = mac;
         user.count = 1;
-        return Ok(());
+        return Ok(())
     }
     Err("Error 4: User does not exist\nMeet me in room 211 or write to ligvigfui@gmail.com") // this should never happen
 }
@@ -201,6 +204,18 @@ mod tests {
     fn login_base() {
         let users= users();
         set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_string()).unwrap();
+        assert!(set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_string()).is_ok());
+    }
+
+    #[test]
+    fn normal_login() {
+        let users= users();
+        set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_string()).unwrap();
+        thread::sleep(Duration::from_secs(1));
+        assert!(set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_string()).is_ok());
+        thread::sleep(Duration::from_secs(1));
+        assert!(set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_string()).is_ok());
+        thread::sleep(Duration::from_secs(1));
         assert!(set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_string()).is_ok());
     }
 
