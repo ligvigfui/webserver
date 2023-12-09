@@ -11,7 +11,7 @@ pub fn routing(stream: &mut TcpStream, request: &Request, users: Arc<Vec<Mutex<U
         (M::GET, "/icon") => handle_file(stream, "neptunCRF/icon.png"),
         (M::GET, "/EULA") => handle_page_return(stream, CODE[&200], None, "hu/neptunCRF/EULA.html"),
         (M::POST, "/login") => handle_neptun_login(stream, request, users),
-        (M::GET, "/download") => handle_file(stream, "neptunCRF/NeptunCRF 0.3.0.exe"),
+        (M::GET, "/download") => handle_file(stream, "neptunCRF/NeptunCRF.exe"),
         _ => response404(stream, request),
     }
 }

@@ -7,9 +7,9 @@ pub fn handle_neptun_login(stream: &mut TcpStream, request: &Request, users: Arc
         println!("Request: {:?}", request);
     }
     let (code, response) = match handle_neptun_login_inner(request, &users) {
-        Ok(email) => {
-            println!("{}: {} logged in" , readable_time() , email);
-            let response = response(&users, email);
+        Ok(user) => {
+            println!("{}: {} logged in" , readable_time() , user.lock().unwrap().email);
+            let response = response(user);
             (200, response)
         },
         Err(response) => (400, response.to_string())
@@ -17,7 +17,7 @@ pub fn handle_neptun_login(stream: &mut TcpStream, request: &Request, users: Arc
     default_handle(stream, &CODE[&code], None, &response)
 }
 
-fn handle_neptun_login_inner<'a>(request: &Request, users: &'a Arc<Vec<Mutex<User>>>) -> Result<String,&'a str> {
+fn handle_neptun_login_inner<'a>(request: &Request, users: &'a Arc<Vec<Mutex<User>>>) -> Result<&'a Mutex<User>,&'a str> {
     // get credentials
     let credentials = match request.headers.get("Credentials") {
         Some(x) => x.to_string(),
@@ -36,8 +36,8 @@ fn handle_neptun_login_inner<'a>(request: &Request, users: &'a Arc<Vec<Mutex<Use
         return Err("Error 3: Credentials are not hex\nTry updating the client or contact me at ligvigfui@gmail.com")
     }
 
-    // get email from credentials
-    let email = match get_user_email(users, credentials, request.headers.get("Id").is_some()) {
+    // get user from credentials
+    let user = match get_user(users, credentials, request.headers.get("Id").is_some()) {
         Some(x) => x,
         None => {
             println!("{}: User does not exist" , readable_time());
@@ -46,9 +46,10 @@ fn handle_neptun_login_inner<'a>(request: &Request, users: &'a Arc<Vec<Mutex<Use
     };
     
     // get mac from Id:
+    // if successful: this is the first time this user is logging in
     let id = match request.headers.get("Id") {
         Some(x) => x.to_string(),
-        None => return Ok(email),
+        None => return Ok(user),
     };
     // check if id is correct length
     if id.len() != 240 {
@@ -71,8 +72,8 @@ fn handle_neptun_login_inner<'a>(request: &Request, users: &'a Arc<Vec<Mutex<Use
     };
 
     // set user mac to this if this is the first time logging in
-    match set_mac(users, &email, mac) {
-        Ok(_) => return Ok(email),
+    match set_mac(&user, mac) {
+        Ok(_) => return Ok(user),
         Err(e) => {
             println!("{}", e);
             return Err(e)
@@ -80,43 +81,26 @@ fn handle_neptun_login_inner<'a>(request: &Request, users: &'a Arc<Vec<Mutex<Use
     };
 }
 
-fn response<'a>(users: &'a Arc<Vec<Mutex<User>>>, email: String) -> String {
-    for user in users.iter() {
-        let mut user = user.lock().unwrap();
-        if user.email == email {
-            let response = format!("tKn.8M{}:{}:{}", user.email, user.MAC, user.count);
-            user.count += 2;
-            user.time = now();
-            return hash(response)
-        }
-    }
-    "".to_owned()
+fn response<'a>(users: &'a Mutex<User>) -> String {
+    let mut user = users.lock().unwrap();
+    let response = format!("tKn.8M{}:{}:{}", user.email, user.MAC, user.count);
+    user.count += 2;
+    user.time = now();
+    hash(response)
 }
 
-fn set_mac<'a>(users: &'a Arc<Vec<Mutex<User>>>, email: &str, mac: String) -> Result<(), &'a str> {
-    //a before 5 sec a = continue count
-    //a after 5 sec a = reset count
+fn set_mac<'a>(user: &Mutex<User>, mac: String) -> Result<(), &'a str> {
     //a before 5 sec b = error
-    //a after 5 sec b = reset count
+    //else reset count
+    let mut user = user.lock().unwrap();
 
-    for user in users.iter() {
-        let mut user = user.lock().unwrap();
-        if user.email != email {
-            continue;
-        }
-        if user.time + 5 > now() {
-            if &user.MAC == &mac {
-                user.count += 2;
-                return Ok(())
-            }
-            return Err("Error 8: User already logged in with these credentials")
-        }
-        user.time = now();
-        user.MAC = mac;
-        user.count = 1;
-        return Ok(())
+    if user.time + 5 > now() && &user.MAC != &mac {
+        return Err("Error 8: A user already logged in with these credentials\nIf you think you didn't give your credentials to anyone else, meet me in room 211 or write to ligvigfui@gmail.com for a new password\nIf this is not the case then don't try to cheat the system! ty :)")
     }
-    Err("Error 4: User does not exist\nMeet me in room 211 or write to ligvigfui@gmail.com") // this should never happen
+    user.time = now();
+    user.MAC = mac;
+    user.count = 1;
+    return Ok(())
 }
 
 fn get_mac_from_id(id: String) -> Option<String> {
@@ -144,22 +128,18 @@ fn get_mac_2_chars(id_slice: &str) -> Option<String> {
     None
 }
 
-fn get_user_email(users: &Arc<Vec<Mutex<User>>>, credentials: String , first_time: bool) -> Option<String> {
-    // returns email
-    for user in users.iter() {
+fn get_user(users: &Arc<Vec<Mutex<User>>>, credentials: String , first_time: bool) -> Option<&Mutex<User>> {
+    users.iter().find(|user| {
         let user = user.lock().unwrap();
         let decoded;
         if first_time {
             decoded = format!("vcdjZVbvLFB1{}:{}:{}", user.email, user.password, 0);
         }
         else {
-            decoded = format!("vcdjZVbvLFB1{}:{}:{}", user.email, user.password, user.count-1);
+            decoded = format!("vcdjZVbvLFB1{}:{}:{}:{}", user.email, user.password, user.MAC, user.count-1);
         }
-        if hash(decoded) == credentials {
-            return Some(user.email.clone());
-        }
-    }
-    None
+        hash(decoded) == credentials
+    })
 }
 
 fn hash(string: String) -> String {
@@ -196,42 +176,42 @@ fn i32_to_hex_char(number: i32) -> char {
 mod tests {
     use std::{thread, time::Duration};
     use super::*;
-    fn users() -> Arc<Vec<Mutex<User>>> {
-        Arc::new(vec![Mutex::new(User::new("ligvigfui@fsda.capok".to_owned(), "password".to_string()))])
+    fn user() -> Mutex<User> {
+        Mutex::new(User::new("ligvigfui@fsda.capok".to_owned(), "password".to_string()))
     }
 
     #[test]
     fn login_base() {
-        let users= users();
-        set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_string()).unwrap();
-        assert!(set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_string()).is_ok());
+        let user = user();
+        set_mac(&user, "00:00:00:00:00:00".to_string()).unwrap();
+        assert!(set_mac(&user, "00:00:00:00:00:00".to_string()).is_ok());
     }
 
     #[test]
     fn normal_login() {
-        let users= users();
-        set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_string()).unwrap();
+        let user = user();
+        set_mac(&user, "00:00:00:00:00:00".to_string()).unwrap();
         thread::sleep(Duration::from_secs(1));
-        assert!(set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_string()).is_ok());
+        assert!(set_mac(&user, "00:00:00:00:00:00".to_string()).is_ok());
         thread::sleep(Duration::from_secs(1));
-        assert!(set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_string()).is_ok());
+        assert!(set_mac(&user, "00:00:00:00:00:00".to_string()).is_ok());
         thread::sleep(Duration::from_secs(1));
-        assert!(set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_string()).is_ok());
+        assert!(set_mac(&user, "00:00:00:00:00:00".to_string()).is_ok());
     }
 
     #[test]
     fn login_multiple(){
-        let users = users();
-        set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_string()).unwrap();
+        let user = user();
+        set_mac(&user, "00:00:00:00:00:00".to_string()).unwrap();
         thread::sleep(Duration::from_secs(3));
-        assert!(set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:01".to_string()).is_err());
+        assert!(set_mac(&user, "00:00:00:00:00:01".to_string()).is_err());
     }
 
     #[test]
     fn login_delayed() {
-        let users = users();
-        set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:00".to_string()).unwrap();
+        let user = user();
+        set_mac(&user, "00:00:00:00:00:00".to_string()).unwrap();
         thread::sleep(Duration::from_secs(6));
-        assert!(set_mac(&users, "ligvigfui@fsda.capok", "00:00:00:00:00:01".to_string()).is_ok());
+        assert!(set_mac(&user, "00:00:00:00:00:01".to_string()).is_ok());
     }
 }
