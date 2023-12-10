@@ -2,7 +2,7 @@
 <html>
 <head>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Courgette">
-	<link rel="icon" href="wedding/favicon.gif" type="image/gif">
+	<link rel="icon" href="favicon.gif" type="image/gif">
 	<!-- make the icon animated -->
 	<meta name="google-site-verification" content="biicoPSTteciFgHy8rVubvdJ2P4U-UvjQYKDOk5jMq4" />
 	<meta charset="UTF-8">
@@ -15,7 +15,7 @@
 	</header>
 	
 	<section style="
-		background-image: url('wedding/kezdolap.webp');
+		background-image: url('kezdolap.webp');
 		background-repeat: no-repeat;
 		background-size: auto 100%;
 		background-position: 50%;
@@ -50,7 +50,7 @@
 			<p>Pontos helyszínek: 3643 Dédestapolcsány, Hunyadi utca 70. 3349 Nagyvisnyó Bánvölgye út 1.</p>
 		</div>
 		<div class="willdisapear"
-			style="background-image: url('wedding/szikla.webp');">
+			style="background-image: url('szikla.webp');">
 		</div>
 	</section>
 
@@ -69,7 +69,7 @@
 			</ul>
 		</div>
 		<div class="willdisapear" 
-			style="background-image: url('wedding/levendula.webp');">
+			style="background-image: url('levendula.webp');">
 		</div>
 	</section>
 
@@ -94,7 +94,7 @@
 			<p>Még változhat</p>
 		</div>
 		<div class="willdisapear" 
-			style="background-image: url('wedding/Boroka-Tabor-etel2.webp');">
+			style="background-image: url('Boroka-Tabor-etel2.webp');">
 		</div>
 	</section>
 
@@ -103,7 +103,7 @@
 			<h2>Szállás</h2>
 		</div>
 		<div class="willdisapear" 
-			style="background-image: url('wedding/szallas.webp');">
+			style="background-image: url('szallas.webp');">
 		</div>
 	</section>
 
@@ -112,7 +112,7 @@
 			<h2>Gyakori kérdések</h2>
 		</div>
 		<div class="willdisapear" 
-			style="background-image: url('wedding/GYIK.webp');">
+			style="background-image: url('GYIK.webp');">
 		</div>
 	</section>
 
@@ -226,7 +226,7 @@ form.addEventListener('submit', e => {
 		guests: Number(document.getElementById('guests').value)
 	};
 	// Send form data to server
-	fetch('http://localhost:7878/wedding/form', {
+	fetch('http://localhost:7878/form', {
 		method: 'POST',
 		body: JSON.stringify(form),
 	})

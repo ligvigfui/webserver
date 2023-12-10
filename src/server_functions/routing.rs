@@ -18,27 +18,9 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
         println!("\x1b[38;5;21mHandling - Request.path: {}, Request.method: {:?}\x1b[0m", request.path, request.method);
     }
     match request.headers.get("Host").unwrap().split(":").next().unwrap() {
-        "nikiesboldi.ddnsfree.com" => wedding::routing(stream, request),
-        "neptuncrf.freeddns.org" => neptunCRF::routing(stream, request, users),
-        "coder.ddnsfree.com" => dev::routing(stream, request),
-        "localhost" => {
-            match request.path.split("/").nth(1).unwrap() {
-                "" => handle_page_return(stream, CODE[&200], None, "en/dev.html"),
-                "dev" => {
-                    request.path = request.path.replacen("/dev", "", 1);
-                    dev::routing(stream, request)
-                },
-                "neptunCRF" => {
-                    request.path = request.path.replacen("/neptunCRF", "", 1);
-                    neptunCRF::routing(stream, request, users)
-                },
-                "wedding" => {
-                    request.path = request.path.replacen("/wedding", "", 1);
-                    wedding::routing(stream, request)
-                },
-                _ => response404(stream, request),
-            }
-        }
+        "nikiesboldi.ddnsfree.com" | "nikiesboldi" => wedding::routing(stream, request),
+        "neptuncrf.freeddns.org" | "neptuncrf" => neptunCRF::routing(stream, request, users),
+        "coder.ddnsfree.com" | "coder" => dev::routing(stream, request),
         _ => {
             println!("Did not find host: \"{:?}\"", request.headers.get("Host"));
             response404(stream, request);
