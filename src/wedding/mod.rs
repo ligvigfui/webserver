@@ -1,16 +1,37 @@
-use std::net::TcpStream;
-
 use crate::*;
 
-pub fn routing(stream: &mut TcpStream, request: Request) {
+pub use request::form::Form;
+
+pub mod request;
+
+pub fn routing(stream: &mut TcpStream, request: &Request) {
     use Method as M;
-    if DEBUG >= DebugLevel::LOW {
-        println!("handeling - {}", request.path);
-    }
-    match (&request.method, request.path) {
-        (M::GET, "" | "/") => handle_page_return(stream, CODES[&200], None, "hu/wedding/wedding.html"),
-        (M::GET, "/demo_image.jpg") => handle_image(stream, "wedding/demo_image.jpg"),
-        (M::GET, "/form") => handle_debug(stream, request),
+    match (&request.method, request.path.as_str()) {
+        (M::GET, "" | "/") => handle_page_return(stream, CODE[&200], None, "hu/wedding/wedding.html"),
+        (M::GET, image) if image.ends_with(".webp") => handle_file(stream, &format!("wedding{image}")),
+        (M::GET, "/GYIK.jpg") => handle_file(stream, "wedding/GYIK.jpg"),
+        (M::GET, "/szallas.jpg") => handle_file(stream, "wedding/szallas.jpg"),
+        (M::GET, "/favicon.gif") => handle_file(stream, "wedding/favicon.gif"),
+        (M::POST, "/form") => handle_form(stream, request),
         _ => response404(stream, request),
+    }
+}
+
+fn handle_form<'a>(stream: &mut TcpStream, request: &'a Request) {
+    let form: Result<Form<'a>, serde_json::Error> = request.to_form();
+    match form {
+        Ok(form) => {
+            println!("{:?}", form);
+            default_handle(
+                stream,
+                CODE[&200],
+                Some(vec!["Access-Control-Allow-Origin: *"]),
+                "{\"status\": \"ok\"}",
+            )
+        },
+        Err(e) => {
+            println!("{}", e);
+            response404(stream, request)
+        }
     }
 }
