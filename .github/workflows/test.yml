@@ -28,7 +28,10 @@ jobs:
             run: |
                 ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.SERVER_IP }} -p ${{ secrets.PORT }} <<EOF
                 cd rust/webserver
-                git pull
+                if ! git pull; then
+                    echo "git pull failed"
+                    exit 1
+                fi
                 cargo build --release
                 cargo test
                 EOF
