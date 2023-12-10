@@ -11,13 +11,6 @@
 <body>
 	<header>
 		<nav>
-			<a href="" onclick="scrollToSection(0); return false;">Kezdőlap</a>
-			<a href="" onclick="scrollToSection(1); return false;">Időpont és Helyszín</a>
-			<a href="" onclick="scrollToSection(2); return false;">Program</a>
-			<a href="" onclick="scrollToSection(3); return false;">Menü</a>
-			<a href="" onclick="scrollToSection(4); return false;">Szállás</a>
-			<a href="" onclick="scrollToSection(5); return false;">Gyakori kérdések</a>
-			<a href="" onclick="scrollToSection(6); return false;">Foglalás</a>
 		</nav>
 	</header>
 	
@@ -163,6 +156,10 @@
 </html>
 
 <script>
+const positions = [];
+const sections = document.querySelectorAll('section');
+let sectionHeight = window.innerHeight;
+	
 window.onload = function() {
 	var willDisapears = document.getElementsByClassName('willdisapear');
 	var needsBackgroundImages = document.getElementsByClassName('needsbackgroundimage');
@@ -175,10 +172,13 @@ window.onload = function() {
 		}
 	}
 	window.scrollTo({ top: 0, behavior: "smooth" });
-	//add sections - 1 number of a tags to the header > navigation with 
-	//text = sections > div > h2.text
-	//href = ""
-	//onClick = "scrollToSection(i+1); return false;"
+	
+	var nav = document.getElementsByTagName('nav')[0];
+	nav.innerHTML += "<a href='' onclick='scrollToSection(0); return false;'>Kezdőlap</a>";
+	for (var i = 1; i < sections.length; i++) {
+		var text = sections[i].getElementsByTagName('h2')[0].innerHTML;
+		nav.innerHTML += "<a href='' onclick='scrollToSection(" + i + "); return false;'>" + text + "</a>";
+	}
 }
 
 const form = document.querySelector('form');
@@ -208,10 +208,6 @@ form.addEventListener('submit', e => {
 		console.error(error);
 	});
 });
-
-const positions = [];
-const sections = document.querySelectorAll('section');
-let sectionHeight = window.innerHeight;
 
 function getPositions() {
 	sectionHeight = window.innerHeight;
@@ -302,10 +298,9 @@ header {
 }
 nav {
 	text-align: center;
-	a {
-		display: inline-block;
-		margin-right: 20px;
-	}
+}
+nav > a {
+	padding-right: 5px;
 }
 section {
 	height: 100vh;
