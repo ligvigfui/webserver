@@ -81,9 +81,9 @@ impl Worker {
                     }
                     job();
                 }
-                Err(_) => {
-                    if DEBUG >= DebugLevel::MEDIUM {
-                        println!("Worker {id} disconnected; shutting down.");
+                Err(e) => {
+                    if DEBUG >= DebugLevel::LOW {
+                        eprintln!("\x1b[38;5;9mWorker {id} disconnected with error: {e}; shutting down.\x1b[0m");
                     }
                     break;
                 }

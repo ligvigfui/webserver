@@ -1,6 +1,6 @@
 use crate::*;
 
-pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mutex<User>>>){
+pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mutex<User>>>) {
     /*if request.protocol != "HTTP/1.1" {
         println!("Protocol not supported: {}", request.protocol);
         handle_page_return(stream, CODES[&505], None, "505.html");
@@ -14,11 +14,9 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
             request.headers.insert("Accept-Language", "en");
         },
     };
-
     if DEBUG >= DebugLevel::LOW {
-        println!("\x1b[38;5;21mhandling - {}\x1b[0m", request.path);
+        println!("\x1b[38;5;21mHandling - Request.path: {}, Request.method: {:?}\x1b[0m", request.path, request.method);
     }
-
     match request.headers.get("Host").unwrap().split(":").next().unwrap() {
         "nikiesboldi.ddnsfree.com" => wedding::routing(stream, request),
         "neptuncrf.freeddns.org" => neptunCRF::routing(stream, request, users),
@@ -46,6 +44,7 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
             response404(stream, request);
         }
     }
+    println!("\x1b[38;5;22mDone with request: {}\x1b[0m", request.path);
 }
 
 /*

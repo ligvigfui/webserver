@@ -65,7 +65,7 @@ pub fn handle_page_return(stream: &mut TcpStream, status: &str, headers: Option<
     {
         Ok(x) => x,
         Err(e) => {
-            println!("Error reading file: {}\npages/{}", e, html_name);
+            eprintln!("\x1b[38;5;9mError reading file: {}\npages/{}\x1b[0m", e, html_name);
             format!("{}", e)
         }
     };
@@ -173,7 +173,7 @@ pub fn handle_debug(stream: &mut TcpStream, request: &Request) {
 }
 
 pub fn handle_file(stream: &mut TcpStream, path: &str) {
-    match handle_file_inner(stream, format!("pages/assets/{}", path)) {
+    match handle_file_inner(stream, format!("assets/{}", path)) {
         Ok(_) => {}
         Err(e) => {
             println!("{}", e);
