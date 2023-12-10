@@ -27,4 +27,4 @@ pub mod dev;
 pub mod vue;
 pub mod extensions;
 
-pub static VERSION: &str = "0.2.1";
+pub static VERSION: &str = "0.3.0";
