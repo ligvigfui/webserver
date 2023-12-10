@@ -11,11 +11,13 @@
 <body>
 	<header>
 		<nav>
-			<button onclick="scrollToSection(0)">Kezdőlap</button>
-			<button onclick="scrollToSection(1)">Időpont és Helyszín</button>
-			<button onclick="scrollToSection(2)">Program</button>
-			<button onclick="scrollToSection(3)">Menü</button>
-			<button onclick="scrollToSection(4)">Foglalás</button>
+			<a href="" onclick="scrollToSection(0); return false;">Kezdőlap</a>
+			<a href="" onclick="scrollToSection(1); return false;">Időpont és Helyszín</a>
+			<a href="" onclick="scrollToSection(2); return false;">Program</a>
+			<a href="" onclick="scrollToSection(3); return false;">Menü</a>
+			<a href="" onclick="scrollToSection(4); return false;">Szállás</a>
+			<a href="" onclick="scrollToSection(5); return false;">Gyakori kérdések</a>
+			<a href="" onclick="scrollToSection(6); return false;">Foglalás</a>
 		</nav>
 	</header>
 	
@@ -48,21 +50,20 @@
 		<div style="flex-grow: 3;"></div>
 	</section>
 	
-	<section style="background-color: rgb(63, 165, 42);">
+	<section>
 		<div class="needsbackgroundimage">
 			<h2>Helyszín és Időpont</h2>
 			<p>2024.07.06. Dédestapolcsányi Szent György Templom Boróka Tábor</p>
 			<p>Pontos helyszínek: 3643 Dédestapolcsány, Hunyadi utca 70. 3349 Nagyvisnyó Bánvölgye út 1.</p>
 		</div>
 		<div class="willdisapear"
-			style="background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/20200530_130219place.png');">
+			style="background-image: url('wedding/szikla.webp');">
 		</div>
 	</section>
 
-	<section style="background-color: brown;">
+	<section>
 		<div class="needsbackgroundimage">
-			<h2>Events</h2>
-			<p>Please join us for the following events:</p>
+			<h2>Események</h2>
 			<ul>
 				<!-- todo fix number formatting-->
 				<li><strong>14:00</strong> Templomi szertartás</li>
@@ -75,14 +76,14 @@
 			</ul>
 		</div>
 		<div class="willdisapear" 
-			style="background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/20200711_103457.jpg');">
+			style="background-image: url('wedding/levendula.webp');">
 		</div>
 	</section>
 
-	<section style="background-color: rgb(62, 102, 182);">
+	<section>
 		<div class="needsbackgroundimage">
 			<h2>Menü</h2>
-			<ul>
+			<!--ul>
 				<li>Húsleves gazdagon</li>
 				<li>Rántott csirkemell</li>
 				<li>Bécsi szelet</li>
@@ -96,34 +97,59 @@
 				<li>Zöld saláta</li>
 				<li>Rizs</li>
 				<li>Steak burgonya</li>
-			</ul>
+			</ul-->
+			<p>Még változhat</p>
 		</div>
 		<div class="willdisapear" 
-			style="background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/Boroka-Tabor-etel2.jpg');">
+			style="background-image: url('wedding/Boroka-Tabor-etel2.webp');">
 		</div>
 	</section>
 
-	<section style="background-color: rgb(72, 195, 195);">
+	<section style="background-color: rgb(62, 182, 104);">
 		<div class="needsbackgroundimage">
-			<h2>RSVP</h2>
-			<form style="
-				display: flex;
-				flex-direction: column;
-				justify-content: space-between;
-			">
-				<label for="name">Név:</label>
-				<input type="text" id="name" name="name" required>
-				<label for="email">E-mail cím:</label>
-				<input type="email" id="email" name="email" required>
-				<label for="guests">Hányan jöttök:</label>
-				<input type="number" id="guests" name="guests" min="1" max="10">
-				<button class="btn" type="submit">Submit</button>
-			</form>
+			<h2>Szállás</h2>
+		</div>
+		<div class="willdisapear" 
+			style="background-image: url('wedding/szallas.jpg');">
+		</div>
+	</section>
+
+	<section style="background-color: rgb(182, 62, 70);">
+		<div class="needsbackgroundimage">
+			<h2>Gyakori kérdések</h2>
+		</div>
+		<div class="willdisapear" 
+			style="background-image: url('wedding/GYIK.jpg');">
+		</div>
+	</section>
+
+	<section style="flex-direction: column;">
+		<div style="
+			display: flex;
+			flex-direction: row;
+			height: 100%;
+		">
+			<div class="needsbackgroundimage">
+				<h2>RSVP</h2>
+				<form style="
+					display: flex;
+					flex-direction: column;
+					justify-content: space-between;
+				">
+					<label for="name">Név:</label>
+					<input type="text" id="name" name="name">
+					<label for="email">E-mail cím:</label>
+					<input type="email" id="email" name="email" required>
+					<label for="guests">Hányan jöttök:</label>
+					<input type="number" id="guests" name="guests" min="1" max="10" required>
+					<button class="btn" type="submit">Submit</button>
+				</form>
+			</div>
+			
+			<!--div class="willdisapear">
+			</div-->
 		</div>
 		
-		<div class="willdisapear">
-		</div>
-			
 		<footer>
 			<h2>Kapcsolat</h2>
 			<p>Ha kérdésed van, vagy van ötleted, hogyan lehetne jobb ez az oldal, akkor írj nekünk egy 
@@ -132,15 +158,6 @@
 			</p>
 			<p>&copy; 2023 Boldi és Niki Esküvője. All rights reserved.</p>
 		</footer>
-	</section>
-
-	<section style="background-color: rgb(62, 102, 182);">
-		<div class="needsbackgroundimage">
-
-		</div>
-		<div class="willdisapear" 
-			style="background-image: url('D:/OneDrive - Szegedi Tudományegyetem/nikinek/fotók/20200711_103457.jpg');">
-		</div>
 	</section>
 </body>
 </html>
@@ -153,10 +170,15 @@ window.onload = function() {
 		// add the hidden property to the willdisapear class in css
 		for (var i = 1; i < needsBackgroundImages.length; i++) {
 			// add bgi from the hidden > img.src
+
 			// to .needsbackgroundimage > div
 		}
 	}
 	window.scrollTo({ top: 0, behavior: "smooth" });
+	//add sections - 1 number of a tags to the header > navigation with 
+	//text = sections > div > h2.text
+	//href = ""
+	//onClick = "scrollToSection(i+1); return false;"
 }
 
 const form = document.querySelector('form');
@@ -294,25 +316,14 @@ section {
 }
 .needsbackgroundimage, .willdisapear {
 	flex: 1;
+	flex-direction: column;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	margin: 5%;
-}
-.needsbackgroundimage {
-	flex-direction: column;
-}
-.willdisapear {
 	background-repeat: no-repeat;
 	background-size: auto 100%;
 	background-position: 50%;
-}
-section > .container {
-	width: 90%;
-	height: 90%;
-}
-.container.hidden {
-	display: none;
 }
 h1, h2, p {
 	text-align: center;
@@ -331,18 +342,9 @@ p {
 	line-height: 1.5;
 	margin-bottom: 20px;
 }
-form {
-	> div {
-		display: flex;
-		justify-content: space-between;
-		margin-bottom: 10px;
-	}
-	> button {
-		margin: 20px auto;
-		align-self: center;
-	}
-}
 .btn {
+	margin: 20px auto;
+	align-self: center;
 	display: inline-block;
 	padding: 10px 20px;
 	background-color: #333;
@@ -363,6 +365,9 @@ img {
 	height: 100%;
 }
 footer {
+	align-self: flex-end;
+	margin-top: auto;
+	width: 100%;
 	text-align: center;
 }
 </style>
