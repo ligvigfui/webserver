@@ -9,8 +9,6 @@ pub fn routing(stream: &mut TcpStream, request: &Request) {
     match (&request.method, request.path.as_str()) {
         (M::GET, "" | "/") => handle_page_return(stream, CODE[&200], None, "hu/wedding/wedding.html"),
         (M::GET, image) if image.ends_with(".webp") => handle_file(stream, &format!("wedding{image}")),
-        (M::GET, "/GYIK.jpg") => handle_file(stream, "wedding/GYIK.jpg"),
-        (M::GET, "/szallas.jpg") => handle_file(stream, "wedding/szallas.jpg"),
         (M::GET, "/favicon.gif") => handle_file(stream, "wedding/favicon.gif"),
         (M::POST, "/form") => handle_form(stream, request),
         _ => response404(stream, request),
