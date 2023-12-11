@@ -123,20 +123,11 @@
 			height: 100%;
 		">
 			<div class="needsbackgroundimage">
-				<h2>RSVP</h2>
-				<form style="
-					display: flex;
-					flex-direction: column;
-					justify-content: space-between;
-				">
-					<label for="name">Név:</label>
-					<input type="text" id="name" name="name">
-					<label for="email">E-mail cím:</label>
-					<input type="email" id="email" name="email" required>
-					<label for="guests">Hányan jöttök:</label>
-					<input type="number" id="guests" name="guests" min="1" max="10" required>
-					<button class="btn" type="submit">Submit</button>
-				</form>
+				<h2 style="display: none;">Foglalás</h2>
+				<iframe src="https://docs.google.com/forms/d/e/1FAIpQLScFEeszhx_CZR-PzXFGatOgcH15GSUqNQ6uHVMCZ6O_ZebGeg/viewform?embedded=true"
+					frameborder="0" marginheight="0" marginwidth="0"
+					style="width: 100%; height: 100%;"
+				>Loading…</iframe>
 			</div>
 			
 			<!--div class="willdisapear">
@@ -200,7 +191,7 @@ function onResponsive() {
 	phoneVeiw();
 	getPositions();
 }
-	
+
 window.onload = function() {
 	onResponsive();
 	window.scrollTo({ top: 0, behavior: "smooth" });
@@ -214,34 +205,6 @@ window.onload = function() {
 }
 window.addEventListener('resize', onResponsive);
 window.addEventListener('orientationchange', onResponsive);
-
-const form = document.querySelector('form');
-form.addEventListener('submit', e => {
-	console.log('Form submitted!');
-	e.preventDefault(); // Prevent form from submitting
-	// Get form data
-	const form = {
-		name: document.getElementById('name').value,
-		email: document.getElementById('email').value,
-		guests: Number(document.getElementById('guests').value)
-	};
-	// Send form data to server
-	fetch('http://localhost:7878/form', {
-		method: 'POST',
-		body: JSON.stringify(form),
-	})
-	.then(response => {
-		if (response.ok) {
-			alert('Thank you for your RSVP!');
-		} else {
-			alert('Oops! Something went wrong.');
-		}
-	})
-	.catch(error => {
-		alert('Oops! Something went wrong.');
-		console.error(error);
-	});
-});
 
 let lastDeltaYs = [0, 0, 0];
 window.addEventListener('wheel', function(e) {
