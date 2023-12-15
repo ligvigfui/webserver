@@ -205,6 +205,7 @@ window.onload = function() {
 }
 window.addEventListener('resize', onResponsive);
 window.addEventListener('orientationchange', onResponsive);
+onResponsive();
 
 let lastDeltaYs = [0, 0, 0];
 window.addEventListener('wheel', function(e) {
