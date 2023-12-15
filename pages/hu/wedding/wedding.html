@@ -123,11 +123,20 @@
 			height: 100%;
 		">
 			<div class="needsbackgroundimage">
-				<h2 style="display: none;">Foglalás</h2>
-				<iframe src="https://docs.google.com/forms/d/e/1FAIpQLScFEeszhx_CZR-PzXFGatOgcH15GSUqNQ6uHVMCZ6O_ZebGeg/viewform?embedded=true"
-					frameborder="0" marginheight="0" marginwidth="0"
-					style="width: 100%; height: 100%;"
-				>Loading…</iframe>
+				<h2>RSVP</h2>
+				<form style="
+					display: flex;
+					flex-direction: column;
+					justify-content: space-between;
+				">
+					<label for="name">Név:</label>
+					<input type="text" id="name" name="name">
+					<label for="email">E-mail cím:</label>
+					<input type="email" id="email" name="email" required>
+					<label for="guests">Hányan jöttök:</label>
+					<input type="number" id="guests" name="guests" min="1" max="10" required>
+					<button class="btn" type="submit">Submit</button>
+				</form>
 			</div>
 			
 			<!--div class="willdisapear">
@@ -150,50 +159,18 @@
 const positions = [];
 const sections = document.querySelectorAll('section');
 let sectionHeight = window.innerHeight;
-
-function phoneVeiw() {
+	
+window.onload = function() {
 	var willDisapears = document.getElementsByClassName('willdisapear');
 	var needsBackgroundImages = document.getElementsByClassName('needsbackgroundimage');
 	if (window.innerWidth / window.innerHeight < 3 / 2 ) {
 		// add the hidden property to the willdisapear class in css
-		for (var i = 0; i < willDisapears.length; i++) {
-			willDisapears[i].style.display = 'none';
-		}
 		for (var i = 1; i < needsBackgroundImages.length; i++) {
 			// add bgi from the hidden > img.src
 
 			// to .needsbackgroundimage > div
 		}
 	}
-	else {
-		// remove the hidden property from the willdisapear class in css
-		for (var i = 0; i < willDisapears.length; i++) {
-			willDisapears[i].style.display = 'flex';
-		}
-		for (var i = 1; i < needsBackgroundImages.length; i++) {
-			// remove bgi from the hidden > img.src
-
-			// from .needsbackgroundimage > div
-		}
-	}
-}
-
-function getPositions() {
-	sectionHeight = window.innerHeight;
-	positions.length = 0;
-	for (let i = 0; i < sections.length; i++) {
-		positions.push(i * sectionHeight);
-	}
-	scrollToSection(Math.round(window.scrollY / sectionHeight));
-}
-
-function onResponsive() {
-	phoneVeiw();
-	getPositions();
-}
-
-window.onload = function() {
-	onResponsive();
 	window.scrollTo({ top: 0, behavior: "smooth" });
 	
 	var nav = document.getElementsByTagName('nav')[0];
@@ -203,9 +180,46 @@ window.onload = function() {
 		nav.innerHTML += "<a href='' onclick='scrollToSection(" + i + "); return false;'>" + text + "</a>";
 	}
 }
-window.addEventListener('resize', onResponsive);
-window.addEventListener('orientationchange', onResponsive);
-onResponsive();
+
+const form = document.querySelector('form');
+form.addEventListener('submit', e => {
+	console.log('Form submitted!');
+	e.preventDefault(); // Prevent form from submitting
+	// Get form data
+	const form = {
+		name: document.getElementById('name').value,
+		email: document.getElementById('email').value,
+		guests: Number(document.getElementById('guests').value)
+	};
+	// Send form data to server
+	fetch('http://localhost:7878/wedding/form', {
+		method: 'POST',
+		body: JSON.stringify(form),
+	})
+	.then(response => {
+		if (response.ok) {
+			alert('Thank you for your RSVP!');
+		} else {
+			alert('Oops! Something went wrong.');
+		}
+	})
+	.catch(error => {
+		alert('Oops! Something went wrong.');
+		console.error(error);
+	});
+});
+
+function getPositions() {
+	sectionHeight = window.innerHeight;
+	positions.length = 0;
+	for (let i = 0; i < sections.length; i++) {
+		positions.push(i * sectionHeight);
+	}
+}
+
+getPositions();
+window.addEventListener('resize', getPositions);
+window.addEventListener('orientationchange', getPositions);
 
 let lastDeltaYs = [0, 0, 0];
 window.addEventListener('wheel', function(e) {
