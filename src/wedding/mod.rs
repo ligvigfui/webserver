@@ -10,6 +10,8 @@ pub fn routing(stream: &mut TcpStream, request: &Request) {
         (M::GET, "" | "/") => handle_page_return(stream, CODE[&200], None, "hu/wedding/wedding.html"),
         (M::GET, image) if image.ends_with(".webp") => handle_file(stream, &format!("wedding{image}")),
         (M::GET, "/favicon.gif") => handle_file(stream, "wedding/favicon.gif"),
+        (M::GET, "/app.js") => handle_file_pages(stream, "hu/wedding/app.js"),
+        (M::GET, "/style.css") => handle_file_pages(stream, "hu/wedding/style.css"),
         (M::POST, "/form") => handle_form(stream, request),
         _ => response404(stream, request),
     }
@@ -30,6 +32,15 @@ fn handle_form<'a>(stream: &mut TcpStream, request: &'a Request) {
         Err(e) => {
             println!("{}", e);
             response404(stream, request)
+        }
+    }
+}
+
+pub fn handle_file_pages(stream: &mut TcpStream, path: &str) {
+    match handle_file_inner(stream, format!("pages/{}", path)) {
+        Ok(_) => {}
+        Err(e) => {
+            println!("{}", e);
         }
     }
 }

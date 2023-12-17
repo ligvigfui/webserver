@@ -3,8 +3,9 @@
 <head>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Courgette">
 	<link rel="icon" href="favicon.gif" type="image/gif">
-	<!-- make the icon animated -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="google-site-verification" content="biicoPSTteciFgHy8rVubvdJ2P4U-UvjQYKDOk5jMq4" />
+	<link rel="stylesheet" href="style.css">
 	<meta charset="UTF-8">
 	<title>Niki és Boldi esküvője</title>
 </head>
@@ -43,19 +44,19 @@
 		<div style="flex-grow: 3;"></div>
 	</section>
 	
-	<section>
-		<div class="needsbackgroundimage">
+	<section class="section">
+		<div class="section__content">
 			<h2>Helyszín és Időpont</h2>
 			<p>2024.07.06. Dédestapolcsányi Szent György Templom Boróka Tábor</p>
 			<p>Pontos helyszínek: 3643 Dédestapolcsány, Hunyadi utca 70. 3349 Nagyvisnyó Bánvölgye út 1.</p>
 		</div>
-		<div class="willdisapear"
-			style="background-image: url('szikla.webp');">
+		<div class="section__image">
+			<img src="szikla.webp">
 		</div>
 	</section>
 
-	<section>
-		<div class="needsbackgroundimage">
+	<section class="section">
+		<div class="section__content">
 			<h2>Események</h2>
 			<ul>
 				<!-- todo fix number formatting-->
@@ -68,8 +69,8 @@
 				<li>Buli Éjfélig</li>
 			</ul>
 		</div>
-		<div class="willdisapear" 
-			style="background-image: url('levendula.webp');">
+		<div class="section__image">
+			<img src="levendula.webp">
 		</div>
 	</section>
 
@@ -123,20 +124,11 @@
 			height: 100%;
 		">
 			<div class="needsbackgroundimage">
-				<h2>RSVP</h2>
-				<form style="
-					display: flex;
-					flex-direction: column;
-					justify-content: space-between;
-				">
-					<label for="name">Név:</label>
-					<input type="text" id="name" name="name">
-					<label for="email">E-mail cím:</label>
-					<input type="email" id="email" name="email" required>
-					<label for="guests">Hányan jöttök:</label>
-					<input type="number" id="guests" name="guests" min="1" max="10" required>
-					<button class="btn" type="submit">Submit</button>
-				</form>
+				<h2 style="display: none;">Foglalás</h2>
+				<iframe src="https://docs.google.com/forms/d/e/1FAIpQLScFEeszhx_CZR-PzXFGatOgcH15GSUqNQ6uHVMCZ6O_ZebGeg/viewform?embedded=true"
+					frameborder="0" marginheight="0" marginwidth="0"
+					style="width: 100%; height: 100%;"
+				>Loading…</iframe>
 			</div>
 			
 			<!--div class="willdisapear">
@@ -153,217 +145,5 @@
 		</footer>
 	</section>
 </body>
+<script src="app.js"></script>
 </html>
-
-<script>
-const positions = [];
-const sections = document.querySelectorAll('section');
-let sectionHeight = window.innerHeight;
-	
-window.onload = function() {
-	var willDisapears = document.getElementsByClassName('willdisapear');
-	var needsBackgroundImages = document.getElementsByClassName('needsbackgroundimage');
-	if (window.innerWidth / window.innerHeight < 3 / 2 ) {
-		// add the hidden property to the willdisapear class in css
-		for (var i = 1; i < needsBackgroundImages.length; i++) {
-			// add bgi from the hidden > img.src
-
-			// to .needsbackgroundimage > div
-		}
-	}
-	window.scrollTo({ top: 0, behavior: "smooth" });
-	
-	var nav = document.getElementsByTagName('nav')[0];
-	nav.innerHTML += "<a href='' onclick='scrollToSection(0); return false;'>Kezdőlap</a>";
-	for (var i = 1; i < sections.length; i++) {
-		var text = sections[i].getElementsByTagName('h2')[0].innerHTML;
-		nav.innerHTML += "<a href='' onclick='scrollToSection(" + i + "); return false;'>" + text + "</a>";
-	}
-}
-
-const form = document.querySelector('form');
-form.addEventListener('submit', e => {
-	console.log('Form submitted!');
-	e.preventDefault(); // Prevent form from submitting
-	// Get form data
-	const form = {
-		name: document.getElementById('name').value,
-		email: document.getElementById('email').value,
-		guests: Number(document.getElementById('guests').value)
-	};
-	// Send form data to server
-	fetch('http://localhost:7878/wedding/form', {
-		method: 'POST',
-		body: JSON.stringify(form),
-	})
-	.then(response => {
-		if (response.ok) {
-			alert('Thank you for your RSVP!');
-		} else {
-			alert('Oops! Something went wrong.');
-		}
-	})
-	.catch(error => {
-		alert('Oops! Something went wrong.');
-		console.error(error);
-	});
-});
-
-function getPositions() {
-	sectionHeight = window.innerHeight;
-	positions.length = 0;
-	for (let i = 0; i < sections.length; i++) {
-		positions.push(i * sectionHeight);
-	}
-}
-
-getPositions();
-window.addEventListener('resize', getPositions);
-window.addEventListener('orientationchange', getPositions);
-
-let lastDeltaYs = [0, 0, 0];
-window.addEventListener('wheel', function(e) {
-	console.log(e.deltaY);
-    lastDeltaYs.shift();
-	lastDeltaYs.push(e.deltaY)
-    let currentSectionIndex = Math.round(window.scrollY / sectionHeight);
-	// check if the user scrolled with a mouse wheel
-    if ((lastDeltaYs.every((x) => x % 125 === 0)) ||
-		(lastDeltaYs.every((x) => x % 20 === 0))) {
-        e.preventDefault();
-        if (e.deltaY > 0) {
-            // Scrolling down
-            if (currentSectionIndex < sections.length - 1) {
-                window.scrollTo({ top: positions[currentSectionIndex + 1], behavior: 'smooth' });
-            }
-        } else {
-            // Scrolling up
-            if (currentSectionIndex > 0) {
-                window.scrollTo({ top: positions[currentSectionIndex - 1], behavior: 'smooth' });
-            }
-        }
-    }
-}, { passive: false });
-
-let startY;
-window.addEventListener('touchstart', function(e) {
-	startY = e.touches[0].pageY;
-}, false);
-
-window.addEventListener('touchmove', function(e) {
-	e.preventDefault();
-	let currentSectionIndex = Math.round(window.scrollY / sectionHeight);
-	if (e.touches[0].pageY > startY) {
-		// Scrolling up
-		if (currentSectionIndex > 0) {
-			window.scrollTo({ top: positions[currentSectionIndex - 1], behavior: 'smooth' });
-		}
-	} else {
-		// Scrolling down
-		if (currentSectionIndex < sections.length - 1) {
-			window.scrollTo({ top: positions[currentSectionIndex + 1], behavior: 'smooth' });
-		}
-	}
-}, { passive: false });
-
-function scrollToSection(sectionIndex) {
-	window.scrollTo({ top: positions[sectionIndex], behavior: 'smooth' });
-}
-</script>
-
-<style>
-/* Hide scrollbar for Chrome, Safari and Opera */
-html::-webkit-scrollbar {
-    display: none;
-}
-/* Hide scrollbar for IE, Edge and Firefox */
-html {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-}
-body {
-	font-family: "Courgette", sans-serif;
-	color: #333;
-	margin: 0px;
-	padding: 0;
-	overflow-x: hidden;
-}
-header {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	background-color: rgba(255, 255, 255, 0.6); /* 10% opacity */
-	z-index: 1;
-}
-nav {
-	text-align: center;
-}
-nav > a {
-	padding-right: 5px;
-	font-size: 22px;
-}
-section {
-	height: 100vh;
-	display: flex;
-	flex-direction: row;
-	margin: 0;
-	padding: 0;
-}
-.needsbackgroundimage, .willdisapear {
-	flex: 1;
-	flex-direction: column;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	margin: 5%;
-	background-repeat: no-repeat;
-	background-size: auto 100%;
-	background-position: 50%;
-}
-h1, h2, p {
-	text-align: center;
-	margin-block-start: 0;
-	margin-block-end: 0;
-}
-h1 {
-	font-size: 48px;
-	margin-bottom: 20px;
-}
-h2 {
-	font-size: 36px;
-	margin-bottom: 10px;
-}
-p {
-	line-height: 1.5;
-	margin-bottom: 20px;
-}
-.btn {
-	margin: 20px auto;
-	align-self: center;
-	display: inline-block;
-	padding: 10px 20px;
-	background-color: #333;
-	color: #fff;
-	text-decoration: none;
-	border-radius: 5px;
-	transition: background-color 0.3s ease;
-}
-.btn:hover {
-	background-color: #555;
-}
-li {
-	list-style-type: '👉';
-	padding-inline-start: 2px;
-}
-img {
-	width: auto;
-	height: 100%;
-}
-footer {
-	align-self: flex-end;
-	margin-top: auto;
-	width: 100%;
-	text-align: center;
-}
-</style> 

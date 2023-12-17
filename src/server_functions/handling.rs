@@ -189,6 +189,8 @@ pub fn handle_file_inner(stream: &mut TcpStream, path: String) -> Result<(), io:
         "png" => "image/png",
         "gif" => "image/gif",
         "webp" => "image/webp",
+        "js" => "application/javascript",
+        "css" => "text/css",
         "jpeg" | "jpg" => "image/jpeg",
         format => return Err(Error::new(ErrorKind::Unsupported, format!("format {format} is not jet supported")))
     };
