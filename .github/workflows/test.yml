@@ -64,5 +64,11 @@ jobs:
                 ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.SERVER_IP }} -p ${{ secrets.PORT }} <<EOF
                 cd rust/webserver
                 cargo build --release
-                systemctl --user restart webserver.service
+                run: |
+                    if systemctl --user restart webserver.service; then
+                        echo "Webserver service restarted successfully."
+                    else
+                        echo "Failed to restart webserver service."
+                        exit 1
+                    fi
                 EOF

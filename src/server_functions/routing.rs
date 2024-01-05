@@ -15,6 +15,7 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
         },
     };
     if DEBUG >= DebugLevel::LOW {
+        println!("\x1b[38;5;11m{}\x1b[0m", chrono::Local::now().format("%Y-%m-%d %H:%M:%S"));
         println!("\x1b[38;5;21mHandling - Request.path: {}, Request.method: {:?}\x1b[0m", request.path, request.method);
     }
     let host = match request.headers.get("Host") {
