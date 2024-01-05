@@ -17,7 +17,15 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
     if DEBUG >= DebugLevel::LOW {
         println!("\x1b[38;5;21mHandling - Request.path: {}, Request.method: {:?}\x1b[0m", request.path, request.method);
     }
-    match request.headers.get("Host").unwrap().split(":").next().unwrap() {
+    let host = match request.headers.get("Host") {
+        Some(x) => x,
+        None => {
+            println!("Did not find host: \"{:?}\"", request.headers.get("Host"));
+            response404(stream, request);
+            return;
+        }
+    };
+    match host.split(":").next().unwrap() {
         "nikiesboldi.ddnsfree.com" | 
             "nikiesboldi" | 
             "homenikiesboldi" => wedding::routing(stream, request),
