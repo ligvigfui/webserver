@@ -17,7 +17,13 @@ fn main() {
 
     // listen for connections
     for stream in listener.incoming() {
-        let stream = stream.unwrap();
+        let stream = match stream {
+            Ok(x) => x,
+            Err(e) => {
+                println!("\x1b[38;5;9mmain/Error: {}\x1b[0m", e);
+                continue;
+            }
+        };
         let users = Arc::clone(&neptun_users);
         pool.execute(move || {
             webserver::handling::handle_connection(stream, users);
