@@ -32,8 +32,8 @@ jobs:
                     echo "git pull failed"
                     exit 1
                 fi
-                cargo build
                 cargo test
+                cargo build --release
                 EOF
     # what should this test job do:
         # 1 ssh to server
@@ -62,8 +62,6 @@ jobs:
         -   name: Deploy
             run: |
                 ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.SERVER_IP }} -p ${{ secrets.PORT }} <<EOF
-                cd rust/webserver
-                cargo build --release
                 run: |
                     if systemctl --user restart webserver.service; then
                         echo "Webserver service restarted successfully."
