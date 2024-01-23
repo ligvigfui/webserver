@@ -1,4 +1,4 @@
-use std::io::{BufReader, BufRead, Error, ErrorKind, BufWriter};
+use std::{io::{BufReader, BufRead, Error, ErrorKind, BufWriter}, net::Shutdown};
 
 use crate::*;
 
@@ -214,7 +214,8 @@ fn send_response(stream: &mut TcpStream, response: &str, contents: Option<Vec<u8
         stream.write_all(&contents.unwrap())?;
     }
     print!("\n");
-    stream.flush()
+    stream.flush()?;
+    stream.shutdown(Shutdown::Both)
 }
 
 fn send_chunked_response(stream: &mut TcpStream, headers: &str, body: Option<&str>, contents: Option<Vec<u8>>) -> Result<(),  Error> {
@@ -232,5 +233,6 @@ fn send_chunked_response(stream: &mut TcpStream, headers: &str, body: Option<&st
         writer.write_all(&chunk_data)?;
     }
     writer.write_all(b"0\r\n\r\n")?;
-    writer.flush()
+    writer.flush()?;
+    writer.into_inner()?.shutdown(Shutdown::Both)
 }
