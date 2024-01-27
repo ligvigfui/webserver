@@ -22,12 +22,13 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
         Some(x) => x,
         None => {
             println!("Did not find host: \"{:?}\"", request.headers.get("Host"));
-            response404(stream, request);
+            handle_page_return(stream, CODE[&400], None, "en/host_not_provided.html");
             return;
         }
     };
     match host.split(":").next().unwrap() {
         "nikiesboldi.ddnsfree.com" | 
+            "192.168.0.10" |
             "nikiesboldi" | 
             "homenikiesboldi" => wedding::routing(stream, request),
         "neptuncrf.freeddns.org" | 
