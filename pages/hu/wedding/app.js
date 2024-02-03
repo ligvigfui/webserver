@@ -58,6 +58,7 @@ window.addEventListener('orientationchange', onResponsive);
 
 let lastDeltaYs = [0, 0, 0];
 window.addEventListener('wheel', function(e) {
+	if (!document.getElementById('animation_toggle').checked) return;
 	console.log(e.deltaY);
     lastDeltaYs.shift();
 	lastDeltaYs.push(e.deltaY)
@@ -86,6 +87,7 @@ window.addEventListener('touchstart', function(e) {
 }, false);
 
 window.addEventListener('touchmove', function(e) {
+	if (!document.getElementById('animation_toggle').checked) return;
 	e.preventDefault();
 	let currentSectionIndex = Math.round(window.scrollY / sectionHeight);
 	if (e.touches[0].pageY > startY) {
@@ -102,5 +104,12 @@ window.addEventListener('touchmove', function(e) {
 }, { passive: false });
 
 function scrollToSection(sectionIndex) {
-	window.scrollTo({ top: positions[sectionIndex], behavior: 'smooth' });
+	if (document.getElementById('animation_toggle').checked)
+	{
+		window.scrollTo({ top: positions[sectionIndex], behavior: 'smooth' });
+	}
+	else
+	{
+		window.scrollTo({ top: positions[sectionIndex], behavior: 'instant' });
+	}
 }
