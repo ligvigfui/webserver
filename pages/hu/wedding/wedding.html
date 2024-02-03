@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="hu">
 <head>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Courgette">
 	<link rel="icon" href="favicon.gif" type="image/gif">
@@ -11,6 +11,14 @@
 </head>
 <body>
 	<header>
+		<div style="display: flex; flex-direction: row; float: inline-end;">
+			<input
+				type="checkbox"
+				id="animation_toggle"
+				checked
+			>
+			<p style="margin-bottom: 0px;">Animation</p>
+		</div>
 		<nav>
 		</nav>
 	</header>
@@ -44,37 +52,47 @@
 		<div style="flex-grow: 3;"></div>
 	</section>
 	
-	<section class="section">
-		<div class="section__content">
-			<h2>Helyszín és Időpont</h2>
-			<p>2024.07.06. Dédestapolcsányi Szent György Templom Boróka Tábor</p>
-			<p>Pontos helyszínek: 3643 Dédestapolcsány, Hunyadi utca 70. 3349 Nagyvisnyó Bánvölgye út 1.</p>
-		</div>
-		<div class="section__image">
-			<img src="szikla.webp">
-		</div>
-	</section>
-
-	<section class="section">
-		<div class="section__content">
-			<h2>Események</h2>
-			<ul>
-				<!-- todo fix number formatting-->
-				<li><strong>14:00</strong> Templomi szertartás</li>
-				<li><strong>16:30</strong> Szertartás a Boróka táborban</li>
-				<li><strong>17:30</strong> Vacsora</li>
-				<li><strong>19:00</strong> Nyitótánc</li>
-				<li><strong>23:00</strong> Menyecske tánc</li>
-				<li><strong>00:00</strong> Éjféli menü</li>
-				<li>Buli Éjfélig</li>
-			</ul>
-		</div>
-		<div class="section__image">
-			<img src="levendula.webp">
+	<section
+		style="background-color: aquamarine;"
+	>
+		<div class="section">
+			<div class="section__content">
+				<h2>Helyszín és Időpont</h2>
+				<p>2024.07.06. Dédestapolcsányi Szent György Templom Boróka Tábor</p>
+				<p>Pontos helyszínek: 3643 Dédestapolcsány, Hunyadi utca 70. 3349 Nagyvisnyó Bánvölgye út 1.</p>
+			</div>
+			<div class="section__image">
+				<img src="szikla.webp">
+			</div>
 		</div>
 	</section>
 
-	<section>
+	<section
+		style="background-color:rgb(60, 31, 177);"
+	>
+		<div class="section">
+			<div class="section__content">
+				<h2>Események</h2>
+				<ul>
+					<!-- todo fix number formatting-->
+					<li><strong>14:00</strong> Templomi szertartás</li>
+					<li><strong>16:30</strong> Szertartás a Boróka táborban</li>
+					<li><strong>17:30</strong> Vacsora</li>
+					<li><strong>19:00</strong> Nyitótánc</li>
+					<li><strong>23:00</strong> Menyecske tánc</li>
+					<li><strong>00:00</strong> Éjféli menü</li>
+					<li>Buli Éjfélig</li>
+				</ul>
+			</div>
+			<div class="section__image">
+				<img src="levendula.webp">
+			</div>
+		</div>
+	</section>
+
+	<section
+		style="background-color: blueviolet;"
+	>
 		<div class="needsbackgroundimage">
 			<h2>Menü</h2>
 			<!--ul>
@@ -117,12 +135,13 @@
 		</div>
 	</section>
 
-	<section style="flex-direction: column;">
-		<div style="
-			display: flex;
-			flex-direction: row;
-			height: 100%;
-		">
+	<section style="
+		display: flex;
+		flex-direction: column;
+	">
+		<div
+			style="width: min(100%, 600px); height: 100%; align-self: center;"
+		>
 			<h2 style="display: none;">Foglalás</h2>
 			<iframe src="https://docs.google.com/forms/d/e/1FAIpQLScFEeszhx_CZR-PzXFGatOgcH15GSUqNQ6uHVMCZ6O_ZebGeg/viewform?embedded=true"
 				frameborder="0" marginheight="0" marginwidth="0"
