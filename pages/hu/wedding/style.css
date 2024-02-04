@@ -28,28 +28,24 @@ nav {
 nav > a {
 	padding-right: 5px;
 }
-section {
-	height: 100vh;
-	margin: 0;
-	padding: 0;
-	display: flex;
-}
-h1, h2, p {
+h1, h2, h3, p {
 	text-align: center;
 	margin-block-start: 0;
 	margin-block-end: 0;
 }
 h1 {
 	font-size: 48px;
-	margin-bottom: 20px;
 }
 h2 {
 	font-size: 36px;
+	margin-bottom: 20px;
+}
+h3 {
 	margin-bottom: 10px;
 }
 p {
 	line-height: 1.5;
-	margin-bottom: 20px;
+	margin-bottom: 8px;
 }
 li {
 	list-style-type: '👉';
@@ -60,6 +56,12 @@ footer {
 	margin-top: auto;
 	width: 100%;
 	text-align: center;
+}
+section {
+	height: 100vh;
+	margin: 0;
+	padding: 0;
+	display: flex;
 }
 
 .section {
@@ -92,6 +94,7 @@ footer {
 }
 
 .section__image img {
+	border-radius: 10px;
 	overflow: hidden;
     width: 100%;
 }
@@ -100,4 +103,8 @@ footer {
     .section {
         grid-template-columns: [content-start] 1fr [content-end image-start] 1fr [image-end];
     }
+}
+
+.FAQ li{
+	margin-bottom: 10px;
 }
