@@ -9,7 +9,13 @@
 	<meta charset="UTF-8">
 	<title>Niki és Boldi esküvője</title>
 </head>
-<body>
+<body style="
+	background-image:url('https://d1di2lzuh97fh2.cloudfront.net/files/1m/1mh/1mhb7k.png?ph=15f4911b88');
+">
+<!--
+	background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(126,92,186,1) 100%);
+	background: rgb(255,255,255);
+-->
 	<header>
 		<div style="display: flex; flex-direction: row; float: inline-end;">
 			<input
@@ -52,25 +58,29 @@
 		<div style="flex-grow: 3;"></div>
 	</section>
 	
-	<section
-		style="background-color: aquamarine;"
-	>
+	<section>
 		<div class="section">
 			<div class="section__content">
 				<h2 hidden>Helyszín és Időpont</h2>
-				<h3>Időpont</h3>
+				<h2>Időpont</h2>
 				<p>2024.07.06. <br> Templomi szertartás: 15:00</p>
-				<div> <!--tab 1-->
-					<h3>Templom</h3>
+				<div class="tab">
+					<button class="tablinks" onclick="openTab(event, 'Templom')" id="defaultOpen">Templom</button>
+					<button class="tablinks" onclick="openTab(event, 'Lakodalom')">Lakodalom</button>
+				</div>
+				<div id="Templom" class="tabcontent">
 					<p>Dédestapolcsányi Szent György Templom:</p>
 					<p>3643 Dédestapolcsány, Hunyadi utca 70</p>
-					<!-- map -->
+					<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2660.762895244741!2d20.483193811471185!3d48.17265084859947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x473f7d439a1975bf%3A0xb02ce548f3ed59cc!2sD%C3%A9destapolcs%C3%A1nyi%20R%C3%B3mai%20Katolikus%20Templom!5e0!3m2!1sen!2shu!4v1707199781517!5m2!1sen!2shu"
+					width="400" height="250" class="map"
+					allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 				</div>
-				<div> <!--tab 2-->
-					<h3>Lakodalom</h3>
+				<div id="Lakodalom" class="tabcontent">
 					<p>Boróka tábor:</p>
 					<p>3349 Nagyvisnyó Bánvölgye út 1.</p>
-					<!--map2-->
+					<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d10955.486836599432!2d20.448263766201375!3d48.14305749140401!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4740822722d29e65%3A0x1b68c712017aa550!2zQm9yw7NrYSBUw6Fib3I!5e0!3m2!1sen!2shu!4v1707200873748!5m2!1sen!2shu"
+					width="400" height="250" class="map"
+					allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 				</div>
 			</div>
 			<div class="section__image">
@@ -79,9 +89,7 @@
 		</div>
 	</section>
 
-	<section
-		style="background-color:rgb(60, 31, 177);"
-	>
+	<section>
 		<div class="section">
 			<div class="section__content">
 				<h2>Program</h2>
@@ -101,9 +109,7 @@
 	</section>
 
 	<!--
-	<section
-		hiddenstyle="background-color: blueviolet;"
-	>
+	<section>
 		<div class="section">
 			<div class="section__content">
 				<h2>Menü</h2>
@@ -134,7 +140,7 @@
 	</section>
 	-->
 
-	<section style="background-color: rgb(62, 182, 104);">
+	<section>
 		<div class="section">
 			<div class="section__content">
 				<h2>Szállás</h2>
@@ -149,7 +155,7 @@
 		</div>
 	</section>
 
-	<section style="background-color: rgb(182, 62, 70);">
+	<section>
 		<div class="section">
 			<div class="section__content FAQ">
 				<h2>Gyakori kérdések</h2>
@@ -171,9 +177,7 @@
 		display: flex;
 		flex-direction: column;
 	">
-		<div
-			style="width: min(100%, 600px); height: 100%; align-self: center;"
-		>
+		<div class="google_forms_container">
 			<h2 hidden>Regisztráció</h2>
 			<iframe src="https://docs.google.com/forms/d/e/1FAIpQLScFEeszhx_CZR-PzXFGatOgcH15GSUqNQ6uHVMCZ6O_ZebGeg/viewform?embedded=true"
 				frameborder="0" marginheight="0" marginwidth="0"
@@ -182,12 +186,14 @@
 		</div>
 		
 		<footer>
+			<div class="google_forms_container footer">
 			<h2>Kapcsolat</h2>
-			<p>Ha kérdésed van, vagy van ötleted, hogyan lehetne jobb ez az oldal, akkor írj nekünk egy 
-				<a href="mailto:nemeth.boldizsar0@gmail.com?subject=Niki%20és%20Boldi%20Esküvője%20-%20ötlet/kérdés/hiba%20bejelentés">
-				e-mailt</a>!
-			</p>
-			<p>&copy; 2024 Boldi és Niki Esküvője. All rights reserved.</p>
+				<p>Ha kérdésed van, vagy van ötleted, hogyan lehetne jobb ez az oldal, akkor írj nekünk egy 
+					<a href="mailto:nemeth.boldizsar0@gmail.com?subject=Niki%20és%20Boldi%20Esküvője%20-%20ötlet/kérdés/hiba%20bejelentés">
+					e-mailt</a>!
+				</p>
+				<p>&copy; 2024 Boldi és Niki Esküvője. All rights reserved.</p>
+			</div>
 		</footer>
 	</section>
 </body>
