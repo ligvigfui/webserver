@@ -85,7 +85,7 @@ section {
     grid-area: content;
     z-index: 2;
     border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.65);
     margin: 0 max(10px, 2%);
     padding: 10px 15px;
 }
@@ -133,6 +133,8 @@ section {
 }
 .map {
 	border: 0;
+	width: 100%;
+	height: 100%;
 }
 
 
@@ -147,6 +149,7 @@ section {
 .tab button {
 	background-color: inherit;
 	float: left;
+	width: 50%;
 	border: none;
 	outline: none;
 	cursor: pointer;
@@ -170,6 +173,7 @@ section {
 	display: none;
 	padding: 6px 12px;
 	border: 1px solid #ccc;
+	background-color: rgba(255, 255, 255, 0.6);
 	border-top: none;
 	animation: fadeEffect 1s; /* Fading effect takes 1 second */
 }
@@ -178,4 +182,79 @@ section {
 @keyframes fadeEffect {
 	from {opacity: 0;}
 	to {opacity: 1;}
+}
+
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 36px;
+	height: 20px;
+	margin-top: 1px;
+}
+
+.switch input { 
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	-webkit-transition: .4s;
+	transition: .4s;
+}
+
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 16px;
+	width: 16px;
+	left: 2px;
+	bottom: 2px;
+	background-color: white;
+	-webkit-transition: .4s;
+	transition: .4s;
+}
+
+input:checked + .slider {
+	background-color: #2196F3;
+}
+
+input:focus + .slider {
+	box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+	-webkit-transform: translateX(16px);
+	-ms-transform: translateX(16px);
+	transform: translateX(16px);
+}
+
+/* Rounded sliders */
+.slider.round {
+	border-radius: 20px;
+}
+
+.slider.round:before {
+	border-radius: 50%;
+}
+
+.animation_container {
+	display: flex;
+	flex-direction: row;
+	float: inline-end;
+}
+
+@media (max-width: 768px) {
+	.animation_container {
+		flex-direction: column;
+		align-items: center;
+		margin: auto;
+	}
 }

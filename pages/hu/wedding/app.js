@@ -56,9 +56,39 @@ onResponsive();
 window.addEventListener('resize', onResponsive);
 window.addEventListener('orientationchange', onResponsive);
 
+function openTab(evt, tabName) {
+	var i, tabcontent, tablinks;
+	tabcontent = document.getElementsByClassName("tabcontent");
+	for (i = 0; i < tabcontent.length; i++) {
+		tabcontent[i].style.display = "none";
+	}
+	tablinks = document.getElementsByClassName("tablinks");
+	for (i = 0; i < tablinks.length; i++) {
+		tablinks[i].className = tablinks[i].className.replace(" active", "");
+	}
+	document.getElementById(tabName).style.display = "block";
+	evt.currentTarget.className += " active";
+}
+
+// Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();
+
+// listen to animation_toggle change
+document.getElementById('animation_toggle').addEventListener('change', function() {
+	if (this.checked) {
+		// add event listeners
+		window.addEventListener('wheel', wheel, { passive: false });
+		window.addEventListener('touchmove', touchMove, { passive: false });
+	}
+	else {
+		// remove event listeners if any
+		window.removeEventListener('wheel', wheel, { passive: false });
+		window.removeEventListener('touchmove', touchMove, { passive: false });
+	}
+});
+
 let lastDeltaYs = [0, 0, 0];
-window.addEventListener('wheel', function(e) {
-	if (!document.getElementById('animation_toggle').checked) return;
+function wheel(e) {
 	console.log(e.deltaY);
     lastDeltaYs.shift();
 	lastDeltaYs.push(e.deltaY)
@@ -79,15 +109,14 @@ window.addEventListener('wheel', function(e) {
             }
         }
     }
-}, { passive: false });
+}
 
 let startY;
 window.addEventListener('touchstart', function(e) {
 	startY = e.touches[0].pageY;
 }, false);
 
-window.addEventListener('touchmove', function(e) {
-	if (!document.getElementById('animation_toggle').checked) return;
+function touchMove(e) {
 	e.preventDefault();
 	let currentSectionIndex = Math.round(window.scrollY / sectionHeight);
 	if (e.touches[0].pageY > startY) {
@@ -101,32 +130,15 @@ window.addEventListener('touchmove', function(e) {
 			window.scrollTo({ top: positions[currentSectionIndex + 1], behavior: 'smooth' });
 		}
 	}
-}, { passive: false });
+}
 
 function scrollToSection(sectionIndex) {
-	if (document.getElementById('animation_toggle').checked)
+	window.scrollTo({ top: positions[sectionIndex], behavior: 'smooth' });
+	/*if (document.getElementById('animation_toggle').checked)
 	{
-		window.scrollTo({ top: positions[sectionIndex], behavior: 'smooth' });
 	}
 	else
 	{
 		window.scrollTo({ top: positions[sectionIndex], behavior: 'instant' });
-	}
+	}*/
 }
-
-function openTab(evt, tabName) {
-	var i, tabcontent, tablinks;
-	tabcontent = document.getElementsByClassName("tabcontent");
-	for (i = 0; i < tabcontent.length; i++) {
-		tabcontent[i].style.display = "none";
-	}
-	tablinks = document.getElementsByClassName("tablinks");
-	for (i = 0; i < tablinks.length; i++) {
-		tablinks[i].className = tablinks[i].className.replace(" active", "");
-	}
-	document.getElementById(tabName).style.display = "block";
-	evt.currentTarget.className += " active";
-}
-
-// Get the element with id="defaultOpen" and click on it
-document.getElementById("defaultOpen").click();
