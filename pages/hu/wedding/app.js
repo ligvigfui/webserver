@@ -40,6 +40,7 @@ function openTab(evt, tabName) {
 // Get the element with id="defaultOpen" and click on it
 document.getElementById("defaultOpen").click();
 
+/*
 // listen to animation_toggle change
 document.getElementById('animation_toggle').addEventListener('change', function() {
 	if (this.checked) {
@@ -101,11 +102,12 @@ function touchMove(e) {
 
 function scrollToSection(sectionIndex) {
 	window.scrollTo({ top: positions[sectionIndex], behavior: 'smooth' });
-	/*if (document.getElementById('animation_toggle').checked)
+	if (document.getElementById('animation_toggle').checked)
 	{
 	}
 	else
 	{
 		window.scrollTo({ top: positions[sectionIndex], behavior: 'instant' });
-	}*/
+	}
 }
+*/
