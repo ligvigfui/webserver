@@ -99,15 +99,15 @@ function touchMove(e) {
 		}
 	}
 }
-
+*/
 function scrollToSection(sectionIndex) {
 	window.scrollTo({ top: positions[sectionIndex], behavior: 'smooth' });
+	/*
 	if (document.getElementById('animation_toggle').checked)
 	{
 	}
 	else
 	{
 		window.scrollTo({ top: positions[sectionIndex], behavior: 'instant' });
-	}
+	}*/
 }
-*/
