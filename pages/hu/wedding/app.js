@@ -1,6 +1,6 @@
 const positions = [];
 const sections = document.querySelectorAll('section');
-let sectionHeight = window.innerHeight;
+let sectionHeight = sections[0].offsetHeight;
 
 function getPositions() {
 	sectionHeight = window.innerHeight;
