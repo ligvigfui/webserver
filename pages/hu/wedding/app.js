@@ -1,7 +1,6 @@
-const positions = [];
 const sections = document.querySelectorAll('section');
-let sectionHeight = sections[0].offsetHeight;
 
+/*
 function getPositions() {
 	sectionHeight = window.innerHeight;
 	positions.length = 0;
@@ -9,7 +8,7 @@ function getPositions() {
 		positions.push(i * sectionHeight);
 	}
 	scrollToSection(Math.round(window.scrollY / sectionHeight));
-}
+}*/
 
 var nav = document.getElementsByTagName('nav')[0];
 nav.innerHTML += "<a href='' onclick='scrollToSection(0); return false;'>Kezdőlap</a>";
@@ -19,9 +18,11 @@ for (var i = 1; i < sections.length; i++) {
 }
 
 window.scrollTo({ top: 0, behavior: "smooth" });
+/*
 getPositions();
 window.addEventListener('resize', getPositions);
 window.addEventListener('orientationchange', getPositions);
+*/
 
 function openTab(evt, tabName) {
 	var i, tabcontent, tablinks;
@@ -101,7 +102,7 @@ function touchMove(e) {
 }
 */
 function scrollToSection(sectionIndex) {
-	window.scrollTo({ top: positions[sectionIndex], behavior: 'smooth' });
+	window.scrollTo({ top: sections[sectionIndex].offsetTop, behavior: 'smooth' });
 	/*
 	if (document.getElementById('animation_toggle').checked)
 	{
