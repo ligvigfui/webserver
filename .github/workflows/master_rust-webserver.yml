@@ -38,7 +38,7 @@ jobs:
   deploy:
     needs: build
     runs-on: 'ubuntu-latest'
-    if: github.event_name == 'workflow_dispatch'
+    environment: Deployment
     steps:
     - uses: actions/checkout@v2
     - name: Deploy to Azure
