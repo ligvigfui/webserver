@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy container app to Azure Web App - rust-webserver
 
 on:
@@ -10,42 +7,44 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     runs-on: 'ubuntu-latest'
-
     steps:
     - uses: actions/checkout@v2
+    - name: Run tests
+      run: |
+        cargo test
 
+  build:
+    needs: test
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: actions/checkout@v2
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
-
-    - name: Log in to registry
-      uses: docker/login-action@v2
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1 
       with:
-        registry: https://mcr.microsoft.com/
-        username: ${{ secrets.AzureAppService_ContainerUsername_cee548cc73db483dab55f526667c87d6 }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_fcf0b16b98684af5936949fd4ee937a8 }}
-
-    - name: Build and push container image to registry
-      uses: docker/build-push-action@v3
+        registry: https://index.docker.io/v1/
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
       with:
+        context: .
         push: true
-        tags: mcr.microsoft.com/${{ secrets.AzureAppService_ContainerUsername_cee548cc73db483dab55f526667c87d6 }}/appsvc/staticsite:${{ github.sha }}
-        file: ./Dockerfile
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/rust_webserver:latest
 
   deploy:
-    runs-on: ubuntu-latest
     needs: build
-    environment:
-      name: 'production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
+    runs-on: 'ubuntu-latest'
+    if: github.event_name == 'workflow_dispatch'
     steps:
-    - name: Deploy to Azure Web App
-      id: deploy-to-webapp
+    - uses: actions/checkout@v2
+    - name: Deploy to Azure
       uses: azure/webapps-deploy@v2
       with:
         app-name: 'rust-webserver'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_5fbb042a95d843d983188f8b56292fcf }}
-        images: 'mcr.microsoft.com/${{ secrets.AzureAppService_ContainerUsername_cee548cc73db483dab55f526667c87d6 }}/appsvc/staticsite:${{ github.sha }}'
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5FBB042A95D843D983188F8B56292FCF }}
+        images: '${{ secrets.DOCKER_HUB_USERNAME }}/rust_webserver:latest'
