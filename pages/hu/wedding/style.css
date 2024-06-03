@@ -261,3 +261,5 @@ input:checked + .slider:before {
 		margin: auto;
 	}
 }
+
+/* Add sandwitch menu if max-width: 324 */

@@ -1,45 +1,39 @@
 const sections = document.querySelectorAll('section');
 
-/*
-function getPositions() {
-	sectionHeight = window.innerHeight;
-	positions.length = 0;
-	for (let i = 0; i < sections.length; i++) {
-		positions.push(i * sectionHeight);
-	}
-	scrollToSection(Math.round(window.scrollY / sectionHeight));
-}*/
-
 var nav = document.getElementsByTagName('nav')[0];
-nav.innerHTML += "<a href='' onclick='scrollToSection(0); return false;'>Kezdőlap</a>";
+nav.innerHTML += "<a href='' onclick='scrollToSectionNumber(0); return false;'>Kezdőlap</a>";
 for (var i = 1; i < sections.length; i++) {
     var text = sections[i].getElementsByTagName('h2')[0].innerHTML;
-    nav.innerHTML += "<a href='' onclick='scrollToSection(" + i + "); return false;'>" + text + "</a>";
+    nav.innerHTML += "<a href='' onclick='scrollToSectionNumber(" + i + "); return false;'>" + text + "</a>";
 }
 
 window.scrollTo({ top: 0, behavior: "smooth" });
-/*
-getPositions();
-window.addEventListener('resize', getPositions);
-window.addEventListener('orientationchange', getPositions);
-*/
 
 function openTab(evt, tabName) {
+	//get section__content class from parents
+	var sectionId = evt.target.closest('.section__content').getElementsByTagName('h2')[0].innerHTML;
 	var i, tabcontent, tablinks;
 	tabcontent = document.getElementsByClassName("tabcontent");
 	for (i = 0; i < tabcontent.length; i++) {
+		if (tabcontent[i].closest('.section__content').getElementsByTagName('h2')[0].innerHTML != sectionId)
+			continue;
 		tabcontent[i].style.display = "none";
 	}
 	tablinks = document.getElementsByClassName("tablinks");
 	for (i = 0; i < tablinks.length; i++) {
+		if (tablinks[i].closest('.section__content').getElementsByTagName('h2')[0].innerHTML != sectionId)
+			continue;
 		tablinks[i].className = tablinks[i].className.replace(" active", "");
 	}
 	document.getElementById(tabName).style.display = "block";
 	evt.currentTarget.className += " active";
 }
 
-// Get the element with id="defaultOpen" and click on it
-document.getElementById("defaultOpen").click();
+// Get the elements with class="defaultOpen" and click on them
+const defauls = document.getElementsByClassName("defaultOpen");
+for (var i = 0; i < defauls.length; i++) {
+	defauls[i].click();
+}
 
 /*
 // listen to animation_toggle change
@@ -101,7 +95,7 @@ function touchMove(e) {
 	}
 }
 */
-function scrollToSection(sectionIndex) {
+function scrollToSectionNumber(sectionIndex) {
 	window.scrollTo({ top: sections[sectionIndex].offsetTop, behavior: 'smooth' });
 	/*
 	if (document.getElementById('animation_toggle').checked)
@@ -109,6 +103,6 @@ function scrollToSection(sectionIndex) {
 	}
 	else
 	{
-		window.scrollTo({ top: positions[sectionIndex], behavior: 'instant' });
+		window.scrollTo({ top: sections[sectionIndex].offsetTop, behavior: 'instant' });
 	}*/
 }

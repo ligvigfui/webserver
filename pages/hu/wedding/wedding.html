@@ -69,7 +69,7 @@
 				<h2>Időpont</h2>
 				<p>2024.07.06. <br> Templomi szertartás: 15:00</p>
 				<div class="tab">
-					<button class="tablinks" onclick="openTab(event, 'Templom')" id="defaultOpen">Templom</button>
+					<button class="tablinks defaultOpen" onclick="openTab(event, 'Templom')">Templom</button>
 					<button class="tablinks" onclick="openTab(event, 'Lakodalom')">Lakodalom</button>
 				</div>
 				<div id="Templom" class="tabcontent">
@@ -98,6 +98,7 @@
 				<ul>
 					<!-- todo fix number formatting-->
 					<li><strong>11:00</strong> Szállás ekkortól elfoglalható</li>
+					<li><strong>13:00</strong> Vendégváró a táborban</li>
 					<li><strong>15:00</strong> Templomi szertartás</li>
 					<li><strong>17:00</strong> Indul a nászmenet</li>
 					<li><strong>18:00</strong> Vacsora</li>
@@ -109,37 +110,83 @@
 		</div>
 	</section>
 
-	<!--
 	<section>
 		<div class="section">
 			<div class="section__content">
 				<h2>Menü</h2>
-				<h3>Vacsora</h3>
-				<ul>
-					<li>Húsleves gazdagon</li>
-					<li>Rántott csirkemell</li>
-					<li>Bécsi szelet</li>
-					<li>Sajttal-aszaltszilvával töltött csirkemell</li>
-					<li>Rántott sajt</li>
-					<li>Kolbásszal töltött karaj</li>
-					<li>Gombás szelet</li>
-					<li>Rozmaringos kacsacomb</li>
-					<br>
-					<li>Grill zöldség</li>
-					<li>Zöld saláta</li>
-					<li>Rizs</li>
-					<li>Steak burgonya</li>
-				</ul>
-				<h3>Italok</h3>
-				<h3>Torta</h3>
-				<h3>Éjféli fogás</h3>
+				<div class="tab">
+					<button class="tablinks defaultOpen" onclick="openTab(event, 'Vacsora')">Vacsora</button>
+					<button class="tablinks" onclick="openTab(event, 'Italok')">Italok</button>
+					<button class="tablinks" onclick="openTab(event, 'Tortak')">Torták</button>
+					<button class="tablinks" onclick="openTab(event, 'Ejfel')">Éjféli fogás</button>
+				</div>
+				<div id="Vacsora" class="tabcontent">
+					<ul>
+						<li>Tyúkhúsleves</li>
+						<br/>
+						<li>Aszalt paradicsommal-sajtal töltött csirkemell</li>
+						<li>Aszaltszilvával tölött pulykamell</li>
+						<li>Grill csirkemell</li>
+						<li>Rántott karaj</li>
+						<li>Rántott kamambert</li>
+						<li>Rántott karfiol</li>
+						<li>Juhtúrós gombafejek</li>
+						<li>Vörösboros marhapörkölt tarhonyával</li>
+						<br/>
+						<li>Grill zöldség</li>
+						<li>Rizs</li>
+						<li>Steak burgonya</li>
+						<li>Házi vegyes savanyú</li>
+						<li>Zöld saláta</li>
+					</ul>
+				</div>
+				<div id="Italok" class="tabcontent">
+					<ul>
+						<li>Limonádé</li>
+						<li>Coca Cola</li>
+						<li>Tonic</li>
+						<li>Narancslé</li>
+						<li>Sió Őszibaracklé</li>
+						<li>Ásványvíz</li>
+						<li>Citromos sör (0%)</li>
+						<li>Kávé</li>
+						<br/>
+						<li>Meggyes sör (csapolt)</li>
+						<li>Borsodi világos sör (csapolt)</li>
+						<li>Házi bor</li>
+						<li>Házi pálinka</li>
+						<li>Gin</li>
+						<li>Unicum</li>
+						<li>Baileys</li>
+						<li>Jim Beam Red Stag</li>
+					</ul>
+				</div>
+				<div id="Tortak" class="tabcontent">
+					<ul>
+						<li>Étcsokis málnás</li>
+						<li>Pisztáciás</li>
+						<li>Vörösbársony</li>
+						<li>Maxi-king</li>
+						<li>Diabetikus erdei gyömölcsös sajttorta</li>
+						<li>Gluténmentes, vegán</li>
+					</ul>
+				</div>
+				<div id="Ejfel" class="tabcontent">
+					<ul>
+						<li>Francia saláta</li>
+						<li>Görög saláta</li>
+						<li>Krumpli saláta</li>
+						<br/>
+						<li>Szezámmagos csirke falatka</li>
+						<li>Rántott gomba</li>
+						<li>Csabai karaj</li>
+						<li>Natúr fűszeres karaj</li>
+					</ul>
+				</div>
 			</div>
-			<div class="section__image">
-				<img src="Boroka-Tabor-etel2.webp">
-			</div>
+			<img src="Boroka-Tabor-etel2.webp">
 		</div>
 	</section>
-	-->
 
 	<section>
 		<div class="section">
@@ -162,7 +209,7 @@
 					<li>A templom és a lakodalom helyszíne is meglehetősen természetközeli, ezért ajánlott valamilyen kényelmesebb viselettel készülni.</li>
 					<li>Dresscode nincs, mindenki abban jöjjön, amiben jól érzi magát.</li>
 					<li>Az esüvő színei a lilás-pirosas árnyalatok. Minden kislány, aki ilyen színben jelenik meg, automatikusan koszorúslánnyá lesz nyilvánítva.</li>
-					<li>Nászajándék tekintetében bármivel boldoggá tudtok tenni minket, de a borítékot is megköszönjük.</li>
+					<li>Nászajándék tekintetében bármivel boldoggá tudtok tenni minket, a borítékot is megköszönjük.</li>
 					<li>Szeretnénk megkérni a vendégeket a mértékletes alkoholfogyasztásra.</li>
 				</ul>
 			</div>
