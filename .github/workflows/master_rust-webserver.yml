@@ -34,6 +34,7 @@ jobs:
         context: .
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/rust_webserver:latest
+        build-args: ROOT_PASSWORD=${{ secrets.ROOT_PASSWORD }}
 
   deploy:
     needs: build

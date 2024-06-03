@@ -1,6 +1,19 @@
+ARG ROOT_PASSWORD
 FROM rust:1.71.0
 WORKDIR $HOME/webserver
 COPY . .
-RUN cargo build --release
-CMD [ "target/release/webserver" ]
-EXPOSE 7878
+
+# new script
+COPY entrypoint.sh ./
+
+# Start and enable SSH
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends dialog \
+    && apt-get install -y --no-install-recommends openssh-server \
+    && echo "root:$ROOT_PASSWORD" | chpasswd \
+    && chmod u+x ./entrypoint.sh
+COPY sshd_config /etc/ssh/
+
+EXPOSE 7878 2222
+
+ENTRYPOINT [ "./entrypoint.sh" ]
