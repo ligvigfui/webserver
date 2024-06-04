@@ -27,7 +27,8 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
         }
     };
     match host.split(":").next().unwrap() {
-        "nikiesboldi.ddnsfree.com" | 
+        "nikiesboldi.ddnsfree.com" |
+            "rust-webserver.azurewebsites.net" |
             "192.168.0.10" |
             "nikiesboldi" | 
             "homenikiesboldi" => wedding::routing(stream, request),
