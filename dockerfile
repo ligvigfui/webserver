@@ -1,4 +1,3 @@
-ARG ROOT_PASSWORD
 FROM rust:1.71.0
 WORKDIR $HOME/webserver
 COPY . .
@@ -10,7 +9,7 @@ COPY entrypoint.sh ./
 RUN apt-get update \
     && apt-get install -y --no-install-recommends dialog \
     && apt-get install -y --no-install-recommends openssh-server \
-    && echo "root:$ROOT_PASSWORD" | chpasswd \
+    && echo "root:Docker!" | chpasswd \
     && chmod u+x ./entrypoint.sh
 COPY sshd_config /etc/ssh/
 
