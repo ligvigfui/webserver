@@ -26,14 +26,16 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
             return;
         }
     };
+    wedding::routing(stream, request);
+    /*
     match host.split(":").next().unwrap() {
         "nikiesboldi.ddnsfree.com" |
             "rust-webserver.azurewebsites.net" |
             "192.168.0.10" |
-            "nikiesboldi" | 
+            "nikiesboldi" |
             "homenikiesboldi" => wedding::routing(stream, request),
-        "neptuncrf.freeddns.org" | 
-            "neptuncrf" | 
+        "neptuncrf.freeddns.org" |
+            "neptuncrf" |
             "homeneptuncrf" => neptunCRF::routing(stream, request, users),
         "coder.ddnsfree.com" | 
             "coder" | 
@@ -42,7 +44,7 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
             println!("Did not find host: \"{:?}\"", request.headers.get("Host"));
             response404(stream, request);
         }
-    }
+    } */
     println!("\x1b[38;5;22mDone with request: {}\x1b[0m", request.path);
 }
 
