@@ -1,16 +1,13 @@
-FROM rust:1.71.0
+FROM rust
 WORKDIR $HOME/webserver
 COPY . .
 
-# new script
-COPY entrypoint.sh ./
-
-# Start and enable SSH
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends dialog \
-    && apt-get install -y --no-install-recommends openssh-server \
-    && echo "root:Docker!" | chpasswd \
-    && chmod u+x ./entrypoint.sh
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends dialog
+RUN apt-get install -y --no-install-recommends openssh-server
+RUN echo "root:Docker!" | chpasswd
+RUN cargo build --release
+RUN chmod u+x ./entrypoint.sh
 COPY sshd_config /etc/ssh/
 
 EXPOSE 7878 2222

@@ -18,6 +18,7 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
         println!("\x1b[38;5;11m{}\x1b[0m", chrono::Local::now().format("%Y-%m-%d %H:%M:%S"));
         println!("\x1b[38;5;21mHandling - Request.path: {}, Request.method: {:?}\x1b[0m", request.path, request.method);
     }
+    /*
     let host = match request.headers.get("Host") {
         Some(x) => x,
         None => {
@@ -26,6 +27,7 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
             return;
         }
     };
+    */
     wedding::routing(stream, request);
     /*
     match host.split(":").next().unwrap() {
