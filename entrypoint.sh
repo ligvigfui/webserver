@@ -1,4 +1,4 @@
 #!/bin/sh
 set -e
 service ssh start
-exec cargo run --release
+exec ./target/release/webserver
