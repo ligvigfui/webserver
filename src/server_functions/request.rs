@@ -27,8 +27,8 @@ impl<'a> Request<'a> {
         let headers_iter = headers.split("\r\n");
         let mut headers = HashMap::new();
         for header in headers_iter {
-            let mut header_cut = header.split(": ");
-            let (header_name, header_value) = (header_cut.next()?, header_cut.next()?);
+            let mut header_cut = header.split(":");
+            let (header_name, header_value) = (header_cut.next()?, header_cut.next()?.trim());
             headers.insert(header_name, header_value);
         }
         let method = match Method::from(method) {
