@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy container app to Azure Web App - nikiesboldi
 
 on:
@@ -10,42 +7,44 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     runs-on: 'ubuntu-latest'
-
     steps:
     - uses: actions/checkout@v2
+    - name: Run tests
+      run: |
+        cargo test
 
+  build:
+    needs: test
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: actions/checkout@v2
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
-
-    - name: Log in to registry
-      uses: docker/login-action@v2
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1 
       with:
         registry: https://index.docker.io/v1/
-        username: ${{ secrets.AzureAppService_ContainerUsername_065e23a9dd8b4f9792e3039d2484bea0 }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_9a4be281c2e441e6aa2bd53f1ca392ec }}
-
-    - name: Build and push container image to registry
-      uses: docker/build-push-action@v3
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
       with:
+        context: .
         push: true
-        tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_065e23a9dd8b4f9792e3039d2484bea0 }}/rust_webserver:${{ github.sha }}
-        file: ./Dockerfile
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/rust_webserver:latest
 
   deploy:
-    runs-on: ubuntu-latest
     needs: build
-    environment:
-      name: 'production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
+    runs-on: 'ubuntu-latest'
+    environment: Deployment
     steps:
-    - name: Deploy to Azure Web App
-      id: deploy-to-webapp
+    - uses: actions/checkout@v2
+    - name: Deploy to Azure
       uses: azure/webapps-deploy@v2
       with:
         app-name: 'nikiesboldi'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_741e96e134f24666a755851bad24ae96 }}
-        images: 'index.docker.io/${{ secrets.AzureAppService_ContainerUsername_065e23a9dd8b4f9792e3039d2484bea0 }}/rust_webserver:${{ github.sha }}'
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_741E96E134F24666A755851BAD24AE96 }}
+        images: '${{ secrets.DOCKER_HUB_USERNAME }}/rust_webserver:latest'
