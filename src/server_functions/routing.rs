@@ -1,6 +1,6 @@
 use crate::*;
 
-pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mutex<User>>>) {
+pub fn routing(request: &mut Request, users: Arc<Vec<Mutex<User>>>) -> Response {
     /*if request.protocol != "HTTP/1.1" {
         println!("Protocol not supported: {}", request.protocol);
         handle_page_return(stream, CODES[&505], None, "505.html");
@@ -28,7 +28,7 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
         }
     };
     */
-    wedding::routing(stream, request);
+    let response = wedding::routing(request);
     /*
     match host.split(":").next().unwrap() {
         "nikiesboldi.ddnsfree.com" |
@@ -48,6 +48,7 @@ pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mut
         }
     } */
     println!("\x1b[38;5;22mDone with request: {}\x1b[0m", request.path);
+    response
 }
 
 /*

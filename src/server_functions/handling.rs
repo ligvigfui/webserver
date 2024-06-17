@@ -24,7 +24,11 @@ pub fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
         }
     };
     
-    routing(&mut stream, &mut request, users);
+    let response = routing(&mut request, users);
+    match send_response(&mut stream, response) {
+        Ok(_) => {},
+        Err(e) => eprintln!(e),
+    }
 }
 
 fn read_to_buffer(stream: &mut TcpStream) -> Result<String, Error> {
@@ -107,12 +111,12 @@ pub fn default_handle(stream: &mut TcpStream, status: &str, headers: Option<Vec<
                 response
         );}
     }
-    if let Err(e) = send_response(stream, &response, None) {
+    if let Err(e) = send_response(stream, &response) {
         println!("{}", e);
     }
 }
 
-fn default_handle_files(stream: &mut TcpStream, status: &str, headers: Option<Vec<&str>>, contents: Vec<u8>) {
+fn default_handle_files(stream: &mut TcpStream, status: &str, headers: Option<Vec<&str>>, contents: Vec<u8>) -> Result<(),  Error> {
     let chunked = contents.len() > 1024;
     let constant_headers = if chunked {
         "Transfer-Encoding: chunked\r\n".to_string()
@@ -147,13 +151,9 @@ fn default_handle_files(stream: &mut TcpStream, status: &str, headers: Option<Ve
         );}
     }
     if chunked {
-        if let Err(e) = send_chunked_response(stream, &response, None, Some(contents)) {
-            println!("{}", e);
-        }
+        send_chunked_response(stream, &response, None, Some(contents))
     } else {
-        if let Err(e) = send_response(stream, &response, Some(contents)) {
-            println!("{}", e);
-        }
+        send_response(stream, &response, Some(contents))
     }
 }
 
@@ -204,16 +204,11 @@ pub fn handle_file_inner(stream: &mut TcpStream, path: String) -> Result<(), io:
             format!("Content-Type: {file_format}").as_str(),
         ]),
         contents
-    );
-    Ok(())
+    )
 }
 
-fn send_response(stream: &mut TcpStream, response: &str, contents: Option<Vec<u8>>) -> Result<(),  Error> {
+fn send_response(stream: &mut TcpStream, response: Response) -> Result<(),  Error> {
     stream.write_all(response.as_bytes())?;
-    if contents.is_some() {
-        stream.write_all(&contents.unwrap())?;
-    }
-    print!("\n");
     stream.flush()?;
     stream.shutdown(Shutdown::Both)
 }
@@ -226,7 +221,7 @@ fn send_chunked_response(stream: &mut TcpStream, headers: &str, body: Option<&st
         (None, Some(x)) => x,
         _ => panic!("send_chunked_response: You should only provide one option or the other")
     };
-    let chunks = chunkable.chunks(8192);
+    let chunks = chunkable.chunks(8000);
     for chunk in chunks {
         let len = format!("{:X}\r\n", chunk.len());
         let chunk_data = [len.as_bytes(), chunk, b"\r\n"].concat();

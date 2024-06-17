@@ -5,3 +5,7 @@ pub mod method;
 pub mod request;
 pub mod debug;
 pub mod thread;
+pub mod status_code;
+pub mod response;
+pub mod response_payload;
+pub mod http_verison;

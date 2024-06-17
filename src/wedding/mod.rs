@@ -4,16 +4,16 @@ pub use request::form::Form;
 
 pub mod request;
 
-pub fn routing(stream: &mut TcpStream, request: &Request) {
+pub fn routing(request: &Request) -> Response {
     use Method as M;
     match (&request.method, request.path.as_str()) {
-        (M::GET, "" | "/") => handle_page_return(stream, CODE[&200], None, "hu/wedding/wedding.html"),
-        (M::GET, image) if image.ends_with(".webp") => handle_file(stream, &format!("wedding{image}")),
-        (M::GET, "/favicon.gif") => handle_file(stream, "wedding/favicon.gif"),
-        (M::GET, "/app.js") => handle_file_pages(stream, "hu/wedding/app.js"),
-        (M::GET, "/style.css") => handle_file_pages(stream, "hu/wedding/style.css"),
+        (M::GET, "" | "/") => Response::new(ResponsePayload::File(Path::new("./pages/hu/wedding/wedding.html"))),
+        (M::GET, image) if image.ends_with(".webp") => Response::new(ResponsePayload::File(Path::new(&format!("./assets/wedding{image}")))),
+        (M::GET, "/favicon.gif") => Response::new(ResponsePayload::File(Path::new("./assets/wedding/favicon.gif"))),
+        (M::GET, "/app.js") => Response::new(ResponsePayload::File(Path::new("./pages/hu/wedding/app.js"))),
+        (M::GET, "/style.css") => Response::new(ResponsePayload::File(Path::new("./pages/hu/wedding/style.css"))),
         (M::POST, "/form") => handle_form(stream, request),
-        _ => response404(stream, request),
+        _ => Response::default()
     }
 }
 
