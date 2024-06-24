@@ -35,6 +35,19 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/rust_webserver:latest
 
+  deploy-uat:
+    needs: build
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: actions/checkout@v2
+    - name: Deploy to Azure UAT
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'rust-webserver'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_TEST }}
+        images: '${{ secrets.DOCKER_HUB_USERNAME }}/rust_webserver:latest'
+
   deploy:
     needs: build
     runs-on: 'ubuntu-latest'
