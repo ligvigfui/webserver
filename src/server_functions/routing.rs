@@ -5,13 +5,13 @@ pub fn routing(request: &mut Request, users: Arc<Vec<Mutex<User>>>) -> Response 
         println!("Protocol not supported: {}", request.protocol);
         handle_page_return(stream, CODES[&505], None, "505.html");
     }*/
-    match request.headers.get("Accept-Language") {
+    match request.headers.get(&AcceptLanguage) {
         Some(x) => match x.contains("hu") {
-            true => *request.headers.get_mut("Accept-Language").unwrap() = "hu",
-            false => *request.headers.get_mut("Accept-Language").unwrap() = "en",
+            true => *request.headers.get_mut(&AcceptLanguage).unwrap() = "hu",
+            false => *request.headers.get_mut(&AcceptLanguage).unwrap() = "en",
         },
         None => {
-            request.headers.insert("Accept-Language", "en");
+            request.headers.insert(AcceptLanguage, "en");
         },
     };
     if DEBUG >= DebugLevel::LOW {

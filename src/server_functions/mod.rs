@@ -1,6 +1,5 @@
 pub mod routing;
 pub mod handling;
-pub mod status_codes;
 pub mod method;
 pub mod request;
 pub mod debug;
@@ -9,3 +8,4 @@ pub mod status_code;
 pub mod response;
 pub mod response_payload;
 pub mod http_verison;
+pub mod headers;

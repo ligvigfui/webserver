@@ -27,7 +27,7 @@ pub fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
     let response = routing(&mut request, users);
     match send_response(&mut stream, response) {
         Ok(_) => {},
-        Err(e) => eprintln!(e),
+        Err(e) => eprintln!("{}", e),
     }
 }
 

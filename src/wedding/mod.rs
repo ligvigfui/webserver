@@ -7,31 +7,31 @@ pub mod request;
 pub fn routing(request: &Request) -> Response {
     use Method as M;
     match (&request.method, request.path.as_str()) {
-        (M::GET, "" | "/") => Response::new(ResponsePayload::File(Path::new("./pages/hu/wedding/wedding.html"))),
-        (M::GET, image) if image.ends_with(".webp") => Response::new(ResponsePayload::File(Path::new(&format!("./assets/wedding{image}")))),
-        (M::GET, "/favicon.gif") => Response::new(ResponsePayload::File(Path::new("./assets/wedding/favicon.gif"))),
-        (M::GET, "/app.js") => Response::new(ResponsePayload::File(Path::new("./pages/hu/wedding/app.js"))),
-        (M::GET, "/style.css") => Response::new(ResponsePayload::File(Path::new("./pages/hu/wedding/style.css"))),
-        (M::POST, "/form") => handle_form(stream, request),
+        (M::GET, "" | "/") => Response::new(ResponsePayload::File(PathBuf::from("./pages/hu/wedding/wedding.html"))),
+        (M::GET, image) if image.ends_with(".webp") => Response::new(ResponsePayload::File(PathBuf::from(format!("./assets/wedding{image}")))),
+        (M::GET, "/favicon.gif") => Response::new(ResponsePayload::File(PathBuf::from("./assets/wedding/favicon.gif"))),
+        (M::GET, "/app.js") => Response::new(ResponsePayload::File(PathBuf::from("./pages/hu/wedding/app.js"))),
+        (M::GET, "/style.css") => Response::new(ResponsePayload::File(PathBuf::from("./pages/hu/wedding/style.css"))),
+        (M::POST, "/form") => handle_form(request),
         _ => Response::default()
     }
 }
 
-fn handle_form<'a>(stream: &mut TcpStream, request: &'a Request) {
+fn handle_form<'a>(request: &'a Request) -> Response {
     let form: Result<Form<'a>, serde_json::Error> = request.to_form();
     match form {
         Ok(form) => {
             println!("{:?}", form);
-            default_handle(
-                stream,
-                CODE[&200],
-                Some(vec!["Access-Control-Allow-Origin: *"]),
-                "{\"status\": \"ok\"}",
-            )
+            Response {
+                http_verison: HTTPVerion::_11,
+                status: StatusCode::_200,
+                headers: HashMap::from([(Header::AccessControlAllowOrigin, "*".to_string())]),
+                payload: ResponsePayload::Json("{\"status\": \"ok\"}".to_owned()),
+            }
         },
         Err(e) => {
             println!("{}", e);
-            response404(stream, request)
+            Response::_404(request)
         }
     }
 }

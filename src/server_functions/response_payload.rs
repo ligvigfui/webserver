@@ -3,7 +3,7 @@ use crate::*;
 #[derive(Debug)]
 pub enum ResponsePayload {
     None,
-    File(Path),
+    File(PathBuf),
     Json(String),
     Bites(Vec<u8>),
 }

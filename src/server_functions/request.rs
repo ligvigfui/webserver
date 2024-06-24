@@ -6,8 +6,23 @@ pub struct Request<'a> {
     pub path: String,
     pub query: Option<&'a str>,
     pub protocol: &'a str,
-    pub headers: HashMap<&'a str, &'a str>,
+    pub headers: HashMap<Header, &'a str>,
+    pub cookies: Option<HashMap<&'a str, &'a str>>,
     pub body: &'a str,
+}
+
+impl Default for Request<'_> {
+    fn default() -> Self {
+        Self {
+            method: Method::GET,
+            path: "/".to_string(),
+            query: None,
+            protocol: "HTTP/1.1",
+            headers: HashMap::new(),
+            cookies: None,
+            body: "",
+        }
+    }
 }
 
 impl<'a> Request<'a> {
@@ -27,10 +42,21 @@ impl<'a> Request<'a> {
         let headers_iter = headers.split("\r\n");
         let mut headers = HashMap::new();
         for header in headers_iter {
-            let mut header_cut = header.splitn(2, ":");
-            let (header_name, header_value) = (header_cut.next()?, header_cut.next()?.trim());
+            let mut header_cut = header.split_once(":")?;
+            let (header_name, header_value) = (Header::from(header_cut.0), header_cut.1.trim());
             headers.insert(header_name, header_value);
         }
+        let cookies = match headers.get(&Header::Cookies) {
+            Some(cookies) => {
+                let mut hash_map = HashMap::new();
+                for cookie in cookies.split(';') {
+                    let cookie_cut = cookie.split_once('=')?;
+                    hash_map.insert(cookie_cut.0, cookie_cut.1.trim());
+                }
+                Some(hash_map)
+            }
+            None => None,
+        };
         let method = match Method::from(method) {
             Ok(x) => x,
             Err(e) => {
@@ -44,6 +70,7 @@ impl<'a> Request<'a> {
             query,
             protocol,
             headers,
+            cookies,
             body,
         })
     }
@@ -64,10 +91,10 @@ mod tests {
         assert_eq!(test_request.method, Method::GET);
         assert_eq!(test_request.path, "/");
         assert_eq!(test_request.protocol, "HTTP/1.1");
-        assert_eq!(test_request.headers.get("Host"), Some(&"localhost:7878"));
-        assert_eq!(test_request.headers.get("Connection"), Some(&"keep-alive"));
-        assert_eq!(test_request.headers.get("Content-Length"), Some(&"40"));
-        assert_eq!(test_request.headers.get("Accept-Language"), Some(&"en-US,en;q=0.9"));
+        assert_eq!(test_request.headers.get(&Host), Some(&"localhost:7878"));
+        assert_eq!(test_request.headers.get(&Connection), Some(&"keep-alive"));
+        assert_eq!(test_request.headers.get(&ContentLength), Some(&"40"));
+        assert_eq!(test_request.headers.get(&AcceptLanguage), Some(&"en-US,en;q=0.9"));
         assert_eq!(test_request.body, "hjafshfas\r\n\r\ndkgsgoaw sdhf\r\nasdkgfvs ewu");
     }
 }
