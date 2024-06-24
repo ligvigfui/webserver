@@ -1,7 +1,7 @@
 pub use std::{
     collections::HashMap,
-    fs::{self, File},
     fmt::Display,
+    fs::{self, File},
     io::{self, Read, Write},
     net::TcpStream,
     path::PathBuf,
@@ -14,12 +14,12 @@ pub use crate::{
     server_functions::{*,
         handling::*,
         headers::{*,
-            Header::Host as Host,
             Header::AcceptLanguage as AcceptLanguage,
-            Header::ContentLength as ContentLength,
-            Header::Cookies as Cookies,
             Header::Connection as Connection,
+            Header::ContentLength as ContentLength,
             Header::ContentType as ContentType,
+            Header::Cookies as Cookies,
+            Header::Host as Host,
         },
         http_verison::*,
         method::*,
@@ -32,12 +32,12 @@ pub use crate::{
     neptunCRF::{User, hash::handle_neptun_login}
 };
 
-pub mod server_functions;
+pub mod dev;
+pub mod extensions;
 #[allow(non_snake_case)]
 pub mod neptunCRF;
-pub mod wedding;
-pub mod dev;
+pub mod server_functions;
 pub mod vue;
-pub mod extensions;
+pub mod wedding;
 
 pub static VERSION: &str = "0.3.0";

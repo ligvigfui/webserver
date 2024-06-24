@@ -6,7 +6,7 @@ pub fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
     let buffer = match read_to_buffer(&mut stream) {
         Ok(x) => x,
         Err(e) => {
-            println!("{}", e);
+            eprintln!("{}", e);
             return;
         }
     };
@@ -36,7 +36,7 @@ fn read_to_buffer(stream: &mut TcpStream) -> Result<String, Error> {
     let mut buffer: String = String::new();
     reader.read_line(&mut buffer)?;
     if buffer.len() < 4 {
-        return Err(Error::new(ErrorKind::Other, "Error reading request"));
+        return Err(Error::new(ErrorKind::InvalidInput, "Error reading request"));
     }
     while &buffer[buffer.len()-4..] != "\r\n\r\n" {
         reader.read_line(&mut buffer)?;
@@ -45,19 +45,19 @@ fn read_to_buffer(stream: &mut TcpStream) -> Result<String, Error> {
 
         let content_length = match content_len.split("\r\n").next() {
             Some(x) => x,
-            None => return Err(Error::new(ErrorKind::Other, "Error parsing content length"))
-        }.parse();
+            None => return Err(Error::new(ErrorKind::InvalidData, "Error parsing content length"))
+        };
 
-        let content_length = match content_length {
+        let content_length = match content_length.parse() {
             Ok(x) => x,
-            Err(e) => return Err(Error::new(ErrorKind::Other, e))
+            Err(e) => return Err(Error::new(ErrorKind::InvalidData, e))
         };
         let mut content_buffer = vec![0; content_length];
         reader.read_exact(&mut content_buffer)?;
         
         let content_buffer = match String::from_utf8(content_buffer) {
             Ok(x) => x,
-            Err(e) => return Err(Error::new(ErrorKind::Other, e))
+            Err(e) => return Err(Error::new(ErrorKind::InvalidData, e))
         };
         buffer.push_str(&content_buffer);
     }
