@@ -18,6 +18,10 @@ impl Header {
             "Cookies" => Cookies,
             "Content-Type" => ContentType,
             "Access-Control-Allow-Origin" => Self::AccessControlAllowOrigin,
+            "Accept-Language" => AcceptLanguage,
+            "Connection" => Header::Connection,
+            "Content-Length" => ContentLength,
+            "Host" => Host,
             some => Header::Some(some.to_string())
         }
     }
@@ -26,11 +30,11 @@ impl Header {
 impl Display for Header {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let string = match self {
-            AcceptLanguage => todo!(),
+            AcceptLanguage => "Accept-Language",
             Self::AccessControlAllowOrigin => "Access-Control-Allow-Origin",
-            Cookies => todo!(),
-            Header::Connection => todo!(),
-            ContentLength => todo!(),
+            Cookies => "Cookies",
+            Header::Connection => "Connection",
+            ContentLength => "Content-Length",
             ContentType => "Content-Type",
             Host => "Host",
             Header::Some(h) => h,
