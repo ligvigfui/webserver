@@ -35,12 +35,3 @@ fn handle_form<'a>(request: &'a Request) -> Response {
         }
     }
 }
-
-pub fn handle_file_pages(stream: &mut TcpStream, path: &str) {
-    match handle_file_inner(stream, format!("pages/{}", path)) {
-        Ok(_) => {}
-        Err(e) => {
-            println!("{}", e);
-        }
-    }
-}

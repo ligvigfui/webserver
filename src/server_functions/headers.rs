@@ -9,6 +9,7 @@ pub enum Header {
     ContentLength,
     ContentType,
     Host,
+    TransferEncoding,
     Some(String),
 }
 
@@ -22,6 +23,7 @@ impl Header {
             "Connection" => Header::Connection,
             "Content-Length" => ContentLength,
             "Host" => Host,
+            "Transfer-Encoding" => Self::TransferEncoding,
             some => Header::Some(some.to_string())
         }
     }
@@ -37,6 +39,7 @@ impl Display for Header {
             ContentLength => "Content-Length",
             ContentType => "Content-Type",
             Host => "Host",
+            Self::TransferEncoding => "Transfer-Encoding",
             Header::Some(h) => h,
         };
         write!(f, "{}", string)

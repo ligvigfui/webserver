@@ -50,3 +50,16 @@ mod time_tests {
         assert!(time > 0);
     }
 }
+
+pub trait ErrIfNone<T> {
+    fn err_if_none(self) -> Result<T, &'static str>;
+}
+
+impl<T> ErrIfNone<T> for Option<T> {
+    fn err_if_none(self) -> Result<T, &'static str> {
+        match self {
+            Some(value) => Ok(value),
+            None => Err("Value is None"),
+        }
+    }
+}

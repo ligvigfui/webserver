@@ -42,8 +42,8 @@ impl Response {
         }
     }
 
-    pub fn as_bytes(&self) -> &[u8] {
-        let mut payload_bites = match &self.payload {
+    pub fn as_bytes(&mut self) -> Vec<Vec<u8>> {
+        let payload_bites = match &self.payload {
             ResponsePayload::None => Vec::new(),
             ResponsePayload::File(f) => {
                 let extension = match f.extension() {
@@ -51,15 +51,15 @@ impl Response {
                     None => "",
                 };
                 let mime = match extension {
-                    "svg" => "image/svg+xml",
-                    "exe" => "application/vnd.microsoft.portable-executable",
-                    "png" => "image/png",
-                    "gif" => "image/gif",
-                    "webp" => "image/webp",
-                    "js" => "application/javascript",
                     "css" => "text/css",
+                    "exe" => "application/vnd.microsoft.portable-executable",
+                    "gif" => "image/gif",
+                    "html" => "text/html",
                     "jpeg" | "jpg" => "image/jpeg",
-                    "txt" => "text/html",
+                    "js" => "application/javascript",
+                    "png" => "image/png",
+                    "svg" => "image/svg+xml",
+                    "webp" => "image/webp",
                     "" => "application/x-elf",
                     _ => {
                         eprintln!("Unknown file extension: {:?}", extension);
@@ -84,7 +84,6 @@ impl Response {
             ResponsePayload::Json(j) => j.as_bytes().to_vec(),
             ResponsePayload::Bites(b) => b.to_vec(),
         };
-        self.headers.insert(ContentLength, payload_bites.len().to_string());
         let headers = self.headers.iter()
             .map(|(k, v)| format!("{}: {}", k, v)).collect::<Vec<String>>().join("\r\n");
         
@@ -94,7 +93,31 @@ impl Response {
             self.http_verison, self.status,
             headers
         );
-
-        &payload_bites
+        self.headers.insert(ContentLength, payload_bites.len().to_string());
+        let result_bites = result.as_bytes().to_vec();
+        let potential_content_len = format!("{ContentLength}: {}\r\n\r\n", payload_bites.len());
+        const TCP_MAX_PACKAT_SIZE: usize = 1400;
+        match result_bites.len() + potential_content_len.as_bytes().len() + payload_bites.len() <= TCP_MAX_PACKAT_SIZE {
+            true => {
+                let mut result = result_bites;
+                result.extend_from_slice(potential_content_len.as_bytes());
+                result.extend_from_slice(&payload_bites);
+                vec![result]
+            }
+            false => {
+                let mut result = result_bites;
+                result.extend_from_slice("Transfer-Encoding: chunked\r\n\r\n".as_bytes());
+                let mut result = vec![result];
+                for chunk in payload_bites.chunks(TCP_MAX_PACKAT_SIZE) {
+                    result.push([
+                        format!("{:x}\r\n", chunk.len()).as_bytes(),
+                        chunk,
+                        b"\r\n"
+                    ].concat())
+                }
+                result.push(b"0\r\n\r\n".to_vec());
+                result
+            }
+        }
     }
 }

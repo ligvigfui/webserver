@@ -20,3 +20,16 @@ impl Display for StatusCode {
         }
     }
 }
+
+impl From<u16> for StatusCode {
+    fn from(code: u16) -> Self {
+        match code {
+            200 => StatusCode::_200,
+            400 => StatusCode::_400,
+            404 => StatusCode::_404,
+            500 => StatusCode::_500,
+            505 => StatusCode::_505,
+            _ => StatusCode::_500,
+        }
+    }
+}
