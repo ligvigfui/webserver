@@ -76,14 +76,14 @@ impl Worker {
 
             match message {
                 Ok(job) => {
-                    if DEBUG >= DebugLevel::HIGH {
+                    if DEBUG >= DebugLevel::ULTRA {
                         println!("Worker {id} got a job; executing.");
                     }
                     job();
                 }
                 Err(e) => {
                     if DEBUG >= DebugLevel::LOW {
-                        eprintln!("\x1b[38;5;9mWorker {id} disconnected with error: {e}; shutting down.\x1b[0m");
+                        color!("Worker {} disconnected with error: {}; shutting down.", id, e).foreground(&Color::Red).println();
                     }
                     break;
                 }

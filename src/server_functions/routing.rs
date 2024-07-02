@@ -1,9 +1,14 @@
 use crate::*;
 
 pub fn routing(request: &mut Request, users: Arc<Vec<Mutex<User>>>) -> Response {
-    /*if request.protocol != "HTTP/1.1" {
+    /*if request.protocol != HTTPVerion::_11 {
         println!("Protocol not supported: {}", request.protocol);
-        handle_page_return(stream, CODES[&505], None, "505.html");
+        return Response {
+            http_verison: HTTPVerion::_11,
+            status: StatusCode::_505,
+            headers: HashMap::new(),
+            payload: ResponsePayload::File(PathBuf::from("./pages/en/505.html")),
+        };
     }*/
     match request.headers.get(&AcceptLanguage) {
         Some(x) => match x.contains("hu") {
@@ -15,8 +20,8 @@ pub fn routing(request: &mut Request, users: Arc<Vec<Mutex<User>>>) -> Response 
         },
     };
     if DEBUG >= DebugLevel::LOW {
-        println!("\x1b[38;5;11m{}\x1b[0m", chrono::Local::now().format("%Y-%m-%d %H:%M:%S"));
-        println!("\x1b[38;5;21mHandling - Request.path: {}, Request.method: {:?}\x1b[0m", request.path, request.method);
+        color!(chrono::Local::now().format("%Y-%m-%d %H:%M:%S")).foreground(&Color::U8(U8Color::new(11))).println();
+        color!("Handling - Request.path: {}, Request.method: {:?}", request.path, request.method).foreground(&Color::U8(U8Color::new(21))).println();
     }
     /*
     let host = match request.headers.get("Host") {
@@ -47,7 +52,7 @@ pub fn routing(request: &mut Request, users: Arc<Vec<Mutex<User>>>) -> Response 
             response404(stream, request);
         }
     } */
-    println!("\x1b[38;5;22mDone with request: {}\x1b[0m", request.path);
+    color!("Done with request: {}", request.path).foreground(&Color::U8(U8Color::new(22))).println();
     response
 }
 

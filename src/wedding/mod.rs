@@ -1,18 +1,26 @@
-use crate::*;
+use request::form::Form;
 
-pub use request::form::Form;
+use crate::*;
 
 pub mod request;
 
 pub fn routing(request: &Request) -> Response {
-    use Method as M;
     match (&request.method, request.path.as_str()) {
-        (M::GET, "" | "/") => Response::new(ResponsePayload::File(PathBuf::from("./pages/hu/wedding/wedding.html"))),
-        (M::GET, image) if image.ends_with(".webp") => Response::new(ResponsePayload::File(PathBuf::from(format!("./assets/wedding{image}")))),
-        (M::GET, "/favicon.gif") => Response::new(ResponsePayload::File(PathBuf::from("./assets/wedding/favicon.gif"))),
-        (M::GET, "/app.js") => Response::new(ResponsePayload::File(PathBuf::from("./pages/hu/wedding/app.js"))),
-        (M::GET, "/style.css") => Response::new(ResponsePayload::File(PathBuf::from("./pages/hu/wedding/style.css"))),
-        (M::POST, "/form") => handle_form(request),
+        (GET, "" | "/") => Response::new(ResponsePayload::File(PathBuf::from("./pages/hu/wedding/wedding.html"))),
+        (GET, image) if image.ends_with(".webp") => Response::new(ResponsePayload::File(PathBuf::from(format!("./assets/wedding{image}")))),
+        (GET, "/favicon.gif") => Response::new(ResponsePayload::File(PathBuf::from("./assets/wedding/favicon.gif"))),
+        (GET, "/app.js") => Response::new(ResponsePayload::File(PathBuf::from("./pages/hu/wedding/app.js"))),
+        (GET, "/style.css") => Response::new(ResponsePayload::File(PathBuf::from("./pages/hu/wedding/style.css"))),
+        (POST, "/form") => handle_form(request),
+        (GET, "/debug") => {
+            println!("Debug request: {:?}", request);
+            Response {
+                http_verison: HTTPVerion::_11,
+                status: StatusCode::_308,
+                headers: HashMap::new(),
+                payload: ResponsePayload::Redirect("/".to_string()),
+            }
+        },
         _ => Response::default()
     }
 }

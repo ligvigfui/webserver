@@ -62,7 +62,7 @@ impl Response {
                     "webp" => "image/webp",
                     "" => "application/x-elf",
                     _ => {
-                        eprintln!("Unknown file extension: {:?}", extension);
+                        log_error(format!("Unknown file extension: {:?}", extension));
                         "application/octet-stream"
                     },
                 };
@@ -70,19 +70,23 @@ impl Response {
                 let mut file = match File::open(f) {
                     Ok(f) => f,
                     Err(e) => {
-                        eprintln!("{}", e);
+                        log_error(e);
                         return Response::_404(&Request::default()).as_bytes();
                     }
                 };
                 let mut payload_bites = Vec::new();
                 if let Err(e) = file.read_to_end(&mut payload_bites) {
-                    eprintln!("{}", e);
+                    log_error(e);
                     return Response::_404(&Request::default()).as_bytes();
                 }
                 payload_bites
             },
             ResponsePayload::Json(j) => j.as_bytes().to_vec(),
             ResponsePayload::Bites(b) => b.to_vec(),
+            ResponsePayload::Redirect(p) => {
+                self.headers.insert(Header::Location, p.to_string());
+                Vec::new()
+            },
         };
         let headers = self.headers.iter()
             .map(|(k, v)| format!("{}: {}", k, v)).collect::<Vec<String>>().join("\r\n");

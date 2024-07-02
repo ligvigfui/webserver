@@ -1,7 +1,6 @@
-
 use crate::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Request<'a> {
     pub method: Method,
     pub path: String,

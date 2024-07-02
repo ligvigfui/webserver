@@ -22,7 +22,9 @@ pub use crate::{
             Header::Host as Host,
         },
         http_verison::*,
-        method::*,
+        method::{*,
+            Method::*,
+        },
         request::*,
         response::*,
         response_payload::*,
@@ -32,6 +34,9 @@ pub use crate::{
     neptunCRF::{User, hash::handle_neptun_login}
 };
 
+pub use terminal_colors::*;
+pub use serde::{Serialize, Deserialize};
+
 pub mod dev;
 pub mod extensions;
 #[allow(non_snake_case)]
@@ -40,4 +45,4 @@ pub mod server_functions;
 pub mod vue;
 pub mod wedding;
 
-pub static VERSION: &str = "0.3.0";
+pub static VERSION: &str = "0.4.0";

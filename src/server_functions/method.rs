@@ -1,4 +1,6 @@
-#[derive(Debug, PartialEq, Copy, Clone)]
+use crate::*;
+
+#[derive(Debug, PartialEq, Copy, Clone, Serialize, Deserialize)]
 pub enum Method {
     GET,
     POST,

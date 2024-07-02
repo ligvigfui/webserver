@@ -6,18 +6,18 @@ pub fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
     let buffer = match read_to_buffer(&mut stream) {
         Ok(x) => x,
         Err(e) => {
-            eprintln!("{}", e);
+            log_error(e);
             return;
         }
     };
     let mut request = match Request::try_from(&buffer) {
         Ok(x) => x,
         Err(e) => {
-            eprint!("Error parsing request: {:?}", e);
+            log_error(format!("Error parsing request: {:?}", e));
             if DEBUG == DebugLevel::HIGH {
                 if buffer.len() > DEBUG_LEN {
-                    eprint!(": {:?}", &buffer[..DEBUG_LEN]);}
-                else {eprint!(": {:?}", &buffer);}
+                    log_error(format!(": {:?}", &buffer[..DEBUG_LEN]));}
+                else {log_error(format!(": {:?}", &buffer));}
             }
             eprintln!();
             return;
@@ -27,7 +27,7 @@ pub fn handle_connection(mut stream: TcpStream, users: Arc<Vec<Mutex<User>>>) {
     let mut response = routing(&mut request, users);
     match send_response(&mut stream, &mut response) {
         Ok(_) => {},
-        Err(e) => eprintln!("{}", e),
+        Err(e) => log_error(e),
     }
 }
 
