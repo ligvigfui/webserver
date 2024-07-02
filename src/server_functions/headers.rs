@@ -11,6 +11,7 @@ pub enum Header {
     Host,
     Location,
     TransferEncoding,
+    Server,
     Some(String),
 }
 
@@ -26,6 +27,7 @@ impl From<&str> for Header {
             "Host" => Host,
             "Location" => Header::Location,
             "Transfer-Encoding" => Header::TransferEncoding,
+            "Server" => Header::Server,
             some => Header::Some(some.to_string())
         }
     }
@@ -43,6 +45,7 @@ impl Display for Header {
             Host => "Host",
             Header::Location => "Location",
             Header::TransferEncoding => "Transfer-Encoding",
+            Header::Server => "Server",
             Header::Some(h) => h,
         };
         write!(f, "{}", string)

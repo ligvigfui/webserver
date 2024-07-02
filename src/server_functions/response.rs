@@ -88,6 +88,7 @@ impl Response {
                 Vec::new()
             },
         };
+        self.headers.insert(Header::Server, format!("ligvigfui's rust webserver/{VERSION}"));
         let headers = self.headers.iter()
             .map(|(k, v)| format!("{}: {}", k, v)).collect::<Vec<String>>().join("\r\n");
         
