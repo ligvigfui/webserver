@@ -43,50 +43,22 @@ impl Response {
     }
 
     pub fn as_bytes(&mut self) -> Vec<Vec<u8>> {
-        let payload_bites = match &self.payload {
-            ResponsePayload::None => Vec::new(),
-            ResponsePayload::File(f) => {
-                let extension = match f.extension() {
-                    Some(x) => x.to_str().unwrap(),
-                    None => "",
-                };
-                let mime = match extension {
-                    "css" => "text/css",
-                    "exe" => "application/vnd.microsoft.portable-executable",
-                    "gif" => "image/gif",
-                    "html" => "text/html",
-                    "jpeg" | "jpg" => "image/jpeg",
-                    "js" => "application/javascript",
-                    "png" => "image/png",
-                    "svg" => "image/svg+xml",
-                    "webp" => "image/webp",
-                    "" => "application/x-elf",
-                    _ => {
-                        log_error(format!("Unknown file extension: {:?}", extension));
-                        "application/octet-stream"
-                    },
-                };
-                self.headers.insert(ContentType, mime.to_string());
-                let mut file = match File::open(f) {
-                    Ok(f) => f,
-                    Err(e) => {
-                        log_error(e);
-                        return Response::_404(&Request::default()).as_bytes();
+        let payload_bites = match self.payload.as_bytes() {
+            Ok(x) => x,
+            Err(e) => {
+                log_error(e);
+                return Response::_404(&Request::default()).as_bytes();
+            }
+        };
+        match self.payload.add_headers() {
+            Some(payload_headers) => {
+                for (k, v) in payload_headers {
+                    if !self.headers.contains_key(&k) {
+                        self.headers.insert(k, v);
                     }
                 };
-                let mut payload_bites = Vec::new();
-                if let Err(e) = file.read_to_end(&mut payload_bites) {
-                    log_error(e);
-                    return Response::_404(&Request::default()).as_bytes();
-                }
-                payload_bites
             },
-            ResponsePayload::Json(j) => j.as_bytes().to_vec(),
-            ResponsePayload::Bites(b) => b.to_vec(),
-            ResponsePayload::Redirect(p) => {
-                self.headers.insert(Header::Location, p.to_string());
-                Vec::new()
-            },
+            None => {},
         };
         self.headers.insert(Header::Server, format!("ligvigfui's rust webserver/{VERSION}"));
         let headers = self.headers.iter()
