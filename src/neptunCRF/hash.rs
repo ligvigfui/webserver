@@ -2,7 +2,7 @@ use ripemd::{Ripemd160, Digest};
 
 use crate::*;
 
-pub fn handle_neptun_login(stream: &mut TcpStream, request: &Request, users: Arc<Vec<Mutex<User>>>) {
+pub fn handle_neptun_login(request: &Request, users: Arc<Vec<Mutex<User>>>) -> Response {
     if DEBUG >= DebugLevel::HIGH {
         println!("Request: {:?}", request);
     }
@@ -14,12 +14,15 @@ pub fn handle_neptun_login(stream: &mut TcpStream, request: &Request, users: Arc
         },
         Err(response) => (400, response.to_string())
     };
-    default_handle(stream, &CODE[&code], None, &response)
+    let mut response = Response::new(ResponsePayload::Bites(response.into_bytes()));
+    response.status = StatusCode::from(code);
+    response
 }
 
-fn handle_neptun_login_inner<'a>(request: &Request, users: &'a Arc<Vec<Mutex<User>>>) -> Result<&'a Mutex<User>,&'a str> {
+fn handle_neptun_login_inner<'a>(request: &Request, users: &'a Arc<Vec<Mutex<User>>>) -> Result<&'a Mutex<User>, &'a str> {
+    let id_header = Header::Some("Id".to_string());
     // get credentials
-    let credentials = match request.headers.get("Credentials") {
+    let credentials = match request.headers.get(&Header::Some("Credentials".to_string())) {
         Some(x) => x.to_string(),
         None => {
             println!("{}: No credentials found in GET request", readable_time());
@@ -37,7 +40,7 @@ fn handle_neptun_login_inner<'a>(request: &Request, users: &'a Arc<Vec<Mutex<Use
     }
 
     // get user from credentials
-    let user = match get_user(users, credentials, request.headers.get("Id").is_some()) {
+    let user = match get_user(users, credentials, request.headers.get(&id_header).is_some()) {
         Some(x) => x,
         None => {
             println!("{}: User does not exist" , readable_time());
@@ -47,7 +50,7 @@ fn handle_neptun_login_inner<'a>(request: &Request, users: &'a Arc<Vec<Mutex<Use
     
     // get mac from Id:
     // if successful: this is the first time this user is logging in
-    let id = match request.headers.get("Id") {
+    let id = match request.headers.get(&id_header) {
         Some(x) => x.to_string(),
         None => return Ok(user),
     };

@@ -6,4 +6,5 @@ pub enum DebugLevel {
     LOW,
     MEDIUM,
     HIGH,
+    ULTRA,
 }

@@ -1,26 +1,26 @@
 use crate::*;
 
-use Method as M;
-
-pub fn routing(stream: &mut TcpStream, request: &mut Request, users: Arc<Vec<Mutex<User>>>){
+pub fn routing(request: &mut Request, users: Arc<Vec<Mutex<User>>>) -> Response {
     match (&request.method, request.path.as_str()) {
-        (M::GET, "" | "/") => handle_page_return(stream, CODE[&200], None,
-        &(format!("{}/neptunCRF/neptunCRF.html", request.headers.get("Accept-Language").unwrap()))),
-        (M::GET, "/icon") => handle_file(stream, "neptunCRF/icon.png"),
-        (M::GET, "/EULA") => handle_page_return(stream, CODE[&200], None, "hu/neptunCRF/EULA.html"),
-        (M::POST, "/login") => handle_neptun_login(stream, request, users),
+        (GET, "" | "/") => {
+            let lang = request.headers.get(&AcceptLanguage).unwrap();
+            Response::new(ResponsePayload::File(PathBuf::from(format!("pages/{lang}/neptunCRF/neptunCRF.html"))))
+        },
+        (GET, "/icon") => Response::new(ResponsePayload::File(PathBuf::from("assets/neptunCRF/icon.png"))),
+        (GET, "/EULA") => Response::new(ResponsePayload::File(PathBuf::from("pages/hu/neptunCRF/EULA.html"))),
+        (POST, "/login") => handle_neptun_login(request, users),
         (_, path) if path.starts_with("/client") => {
             request.path = request.path.replacen("/client", "", 1);
-            client_routing(stream, &request)
+            client_routing(request)
         },
-        _ => response404(stream, request),
+        _ => Response::_404(request)
     }
 }
 
-fn client_routing(stream: &mut TcpStream, request: &Request) {
+fn client_routing(request: &Request) -> Response {
     match (&request.method, request.path.as_str()) {
-        (M::GET, "/download") => handle_file(stream, "neptunCRF/NeptunCRF.exe"),
-        (M::GET, "/latestversion") => default_handle(stream, CODE[&200], None, "0.4.0"),
-        _ => response404(stream, request),
+        (GET, "/download") => Response::new(ResponsePayload::File(PathBuf::from("neptunCRF/NeptunCRF.exe"))),
+        (GET, "/latestversion") => Response::new(ResponsePayload::Bites(VERSION.as_bytes().to_vec())),
+        _ => Response::_404(request)
     }
 }

@@ -1,10 +1,13 @@
 use crate::*;
 
-pub fn routing(stream: &mut TcpStream, request: &Request) {
-    use Method as M;
+pub fn routing(request: &Request) -> Response {
     match (&request.method, request.path.as_str()) {
-        (M::GET, "/favicon.ico") => handle_file(stream, "favicon.ico"),
-        (M::GET, "/debug") => handle_debug(stream, request),
-        _ => vue::routing(stream, request),
+        (GET, "/favicon.ico") => 
+            Response::new(ResponsePayload::File(PathBuf::from("assets/favicon.ico"))),
+        (GET, "/debug") => {
+            println!("Debug request: {:?}", request);
+            Response::default()
+        },
+        _ => vue::routing(request),
     }
 }

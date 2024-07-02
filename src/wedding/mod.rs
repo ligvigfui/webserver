@@ -1,46 +1,45 @@
-use crate::*;
+use request::form::Form;
 
-pub use request::form::Form;
+use crate::*;
 
 pub mod request;
 
-pub fn routing(stream: &mut TcpStream, request: &Request) {
-    use Method as M;
+pub fn routing(request: &Request) -> Response {
     match (&request.method, request.path.as_str()) {
-        (M::GET, "" | "/") => handle_page_return(stream, CODE[&200], None, "hu/wedding/wedding.html"),
-        (M::GET, image) if image.ends_with(".webp") => handle_file(stream, &format!("wedding{image}")),
-        (M::GET, "/favicon.gif") => handle_file(stream, "wedding/favicon.gif"),
-        (M::GET, "/app.js") => handle_file_pages(stream, "hu/wedding/app.js"),
-        (M::GET, "/style.css") => handle_file_pages(stream, "hu/wedding/style.css"),
-        (M::POST, "/form") => handle_form(stream, request),
-        _ => response404(stream, request),
+        (GET, "" | "/") => Response::new(ResponsePayload::File(PathBuf::from("./pages/hu/wedding/wedding.html"))),
+        (GET, image) if image.ends_with(".webp") => Response::new(ResponsePayload::File(PathBuf::from(format!("./assets/wedding{image}")))),
+        (GET, "/favicon.gif") => Response::new(ResponsePayload::File(PathBuf::from("./assets/wedding/favicon.gif"))),
+        (GET, "/app.js") => Response::new(ResponsePayload::File(PathBuf::from("./pages/hu/wedding/app.js"))),
+        (GET, "/style.css") => Response::new(ResponsePayload::File(PathBuf::from("./pages/hu/wedding/style.css"))),
+        (POST, "/form") => handle_form(request),
+        (GET, "/debug") => {
+            println!("Debug request: {:?}", request);
+            Response {
+                http_verison: HTTPVerion::_11,
+                status: StatusCode::_308,
+                headers: HashMap::new(),
+                payload: ResponsePayload::Redirect("/".to_string()),
+            }
+        },
+        _ => Response::default()
     }
 }
 
-fn handle_form<'a>(stream: &mut TcpStream, request: &'a Request) {
+fn handle_form<'a>(request: &'a Request) -> Response {
     let form: Result<Form<'a>, serde_json::Error> = request.to_form();
     match form {
         Ok(form) => {
             println!("{:?}", form);
-            default_handle(
-                stream,
-                CODE[&200],
-                Some(vec!["Access-Control-Allow-Origin: *"]),
-                "{\"status\": \"ok\"}",
-            )
+            Response {
+                http_verison: HTTPVerion::_11,
+                status: StatusCode::_200,
+                headers: HashMap::from([(Header::AccessControlAllowOrigin, "*".to_string())]),
+                payload: ResponsePayload::Json("{\"status\": \"ok\"}".to_owned()),
+            }
         },
         Err(e) => {
             println!("{}", e);
-            response404(stream, request)
-        }
-    }
-}
-
-pub fn handle_file_pages(stream: &mut TcpStream, path: &str) {
-    match handle_file_inner(stream, format!("pages/{}", path)) {
-        Ok(_) => {}
-        Err(e) => {
-            println!("{}", e);
+            Response::_404(request)
         }
     }
 }

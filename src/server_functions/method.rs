@@ -1,4 +1,6 @@
-#[derive(Debug, PartialEq, Copy, Clone)]
+use crate::*;
+
+#[derive(Debug, PartialEq, Copy, Clone, Serialize, Deserialize)]
 pub enum Method {
     GET,
     POST,
@@ -11,8 +13,10 @@ pub enum Method {
     PATCH,
 }
 
-impl Method {
-    pub fn from(method: &str) -> Result<Method, &'static str> {
+impl TryFrom<&str> for Method {
+    type Error = &'static str;
+
+    fn try_from(method: &str) -> Result<Self, Self::Error> {
         match method {
             "GET" => Ok(Method::GET),
             "HEAD" => Ok(Method::HEAD),

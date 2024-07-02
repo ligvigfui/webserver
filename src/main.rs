@@ -4,9 +4,7 @@ use std::{
 };
 
 use webserver::{
-    self,
-    thread::ThreadPool,
-    neptunCRF,
+    self, log_error, neptunCRF, thread::ThreadPool
 };
 
 fn main() {
@@ -21,7 +19,7 @@ fn main() {
         let stream = match stream {
             Ok(x) => x,
             Err(e) => {
-                println!("\x1b[38;5;9mmain/Error: {}\x1b[0m", e);
+                log_error(e);
                 continue;
             }
         };

@@ -1,4 +1,7 @@
 use std::time;
+use chrono::DateTime;
+
+use crate::*;
 
 impl IsHex for String {
     /// Checks if a string is hex
@@ -32,8 +35,7 @@ pub fn now() -> u64 {
 /// Returns a string with the current time in the format "YYYY-MM-DD HH:MM:SS"
 /// with a two hour offset.
 pub fn readable_time() -> String {
-    let current_date_time = chrono::NaiveDateTime::from_timestamp_opt(now() as i64, 0)
-        .expect("Invalid timestamp");
+    let current_date_time = DateTime::from_timestamp(now() as i64, 0).expect("Invalid timestamp");
     //get the current timezone offset
     let offset = chrono::Local::now().offset().local_minus_utc() as i64;
     let local_date_time = current_date_time + chrono::Duration::seconds(offset);
@@ -49,4 +51,23 @@ mod time_tests {
         let time = now();
         assert!(time > 0);
     }
+}
+
+pub trait ErrIfNone<T> {
+    fn err_if_none(self) -> Result<T, &'static str>;
+}
+
+impl<T> ErrIfNone<T> for Option<T> {
+    fn err_if_none(self) -> Result<T, &'static str> {
+        match self {
+            Some(value) => Ok(value),
+            None => Err("Value is None"),
+        }
+    }
+}
+
+pub fn log_error<T>(e: T)
+where
+    T: std::fmt::Display {
+    eprintln!("{}", color!(e).foreground(&Color::Red));
 }

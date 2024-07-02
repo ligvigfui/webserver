@@ -1,4 +1,4 @@
-use crate::Request;
+use crate::*;
 
 #[derive(serde::Deserialize, Default, Debug)]
 pub struct Form<'a> {
