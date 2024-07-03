@@ -5,17 +5,17 @@ pub struct Response {
     pub http_verison: HTTPVerion,
     pub status: StatusCode,
     pub headers: HashMap<Header, String>,
-    pub payload: ResponsePayload,
+    pub payload: Payload,
 }
 
 impl Default for Response {
     fn default() -> Self {
-        Self { http_verison: HTTPVerion::_11, status: StatusCode::_200, headers: HashMap::new(), payload: ResponsePayload::None }
+        Self { http_verison: HTTPVerion::_11, status: StatusCode::_200, headers: HashMap::new(), payload: Payload::None }
     }
 }
 
 impl Response {
-    pub fn new(payload: ResponsePayload) -> Self {
+    pub fn new(payload: Payload) -> Self {
         Self {
             http_verison: HTTPVerion::_11,
             status: StatusCode::_200,
@@ -38,7 +38,7 @@ impl Response {
             http_verison: HTTPVerion::_11,
             status: StatusCode::_404,
             headers: HashMap::new(),
-            payload: ResponsePayload::File(PathBuf::from(format!("./pages/{language}/404.html")))
+            payload: Payload::File(PathBuf::from(format!("./pages/{language}/404.html")))
         }
     }
 

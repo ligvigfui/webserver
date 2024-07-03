@@ -14,7 +14,7 @@ pub fn handle_neptun_login(request: &Request, users: Arc<Vec<Mutex<User>>>) -> R
         },
         Err(response) => (400, response.to_string())
     };
-    let mut response = Response::new(ResponsePayload::Bites(response.into_bytes()));
+    let mut response = Response::new(Payload::Bites(response.into_bytes()));
     response.status = StatusCode::from(code);
     response
 }

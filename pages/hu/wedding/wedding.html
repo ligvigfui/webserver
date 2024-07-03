@@ -5,7 +5,6 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Courgette">
 	<link rel="icon" href="favicon.gif" type="image/gif">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="google-site-verification" content="biicoPSTteciFgHy8rVubvdJ2P4U-UvjQYKDOk5jMq4" />
 	<link rel="stylesheet" href="style.css">
 	<meta charset="UTF-8">
 	<title>Niki és Boldi esküvője</title>
@@ -216,6 +215,58 @@
 			<img src="GYIK.webp">
 		</div>
 	</section>
+
+	<section>
+		<div class="section">
+			<div class="section__content">
+				<h2>Form test</h2>
+				<form>
+					<label for="name">Név</label>
+					<input type="text" id="name" name="name">
+					<label for="email">E-mail cím</label>
+					<input type="email" id="email" name="email">
+					<label for="guests">Vendégek száma</label>
+					<input type="number" id="guests" name="guests">
+					<button type="submit">Küldés</button>
+				</form>
+			</div>
+			<img src="szallas.webp">
+		</div>
+	</section>
+
+	<script>
+		const form = document.querySelector('form');
+		form.addEventListener('submit', e => {
+			console.log('Form submitted!');
+			e.preventDefault(); // Prevent form from submitting
+			// Get form data
+			const form = {
+				name: document.getElementById('name').value,
+				email: document.getElementById('email').value,
+				guests: Number(document.getElementById('guests').value)
+			};
+			// Send form data to server
+			fetch('/form', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(form),
+			})
+			.then(response => {
+				if (response.ok) {
+					alert('Thank you for your RSVP!');
+				} else {
+					console.error(response);
+					alert(response.statusText);
+				}
+			})
+			.catch(error => {
+				alert(error.message);
+				console.error(error);
+			});
+		});
+	</script>
 
 	<section style="
 		display: flex;

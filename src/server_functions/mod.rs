@@ -6,7 +6,7 @@ pub mod http_verison;
 pub mod method;
 pub mod request;
 pub mod response;
-pub mod response_payload;
+pub mod payload;
 pub mod routing;
 pub mod status_code;
 pub mod thread;
