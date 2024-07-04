@@ -47,6 +47,11 @@ jobs:
         slot-name: 'production'
         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_TEST }}
         images: '${{ secrets.DOCKER_HUB_USERNAME }}/rust_webserver:latest'
+    - name: Restart Azure App Service
+      uses: AzureAppServiceManage@0
+      with:
+        app-name: 'rust-webserver'
+        slot-name: 'production'
 
   deploy:
     needs: build
