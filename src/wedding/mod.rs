@@ -1,12 +1,11 @@
-use request::form::Form;
-
 use crate::*;
 
 pub mod request;
 
 pub fn routing(request: &Request) -> Response {
     match (&request.method, request.path.as_str()) {
-        (GET, "" | "/") => Response::new(Payload::File(PathBuf::from("./pages/hu/wedding/wedding.html"))),
+        (GET, "/wedding.html" | "/") => Response::new(Payload::File(PathBuf::from("./pages/hu/wedding/wedding.html"))),
+        (GET, "/bhj.html") => Response::new(Payload::File(PathBuf::from("./pages/hu/wedding/bhj.html"))),
         (GET, image) if image.ends_with(".webp") => Response::new(Payload::File(PathBuf::from(format!("./assets/wedding{image}")))),
         (GET, "/favicon.gif") => Response::new(Payload::File(PathBuf::from("./assets/wedding/favicon.gif"))),
         (GET, "/app.js") => Response::new(Payload::File(PathBuf::from("./pages/hu/wedding/app.js"))),
@@ -20,6 +19,6 @@ pub fn routing(request: &Request) -> Response {
                 payload: Payload::Redirect("/".to_string()),
             }
         },
-        _ => Response::default()
+        _ => Response::_404(request)
     }
 }
