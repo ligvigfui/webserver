@@ -6,7 +6,6 @@ for (var i = 1; i < sections.length; i++) {
     var text = sections[i].getElementsByTagName('h2')[0].innerHTML;
     nav.innerHTML += "<a href='' onclick='scrollToSectionNumber(" + i + "); return false;'>" + text + "</a>";
 }
-nav.innerHTML += "<a href='/bhj.html'>Esküvői Totó</a>";
 
 window.scrollTo({ top: 0, behavior: "smooth" });
 
